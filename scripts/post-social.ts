@@ -369,15 +369,25 @@ async function main() {
   
   let twitterPosted = 0;
   let blueskyPosted = 0;
+  let twitterFailed = 0;  // Track failures to stop trying after repeated fails
+  let blueskyFailed = 0;
   
-  for (const article of articles) {
-    // Check if we've hit limits
+  // Only try top articles by virality (no point trying 50+)
+  const topArticles = articles.slice(0, 10);
+  
+  for (const article of topArticles) {
+    // Check if we've hit limits OR too many failures
     if (twitterPosted >= MAX_TWEETS_PER_RUN && blueskyPosted >= MAX_BLUESKY_PER_RUN) {
+      console.log('\n✅ Hit posting limits, stopping');
+      break;
+    }
+    if (twitterFailed >= 3 && blueskyFailed >= 3) {
+      console.log('\n⚠️ Too many failures on both platforms, stopping');
       break;
     }
     
     // Post to Twitter (if not already posted and under limit)
-    if (twitterPosted < MAX_TWEETS_PER_RUN && !postedLog.twitter.includes(article.slug)) {
+    if (twitterPosted < MAX_TWEETS_PER_RUN && twitterFailed < 3 && !postedLog.twitter.includes(article.slug)) {
       const tweet = generateSocialPost(article, 'twitter');
       console.log(`\n🐦 Posting to Twitter: ${article.title.slice(0, 40)}...`);
       
@@ -386,6 +396,9 @@ async function main() {
         console.log('   ✅ Twitter posted!');
         postedLog.twitter.push(article.slug);
         twitterPosted++;
+        twitterFailed = 0; // Reset on success
+      } else {
+        twitterFailed++;
       }
       
       // Small delay between posts
@@ -393,7 +406,7 @@ async function main() {
     }
     
     // Post to Bluesky (if not already posted and under limit)
-    if (blueskyPosted < MAX_BLUESKY_PER_RUN && !postedLog.bluesky.includes(article.slug)) {
+    if (blueskyPosted < MAX_BLUESKY_PER_RUN && blueskyFailed < 3 && !postedLog.bluesky.includes(article.slug)) {
       const post = generateSocialPost(article, 'bluesky');
       console.log(`\n🦋 Posting to Bluesky: ${article.title.slice(0, 40)}...`);
       
@@ -402,10 +415,13 @@ async function main() {
         console.log('   ✅ Bluesky posted!');
         postedLog.bluesky.push(article.slug);
         blueskyPosted++;
+        blueskyFailed = 0; // Reset on success
+      } else {
+        blueskyFailed++;
       }
       
-      // Small delay between posts
-      await new Promise(r => setTimeout(r, 1000));
+      // Longer delay for Bluesky to avoid rate limits
+      await new Promise(r => setTimeout(r, 3000));
     }
   }
   
