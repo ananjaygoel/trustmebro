@@ -1,7 +1,7 @@
 /**
- * TrustMeBro News Fetcher
+ * TrustMeBro News Fetcher v2.0
  * 
- * Fetches news from NewsAPI and rewrites them in GenZ style using AI Pipe + Claude
+ * Fetches news from NewsAPI + RSS feeds and rewrites them in GenZ style using AI Pipe + Claude
  * Run with: npm run fetch-news
  */
 
@@ -13,8 +13,12 @@ const NEWS_API_KEY = process.env.NEWS_API_KEY || '';
 const AIPIPE_TOKEN = process.env.AIPIPE_TOKEN || '';
 const POSTS_DIR = './src/content/posts';
 
+// Articles per category (increased from 3)
+const ARTICLES_PER_CATEGORY = 10;
+const PAGE_SIZE = 15; // Fetch more to have buffer for filtering
+
 // Categories to fetch news for
-const CATEGORIES = ['technology', 'business', 'entertainment', 'sports', 'science', 'health'];
+const CATEGORIES = ['technology', 'business', 'entertainment', 'sports', 'science', 'health', 'general'];
 
 // Map NewsAPI categories to our categories
 const CATEGORY_MAP: Record<string, string> = {
@@ -26,6 +30,21 @@ const CATEGORY_MAP: Record<string, string> = {
   'health': 'health',
   'general': 'world',
 };
+
+// RSS Feeds for additional content (unlimited!)
+const RSS_FEEDS = [
+  { url: 'https://feeds.arstechnica.com/arstechnica/technology-lab', category: 'tech', source: 'Ars Technica' },
+  { url: 'https://www.theverge.com/rss/index.xml', category: 'tech', source: 'The Verge' },
+  { url: 'https://techcrunch.com/feed/', category: 'tech', source: 'TechCrunch' },
+  { url: 'https://feeds.bbci.co.uk/news/technology/rss.xml', category: 'tech', source: 'BBC Tech' },
+  { url: 'https://www.wired.com/feed/rss', category: 'tech', source: 'Wired' },
+  { url: 'https://feeds.bbci.co.uk/news/world/rss.xml', category: 'world', source: 'BBC World' },
+  { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', category: 'world', source: 'NY Times' },
+  { url: 'https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml', category: 'entertainment', source: 'BBC Entertainment' },
+  { url: 'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml', category: 'science', source: 'BBC Science' },
+  { url: 'https://www.reddit.com/r/technology/.rss', category: 'viral', source: 'Reddit Tech' },
+  { url: 'https://www.reddit.com/r/worldnews/.rss', category: 'viral', source: 'Reddit World' },
+];
 
 interface NewsArticle {
   title: string;
@@ -43,14 +62,14 @@ interface RewrittenArticle {
   content: string;
 }
 
-// ============ FETCH NEWS ============
+// ============ FETCH NEWS FROM NEWSAPI ============
 async function fetchNews(category: string): Promise<NewsArticle[]> {
   if (!NEWS_API_KEY) {
-    console.log('⚠️  No NEWS_API_KEY found, using sample data');
+    console.log('⚠️  No NEWS_API_KEY found, skipping NewsAPI');
     return [];
   }
 
-  const url = `https://newsapi.org/v2/top-headlines?country=us&category=${category}&pageSize=5&apiKey=${NEWS_API_KEY}`;
+  const url = `https://newsapi.org/v2/top-headlines?country=us&category=${category}&pageSize=${PAGE_SIZE}&apiKey=${NEWS_API_KEY}`;
   
   try {
     const response = await fetch(url);
@@ -61,9 +80,72 @@ async function fetchNews(category: string): Promise<NewsArticle[]> {
       return [];
     }
     
-    return data.articles.filter((a: NewsArticle) => a.title && a.description);
+    return data.articles.filter((a: NewsArticle) => 
+      a.title && 
+      a.description && 
+      !a.title.includes('[Removed]') &&
+      a.description.length > 50
+    );
   } catch (error) {
     console.error(`❌ Failed to fetch ${category}:`, error);
+    return [];
+  }
+}
+
+// ============ FETCH NEWS FROM RSS FEEDS ============
+async function fetchRSS(feedUrl: string): Promise<NewsArticle[]> {
+  try {
+    const response = await fetch(feedUrl, {
+      headers: {
+        'User-Agent': 'TrustMeBro News Bot/2.0'
+      }
+    });
+    const xml = await response.text();
+    
+    // Simple XML parsing for RSS items
+    const items: NewsArticle[] = [];
+    const itemMatches = xml.match(/<item>[\s\S]*?<\/item>/g) || 
+                        xml.match(/<entry>[\s\S]*?<\/entry>/g) || [];
+    
+    for (const item of itemMatches.slice(0, 10)) {
+      const title = item.match(/<title>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/)?.[1]?.trim() || '';
+      const description = item.match(/<description>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/description>/)?.[1]?.trim() ||
+                         item.match(/<summary[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/summary>/)?.[1]?.trim() ||
+                         item.match(/<content[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/content>/)?.[1]?.trim() || '';
+      const link = item.match(/<link>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/link>/)?.[1]?.trim() ||
+                   item.match(/<link[^>]*href="([^"]+)"/)?.[1] || '';
+      const image = item.match(/<media:content[^>]*url="([^"]+)"/)?.[1] ||
+                    item.match(/<enclosure[^>]*url="([^"]+)"/)?.[1] ||
+                    item.match(/src="(https:\/\/[^"]+\.(jpg|jpeg|png|webp))"/)?.[1] || '';
+      const pubDate = item.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1] ||
+                      item.match(/<published>([\s\S]*?)<\/published>/)?.[1] || '';
+      
+      // Clean HTML from description
+      const cleanDescription = description
+        .replace(/<[^>]+>/g, '')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .slice(0, 500);
+      
+      if (title && cleanDescription && cleanDescription.length > 30) {
+        items.push({
+          title: title.replace(/<[^>]+>/g, ''),
+          description: cleanDescription,
+          content: cleanDescription,
+          url: link,
+          urlToImage: image,
+          source: { name: 'RSS' },
+          publishedAt: pubDate,
+        });
+      }
+    }
+    
+    return items;
+  } catch (error) {
+    console.error(`❌ Failed to fetch RSS ${feedUrl}:`, error);
     return [];
   }
 }
@@ -121,7 +203,7 @@ Respond in JSON format:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'anthropic/claude-sonnet-4', // Claude Sonnet via AI Pipe
+        model: 'anthropic/claude-sonnet-4',
         messages: [{ role: 'user', content: prompt }],
         max_tokens: 1500,
       }),
@@ -157,7 +239,13 @@ function slugify(text: string): string {
     .slice(0, 50);
 }
 
-function savePost(article: RewrittenArticle, category: string, source: string, image: string) {
+function postExists(slug: string): boolean {
+  const filename = `${slug}.mdx`;
+  const filepath = path.join(POSTS_DIR, filename);
+  return fs.existsSync(filepath);
+}
+
+function savePost(article: RewrittenArticle, category: string, source: string, image: string): boolean {
   const slug = slugify(article.title);
   const date = new Date().toISOString().split('T')[0];
   const filename = `${slug}.mdx`;
@@ -166,7 +254,7 @@ function savePost(article: RewrittenArticle, category: string, source: string, i
   // Skip if already exists
   if (fs.existsSync(filepath)) {
     console.log(`⏭️  Skipping (exists): ${slug}`);
-    return;
+    return false;
   }
 
   const frontmatter = `---
@@ -185,11 +273,13 @@ ${article.content}
 
   fs.writeFileSync(filepath, frontmatter);
   console.log(`✅ Saved: ${filename}`);
+  return true;
 }
 
 // ============ MAIN ============
 async function main() {
-  console.log('🔥 TrustMeBro News Fetcher\n');
+  console.log('🔥 TrustMeBro News Fetcher v2.0\n');
+  console.log(`📊 Config: ${ARTICLES_PER_CATEGORY} articles per category, ${PAGE_SIZE} fetched per request\n`);
   
   // Ensure posts directory exists
   if (!fs.existsSync(POSTS_DIR)) {
@@ -197,31 +287,92 @@ async function main() {
   }
 
   let totalSaved = 0;
+  let totalProcessed = 0;
 
+  // ============ FETCH FROM NEWSAPI ============
+  console.log('📡 === NEWSAPI SOURCES ===\n');
+  
   for (const category of CATEGORIES) {
     console.log(`\n📰 Fetching ${category} news...`);
     const articles = await fetchNews(category);
+    console.log(`   Found ${articles.length} articles`);
     
-    for (const article of articles.slice(0, 3)) { // Max 3 per category
-      console.log(`  📝 Processing: ${article.title.slice(0, 50)}...`);
+    let categoryCount = 0;
+    for (const article of articles) {
+      if (categoryCount >= ARTICLES_PER_CATEGORY) break;
+      
+      // Skip if we might already have this
+      const potentialSlug = slugify(article.title);
+      if (postExists(potentialSlug)) {
+        console.log(`   ⏭️  Skipping (likely exists): ${article.title.slice(0, 40)}...`);
+        continue;
+      }
+      
+      console.log(`   📝 Processing: ${article.title.slice(0, 50)}...`);
+      totalProcessed++;
       
       const rewritten = await rewriteWithAIPipe(article);
       if (rewritten) {
-        savePost(
+        const saved = savePost(
           rewritten,
           CATEGORY_MAP[category] || 'world',
           article.source.name,
           article.urlToImage
         );
-        totalSaved++;
+        if (saved) {
+          totalSaved++;
+          categoryCount++;
+        }
       }
       
-      // Rate limiting
-      await new Promise(r => setTimeout(r, 1000));
+      // Rate limiting - be nice to APIs
+      await new Promise(r => setTimeout(r, 1500));
     }
   }
 
-  console.log(`\n🎉 Done! Saved ${totalSaved} new articles.`);
+  // ============ FETCH FROM RSS FEEDS ============
+  console.log('\n\n📡 === RSS FEED SOURCES ===\n');
+  
+  for (const feed of RSS_FEEDS) {
+    console.log(`\n🔗 Fetching ${feed.source}...`);
+    const articles = await fetchRSS(feed.url);
+    console.log(`   Found ${articles.length} articles`);
+    
+    let feedCount = 0;
+    for (const article of articles) {
+      if (feedCount >= 5) break; // Max 5 per RSS feed
+      
+      // Skip if we might already have this
+      const potentialSlug = slugify(article.title);
+      if (postExists(potentialSlug)) {
+        continue;
+      }
+      
+      console.log(`   📝 Processing: ${article.title.slice(0, 50)}...`);
+      totalProcessed++;
+      
+      const rewritten = await rewriteWithAIPipe(article);
+      if (rewritten) {
+        const saved = savePost(
+          rewritten,
+          feed.category,
+          feed.source,
+          article.urlToImage
+        );
+        if (saved) {
+          totalSaved++;
+          feedCount++;
+        }
+      }
+      
+      // Rate limiting
+      await new Promise(r => setTimeout(r, 1500));
+    }
+  }
+
+  console.log(`\n\n🎉 Done!`);
+  console.log(`   📊 Processed: ${totalProcessed} articles`);
+  console.log(`   ✅ Saved: ${totalSaved} new articles`);
 }
 
 main().catch(console.error);
