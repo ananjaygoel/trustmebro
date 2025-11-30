@@ -14,8 +14,8 @@ import * as path from 'path';
 const POSTS_DIR = './src/content/posts';
 const POSTED_LOG = './src/content/.social-posted.json';
 const SITE_URL = 'https://trustmebro.pro';
-const MAX_TWEETS_PER_RUN = 1; // Free tier: 17/day, 12 runs = ~1.4/run, so 1 to be safe
-const MAX_BLUESKY_PER_RUN = 5; // Bluesky is unlimited
+const MAX_TWEETS_PER_RUN = 0; // Twitter disabled - API too restrictive under Musk
+const MAX_BLUESKY_PER_RUN = 5; // Bluesky is unlimited and FREE!
 
 // ============ CREDENTIALS ============
 const BLUESKY_HANDLE = process.env.BLUESKY_HANDLE || '';
