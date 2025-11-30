@@ -46,8 +46,8 @@ const allCategories = ['tech', 'ai', 'gaming', 'business', 'entertainment', 'spo
         </p>
       </div>
 
-      <!-- Categories Grid -->
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <!-- Categories Grid - 2 cols mobile, 5 cols desktop for even 5+5 layout -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
         {allCategories.map(slug => {
           const config = categoryConfig[slug] || { name: slug, emoji: '📰', gradient: 'from-gray-500 to-gray-600' };
           const count = categoryCounts[slug] || 0;
@@ -92,11 +92,11 @@ const allCategories = ['tech', 'ai', 'gaming', 'business', 'entertainment', 'spo
             <div class="text-sm text-[--color-text-secondary]">Total Stories</div>
           </div>
           <div class="text-center">
-            <div class="text-3xl font-black gradient-text">{Object.keys(categoryCounts).length}</div>
-            <div class="text-sm text-[--color-text-secondary]">Active Categories</div>
+            <div class="text-3xl font-black gradient-text">{allCategories.length}</div>
+            <div class="text-sm text-[--color-text-secondary]">Categories</div>
           </div>
           <div class="text-center">
-            <div class="text-3xl font-black gradient-text">24/7</div>
+            <div class="text-3xl font-black gradient-text">2hr</div>
             <div class="text-sm text-[--color-text-secondary]">Auto Updates</div>
           </div>
           <div class="text-center">
