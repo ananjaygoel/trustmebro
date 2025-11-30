@@ -309,7 +309,14 @@ async function fetchRSS(feedUrl: string): Promise<NewsArticle[]> {
 
 // ============ REWRITE WITH GROQ (FREE - 14,400 req/day!) ============
 // Uses Llama 3.1 8B via Groq API - blazing fast LPU inference
-async function rewriteWithGroq(article: NewsArticle): Promise<RewrittenArticle | null> {
+// IMPORTANT: Free tier has 6,000 tokens per MINUTE limit!
+
+// Rate limiting state
+let lastRequestTime = 0;
+const MIN_REQUEST_INTERVAL = 5000; // 5 seconds between requests (safe for 6K TPM)
+let consecutiveRateLimits = 0;
+
+async function rewriteWithGroq(article: NewsArticle, retryCount = 0): Promise<RewrittenArticle | null> {
   if (!GROQ_API_KEY) {
     console.log('⚠️  No GROQ_API_KEY found, using original content');
     return {
@@ -317,6 +324,22 @@ async function rewriteWithGroq(article: NewsArticle): Promise<RewrittenArticle |
       excerpt: article.description,
       content: article.content || article.description,
     };
+  }
+
+  // Rate limiting - wait between requests
+  const now = Date.now();
+  const timeSinceLastRequest = now - lastRequestTime;
+  const waitTime = Math.max(0, MIN_REQUEST_INTERVAL - timeSinceLastRequest);
+  if (waitTime > 0) {
+    await new Promise(r => setTimeout(r, waitTime));
+  }
+  lastRequestTime = Date.now();
+
+  // If we've hit too many rate limits, slow down even more
+  if (consecutiveRateLimits >= 3) {
+    console.log('⏳ Cooling down after rate limits (30s)...');
+    await new Promise(r => setTimeout(r, 30000));
+    consecutiveRateLimits = 0;
   }
 
   const prompt = `You are a Gen Z news writer AND SEO expert for "TrustMeBro" - a sarcastic, funny news site. 
@@ -345,7 +368,7 @@ Rewrite this news article to be:
 Original Title: ${article.title}
 Original Content: ${article.description} ${article.content || ''}
 
-Respond ONLY with valid JSON (no markdown, no code blocks):
+Respond ONLY with valid JSON (no markdown, no code blocks). Use escaped characters for newlines (\\n) and quotes (\\""):
 {
   "title": "SEO-optimized catchy title (max 60 chars, include keyword + emoji)",
   "excerpt": "SEO meta description with keywords, 120-160 chars, compelling",
@@ -363,30 +386,80 @@ Respond ONLY with valid JSON (no markdown, no code blocks):
       body: JSON.stringify({
         model: 'llama-3.1-8b-instant',
         messages: [
-          { role: 'system', content: 'You are a helpful assistant that outputs only valid JSON.' },
+          { role: 'system', content: 'You are a helpful assistant that outputs only valid JSON. Always escape special characters properly. Use \\n for newlines in strings.' },
           { role: 'user', content: prompt }
         ],
-        temperature: 0.9,
-        max_tokens: 2048,
+        temperature: 0.8, // Slightly lower for more consistent JSON output
+        max_tokens: 1500, // Reduced to help with rate limits
       }),
     });
 
     const data = await response.json();
     
     if (data.error) {
-      console.error('❌ Groq error:', data.error.message || data.error);
+      const errorMsg = data.error.message || data.error;
+      
+      // Handle rate limiting with retry
+      if (errorMsg.includes('Rate limit') || errorMsg.includes('rate limit')) {
+        consecutiveRateLimits++;
+        
+        // Extract wait time from error message if available
+        const waitMatch = errorMsg.match(/try again in (\d+\.?\d*)s/i);
+        const waitSeconds = waitMatch ? parseFloat(waitMatch[1]) : 5;
+        
+        if (retryCount < 2) {
+          console.log(`⏳ Rate limited, waiting ${waitSeconds + 2}s then retry (${retryCount + 1}/2)...`);
+          await new Promise(r => setTimeout(r, (waitSeconds + 2) * 1000));
+          return rewriteWithGroq(article, retryCount + 1);
+        }
+        
+        console.error('❌ Rate limit exceeded after retries, skipping article');
+        return null;
+      }
+      
+      console.error('❌ Groq error:', errorMsg);
       return null;
     }
+
+    // Reset rate limit counter on success
+    consecutiveRateLimits = 0;
 
     const content = data.choices?.[0]?.message?.content;
     if (!content) return null;
 
     // Parse JSON from response (clean up any markdown code blocks)
-    const cleanedContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    let cleanedContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    
+    // Fix common JSON issues - remove control characters
+    cleanedContent = cleanedContent
+      .replace(/[\x00-\x1F\x7F]/g, (char: string) => {
+        // Keep escaped versions, remove raw control chars
+        if (char === '\n') return '\\n';
+        if (char === '\r') return '\\r';
+        if (char === '\t') return '\\t';
+        return ' '; // Replace other control chars with space
+      });
+    
     const jsonMatch = cleanedContent.match(/\{[\s\S]*\}/);
     if (!jsonMatch) return null;
 
-    return JSON.parse(jsonMatch[0]);
+    try {
+      return JSON.parse(jsonMatch[0]);
+    } catch (parseError) {
+      // Try to fix common JSON issues
+      let fixedJson = jsonMatch[0]
+        .replace(/\n/g, '\\n') // Escape literal newlines
+        .replace(/\r/g, '\\r')
+        .replace(/\t/g, '\\t')
+        .replace(/\\n\\n/g, '\\n'); // Avoid double escaping
+      
+      try {
+        return JSON.parse(fixedJson);
+      } catch {
+        console.error('❌ JSON parse failed after fixes:', parseError);
+        return null;
+      }
+    }
   } catch (error) {
     console.error('❌ Rewrite failed:', error);
     return null;
@@ -452,8 +525,9 @@ ${article.content}
 
 // ============ MAIN ============
 async function main() {
-  console.log('🔥 TrustMeBro News Fetcher v2.0\n');
+  console.log('🔥 TrustMeBro News Fetcher v2.1\n');
   console.log(`📊 Config: ${ARTICLES_PER_CATEGORY} articles per category, ${PAGE_SIZE} fetched per request\n`);
+  console.log('⚡ Rate limiting: 5s between requests (Groq free tier: 6K TPM)\n');
   
   // Ensure posts directory exists
   if (!fs.existsSync(POSTS_DIR)) {
@@ -462,18 +536,27 @@ async function main() {
 
   let totalSaved = 0;
   let totalProcessed = 0;
+  
+  // Global limit to prevent rate limit issues
+  const MAX_TOTAL_ARTICLES = 30;
 
   // ============ FETCH FROM NEWSAPI ============
   console.log('📡 === NEWSAPI SOURCES ===\n');
   
   for (const category of CATEGORIES) {
+    if (totalSaved >= MAX_TOTAL_ARTICLES) {
+      console.log(`\n🛑 Reached max articles limit (${MAX_TOTAL_ARTICLES}), stopping NewsAPI...`);
+      break;
+    }
+    
     console.log(`\n📰 Fetching ${category} news...`);
     const articles = await fetchNews(category);
     console.log(`   Found ${articles.length} articles`);
     
     let categoryCount = 0;
     for (const article of articles) {
-      if (categoryCount >= ARTICLES_PER_CATEGORY) break;
+      if (categoryCount >= 2) break; // Reduced from 5 to 2 per category
+      if (totalSaved >= MAX_TOTAL_ARTICLES) break;
       
       // Skip if we might already have this
       const potentialSlug = slugify(article.title);
@@ -496,11 +579,9 @@ async function main() {
         if (saved) {
           totalSaved++;
           categoryCount++;
+          console.log(`   ✅ Saved! (${totalSaved}/${MAX_TOTAL_ARTICLES})`);
         }
       }
-      
-      // Rate limiting - be nice to APIs
-      await new Promise(r => setTimeout(r, 1500));
     }
   }
 
@@ -508,13 +589,20 @@ async function main() {
   console.log('\n\n📡 === RSS FEED SOURCES ===\n');
   
   for (const feed of RSS_FEEDS) {
+    // Stop if we've saved enough articles
+    if (totalSaved >= MAX_TOTAL_ARTICLES) {
+      console.log(`\n🛑 Reached max articles limit (${MAX_TOTAL_ARTICLES}), stopping...`);
+      break;
+    }
+    
     console.log(`\n🔗 Fetching ${feed.source}...`);
     const articles = await fetchRSS(feed.url);
     console.log(`   Found ${articles.length} articles`);
     
     let feedCount = 0;
     for (const article of articles) {
-      if (feedCount >= 5) break; // Max 5 per RSS feed
+      if (feedCount >= 2) break; // Max 2 per RSS feed (reduced from 5)
+      if (totalSaved >= MAX_TOTAL_ARTICLES) break;
       
       // Skip if we might already have this
       const potentialSlug = slugify(article.title);
@@ -536,11 +624,9 @@ async function main() {
         if (saved) {
           totalSaved++;
           feedCount++;
+          console.log(`   ✅ Saved! (${totalSaved}/${MAX_TOTAL_ARTICLES})`);
         }
       }
-      
-      // Rate limiting
-      await new Promise(r => setTimeout(r, 1500));
     }
   }
 
