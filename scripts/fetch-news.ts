@@ -466,6 +466,54 @@ Respond ONLY with valid JSON (no markdown, no code blocks). Use escaped characte
   }
 }
 
+// ============ FALLBACK GENZ REWRITE ============
+// When AI fails, still add some GenZ flavor so we don't publish boring content
+function fallbackGenZRewrite(article: NewsArticle): RewrittenArticle {
+  const genZPrefixes = [
+    "No cap, ", "Bestie, ", "Okay so like, ", "Not gonna lie, ", 
+    "Fr fr, ", "Lowkey, ", "Highkey, ", "POV: ", "It's giving "
+  ];
+  const genZSuffixes = [
+    " and honestly? We're here for it. 💅",
+    " - no cap, this is wild. 🔥",
+    " and it's lowkey iconic. ✨",
+    " - the vibes are immaculate. 💫",
+    " and we're not okay. 😭",
+    " - slay or be slayed, bestie. 👑",
+    " and that's on periodt. 💯"
+  ];
+  const emojis = ["🔥", "💀", "✨", "💅", "👀", "😭", "🫠", "💫", "👑", "🤯"];
+  
+  const randomPrefix = genZPrefixes[Math.floor(Math.random() * genZPrefixes.length)];
+  const randomSuffix = genZSuffixes[Math.floor(Math.random() * genZSuffixes.length)];
+  const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+  
+  // Add emoji to title
+  const title = `${article.title.slice(0, 55)} ${randomEmoji}`;
+  
+  // GenZ-ify the excerpt
+  const excerpt = `${randomPrefix}${article.description.slice(0, 120)}...`;
+  
+  // Build content with GenZ flavor
+  const content = `## The Tea ☕
+
+${randomPrefix}${article.description}${randomSuffix}
+
+## What's Actually Happening 👀
+
+${article.content || article.description}
+
+## The Vibe Check 💅
+
+This whole situation is honestly giving main character energy. Whether you're here for it or not, it's definitely something to keep an eye on. Stay tuned bestie, we'll keep you updated! ✨
+
+---
+*your fave news source that actually gets it* 💕`;
+
+  console.log('   🆘 Used fallback GenZ rewrite');
+  return { title, excerpt, content };
+}
+
 // ============ SAVE POST ============
 function slugify(text: string): string {
   return text
@@ -568,19 +616,22 @@ async function main() {
       console.log(`   📝 Processing: ${article.title.slice(0, 50)}...`);
       totalProcessed++;
       
-      const rewritten = await rewriteWithGroq(article);
-      if (rewritten) {
-        const saved = savePost(
-          rewritten,
-          CATEGORY_MAP[category] || 'world',
-          article.source.name,
-          article.urlToImage
-        );
-        if (saved) {
-          totalSaved++;
-          categoryCount++;
-          console.log(`   ✅ Saved! (${totalSaved}/${MAX_TOTAL_ARTICLES})`);
-        }
+      // Try AI rewrite, fallback to GenZ template if fails
+      let rewritten = await rewriteWithGroq(article);
+      if (!rewritten) {
+        rewritten = fallbackGenZRewrite(article);
+      }
+      
+      const saved = savePost(
+        rewritten,
+        CATEGORY_MAP[category] || 'world',
+        article.source.name,
+        article.urlToImage
+      );
+      if (saved) {
+        totalSaved++;
+        categoryCount++;
+        console.log(`   ✅ Saved! (${totalSaved}/${MAX_TOTAL_ARTICLES})`);
       }
     }
   }
@@ -613,19 +664,22 @@ async function main() {
       console.log(`   📝 Processing: ${article.title.slice(0, 50)}...`);
       totalProcessed++;
       
-      const rewritten = await rewriteWithGroq(article);
-      if (rewritten) {
-        const saved = savePost(
-          rewritten,
-          feed.category,
-          feed.source,
-          article.urlToImage
-        );
-        if (saved) {
-          totalSaved++;
-          feedCount++;
-          console.log(`   ✅ Saved! (${totalSaved}/${MAX_TOTAL_ARTICLES})`);
-        }
+      // Try AI rewrite, fallback to GenZ template if fails
+      let rewritten = await rewriteWithGroq(article);
+      if (!rewritten) {
+        rewritten = fallbackGenZRewrite(article);
+      }
+      
+      const saved = savePost(
+        rewritten,
+        feed.category,
+        feed.source,
+        article.urlToImage
+      );
+      if (saved) {
+        totalSaved++;
+        feedCount++;
+        console.log(`   ✅ Saved! (${totalSaved}/${MAX_TOTAL_ARTICLES})`);
       }
     }
   }
