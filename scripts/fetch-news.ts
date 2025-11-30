@@ -398,7 +398,6 @@ Respond ONLY with valid JSON (no markdown, no code blocks). Use escaped characte
         ],
         temperature: 0.7, // Lower for more consistent JSON output
         max_tokens: 1500,
-        response_format: { type: "json_object" }, // Force JSON mode if supported
       }),
     });
 
@@ -588,7 +587,7 @@ title: "${article.title.replace(/"/g, '\\"')}"
 excerpt: "${article.excerpt.replace(/"/g, '\\"')}"
 category: "${category}"
 date: ${date}
-publishedAt: ${publishedAt}
+publishedAt: "${publishedAt}"
 image: "${image || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800'}"
 author: "${randomAuthor}"
 source: "${source}"
