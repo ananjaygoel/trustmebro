@@ -382,41 +382,46 @@ async function rewriteWithGroq(article: NewsArticle, retryCount = 0): Promise<Re
     consecutiveRateLimits = 0;
   }
 
-  const prompt = `You are a Gen Z news writer AND SEO expert for "TrustMeBro" - a sarcastic, funny news site. 
-Rewrite this news article to be:
+  const prompt = `You are the BEST Gen Z news writer for "TrustMeBro" - a viral, sarcastic news site that makes boring news actually fun to read.
 
-**TONE & STYLE:**
-- Hilarious and sarcastic (but still informative)
-- Full of Gen Z slang (no cap, fr fr, lowkey, highkey, slay, ate, understood the assignment, main character energy, it's giving, etc.)
-- Include jokes, memes references, and witty observations
-- Use emojis sparingly but effectively
-- Keep the facts accurate but make the delivery entertaining
-- Add funny commentary and hot takes
-- Make it sound like a friend telling you the news
+## YOUR MISSION
+Transform this news into content that would go VIRAL on TikTok/Twitter. Make it funny, relatable, and shareable while keeping facts accurate.
 
-**SEO REQUIREMENTS (IMPORTANT):**
-- Title: Include primary keyword naturally, keep under 60 characters, make it click-worthy
-- Excerpt: Include secondary keywords, keep between 120-160 characters for meta description
-- Content: 
-  - Use H2 (##) and H3 (###) headings with keywords
-  - Include relevant keywords naturally throughout (don't keyword stuff)
-  - First paragraph should contain the main keyword
-  - Use semantic/related keywords throughout
-  - Include numbers, statistics, or data when available
-  - Aim for 300-500 words minimum for SEO value
+## VOICE & TONE (THIS IS CRITICAL)
+- Write like you're texting your group chat about this news
+- Be genuinely funny - use irony, exaggeration, and unexpected observations
+- Reference current memes, internet culture, and relatable experiences
+- Use Gen Z slang NATURALLY (no cap, fr fr, lowkey, slay, ate, understood the assignment, main character energy, it's giving, rent free, delulu, sus, valid, based, L/W, touch grass, chronically online)
+- Emojis should feel natural, not forced (💀 for something wild, 😭 for dramatic, ✨ for something good)
+- Hot takes and spicy commentary welcome
+- Roast the situation (lovingly) when appropriate
 
-Original Title: ${article.title}
-Original Content: ${article.description} ${article.content || ''}
+## STRUCTURE
+1. **Title**: Punchy, click-worthy, includes 1 emoji at end, under 60 chars. Make people NEED to click.
+2. **Excerpt**: The hook - 120-150 chars that makes people want to read more. Include a Gen Z phrase.
+3. **Content**: 400-600 words with:
+   - Opening that hooks immediately (no boring intros)
+   - "## The Tea ☕" - What happened, but make it entertaining
+   - "## Why This Matters (Or Doesn't) 👀" - Your take, commentary, implications
+   - "## The Vibe Check 💅" - Final thoughts, predictions, or a funny conclusion
+   - Sprinkle in jokes, asides, and commentary throughout
 
-Respond ONLY with valid JSON (no markdown, no code blocks). Use escaped characters for newlines (\\n) and quotes (\\""):
-{
-  "title": "SEO-optimized catchy title (max 60 chars, include keyword + emoji)",
-  "excerpt": "SEO meta description with keywords, 120-160 chars, compelling",
-  "content": "full rewritten article in markdown with proper headings, keywords, 300-500 words"
-}`;
+## EXAMPLES OF GOOD GENZ WRITING
+- Instead of "The company announced" → "They really said 'hold my coffee' and"
+- Instead of "This is significant" → "This is lowkey a whole thing and I'm not okay"
+- Instead of "Experts say" → "The people who actually know things are saying"
+- Add parenthetical asides like "(yes, really)" or "(I can't make this up)"
+
+## ARTICLE TO REWRITE
+Title: ${article.title}
+Content: ${article.description} ${article.content || ''}
+
+## OUTPUT FORMAT
+Return ONLY this JSON structure. No markdown blocks, no extra text:
+{"title": "your title here", "excerpt": "your excerpt here", "content": "your markdown content here with \\n for newlines"}`
 
   try {
-    // Groq API - OpenAI compatible, using Llama 3.1 8B (fast & free!)
+    // Groq API - Using Llama 3.3 70B for quality output
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -424,13 +429,13 @@ Respond ONLY with valid JSON (no markdown, no code blocks). Use escaped characte
         'Authorization': `Bearer ${GROQ_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'llama-3.1-8b-instant',
+        model: 'llama-3.3-70b-versatile',
         messages: [
-          { role: 'system', content: 'You MUST output ONLY valid JSON. No explanations, no markdown code blocks, no text before or after. Start with { and end with }. Escape all special characters: use \\n for newlines, \\" for quotes inside strings.' },
+          { role: 'system', content: 'You are a witty, chronically-online Gen Z writer who makes news entertaining. Output ONLY valid JSON - no markdown blocks, no explanations. Start with { end with }. Use \\n for newlines in content. Be genuinely funny and relatable.' },
           { role: 'user', content: prompt }
         ],
-        temperature: 0.7, // Lower for more consistent JSON output
-        max_tokens: 1500,
+        temperature: 0.8, // Higher for more creative/funny output
+        max_tokens: 2000,
       }),
     });
 
@@ -653,12 +658,13 @@ ${safeContent}
 
 // ============ MAIN ============
 async function main() {
-  // Distribution settings
-  const MAX_TOTAL_ARTICLES = 30;
+  // Distribution settings - Quality over quantity!
+  // Using 70B model = more tokens per article, so fewer articles but better quality
+  const MAX_TOTAL_ARTICLES = 20;  // Reduced from 30 for quality
   const ALL_CATEGORIES = ['tech', 'ai', 'gaming', 'business', 'entertainment', 'sports', 'science', 'health', 'world', 'viral'];
-  const ARTICLES_PER_CATEGORY = Math.floor(MAX_TOTAL_ARTICLES / ALL_CATEGORIES.length); // 3 per category
+  const ARTICLES_PER_CATEGORY = Math.floor(MAX_TOTAL_ARTICLES / ALL_CATEGORIES.length); // 2 per category
   
-  console.log('🔥 TrustMeBro News Fetcher v2.2 - Fair Distribution Edition\n');
+  console.log('🔥 TrustMeBro News Fetcher v2.3 - Quality Edition (Llama 3.3 70B)\n');
   console.log(`📊 Config: ${MAX_TOTAL_ARTICLES} total articles, ${ARTICLES_PER_CATEGORY} per category across ${ALL_CATEGORIES.length} categories\n`);
   console.log('⚡ Rate limiting: 5s between requests (Groq free tier: 6K TPM)\n');
   
