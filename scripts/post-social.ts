@@ -14,7 +14,7 @@ import * as path from 'path';
 const POSTS_DIR = './src/content/posts';
 const POSTED_LOG = './src/content/.social-posted.json';
 const SITE_URL = 'https://trustmebro.pro';
-const MAX_TWEETS_PER_RUN = 2; // Conservative for 500/month limit
+const MAX_TWEETS_PER_RUN = 1; // Free tier: 17/day, 12 runs = ~1.4/run, so 1 to be safe
 const MAX_BLUESKY_PER_RUN = 5; // Bluesky is unlimited
 
 // ============ CREDENTIALS ============
