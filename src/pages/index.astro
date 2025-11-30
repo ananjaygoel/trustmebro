@@ -1,16 +1,177 @@
 ---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import PostCard from '../components/PostCard.astro';
+import { getCollection } from 'astro:content';
 
+// Get all posts sorted by date
+const posts = await getCollection('posts');
+const sortedPosts = posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const featuredPost = sortedPosts[0];
+const latestPosts = sortedPosts.slice(1, 7);
+const trendingPosts = sortedPosts.slice(0, 5);
+
+const categoryEmojis: Record<string, string> = {
+  tech: '💻', business: '💰', ai: '🤖', world: '🌍', viral: '🔥',
+  entertainment: '🎬', gaming: '🎮', science: '🔬'
+};
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="Home">
+  <Header />
+  
+  <main>
+    <!-- Hero Section -->
+    <section class="py-8 bg-gradient-to-b from-[#0b0f1a] to-[#0f1724]">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="grid md:grid-cols-3 gap-6">
+          <!-- Featured Post -->
+          {featuredPost && (
+            <PostCard 
+              title={featuredPost.data.title}
+              slug={featuredPost.slug}
+              excerpt={featuredPost.data.excerpt}
+              category={featuredPost.data.category}
+              categoryEmoji={categoryEmojis[featuredPost.data.category] || '📰'}
+              date={featuredPost.data.date}
+              image={featuredPost.data.image}
+              featured={true}
+            />
+          )}
+          
+          <!-- Side Stories -->
+          <div class="space-y-4">
+            <h3 class="text-sm font-bold text-cyan-400">⚡ Latest</h3>
+            {latestPosts.slice(0, 4).map(post => (
+              <a href={`/posts/${post.slug}`} class="flex gap-3 p-3 rounded-xl glass hover:border-purple-500 transition-all group">
+                <div class="w-20 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                  {post.data.image ? (
+                    <img src={post.data.image} alt={post.data.title} class="w-full h-full object-cover" />
+                  ) : (
+                    <div class="w-full h-full gradient-bg flex items-center justify-center">
+                      {categoryEmojis[post.data.category] || '📰'}
+                    </div>
+                  )}
+                </div>
+                <div class="min-w-0">
+                  <span class="text-xs text-cyan-400">{categoryEmojis[post.data.category]} {post.data.category}</span>
+                  <h4 class="text-sm font-semibold line-clamp-2 group-hover:text-cyan-400 transition-colors">{post.data.title}</h4>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Quick Actions -->
+    <section class="py-4 border-y border-white/5 bg-[#0f1724]">
+      <div class="max-w-7xl mx-auto px-4 flex gap-3 overflow-x-auto">
+        <button class="pill bg-purple-500 border-purple-500 text-white">�� Latest</button>
+        <button class="pill">🔥 Trending</button>
+        <button class="pill">📈 Most Read</button>
+        <button id="random-btn" class="pill">🎲 Random</button>
+        <button id="share-site-btn" class="pill">📤 Share</button>
+      </div>
+    </section>
+    
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-12">
+      <div class="grid lg:grid-cols-3 gap-8">
+        <!-- Posts Grid -->
+        <div class="lg:col-span-2">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-extrabold gradient-text">📰 Latest News</h2>
+            <a href="/archive" class="text-sm text-cyan-400 hover:underline">See All →</a>
+          </div>
+          
+          <div class="grid md:grid-cols-2 gap-6">
+            {latestPosts.map(post => (
+              <PostCard 
+                title={post.data.title}
+                slug={post.slug}
+                excerpt={post.data.excerpt}
+                category={post.data.category}
+                categoryEmoji={categoryEmojis[post.data.category] || '📰'}
+                date={post.data.date}
+                image={post.data.image}
+              />
+            ))}
+          </div>
+          
+          {sortedPosts.length === 0 && (
+            <div class="text-center py-20 glass rounded-2xl">
+              <p class="text-4xl mb-4">🚧</p>
+              <p class="text-gray-400">No posts yet! Run the news fetcher to add content.</p>
+              <code class="block mt-4 text-sm text-purple-400">npm run fetch-news</code>
+            </div>
+          )}
+        </div>
+        
+        <!-- Sidebar -->
+        <aside class="space-y-6">
+          <!-- Trending -->
+          <div class="glass rounded-2xl p-5">
+            <h3 class="text-sm font-bold text-cyan-400 mb-4">🔥 Trending Now</h3>
+            <ol class="space-y-4">
+              {trendingPosts.map((post, i) => (
+                <li class="flex gap-3">
+                  <span class={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+                    i === 0 ? 'gradient-bg text-black' : 
+                    i === 1 ? 'bg-purple-500' : 
+                    i === 2 ? 'bg-cyan-500 text-black' : 'glass'
+                  }`}>{i + 1}</span>
+                  <div>
+                    <a href={`/posts/${post.slug}`} class="text-sm font-medium hover:text-cyan-400 transition-colors line-clamp-2">{post.data.title}</a>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+          
+          <!-- Categories -->
+          <div class="glass rounded-2xl p-5">
+            <h3 class="text-sm font-bold text-cyan-400 mb-4">📁 Categories</h3>
+            <div class="flex flex-wrap gap-2">
+              {Object.entries(categoryEmojis).map(([cat, emoji]) => (
+                <a href={`/category/${cat}`} class="pill text-xs">{emoji} {cat}</a>
+              ))}
+            </div>
+          </div>
+          
+          <!-- Newsletter -->
+          <div class="glass rounded-2xl p-5">
+            <h3 class="text-sm font-bold text-cyan-400 mb-2">📬 Stay Updated</h3>
+            <p class="text-xs text-gray-400 mb-4">Get the latest drops in your inbox.</p>
+            <form class="space-y-3">
+              <input type="email" placeholder="your@email.com" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-sm focus:outline-none focus:border-cyan-400" />
+              <button class="w-full py-3 rounded-xl gradient-bg font-bold text-black text-sm hover:scale-105 transition-all">Subscribe</button>
+            </form>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+  
+  <Footer />
+</Layout>
+
+<script>
+  document.getElementById('random-btn')?.addEventListener('click', () => {
+    const links = document.querySelectorAll('a[href^="/posts/"]');
+    if (links.length) {
+      const randomLink = links[Math.floor(Math.random() * links.length)] as HTMLAnchorElement;
+      window.location.href = randomLink.href;
+    }
+  });
+  
+  document.getElementById('share-site-btn')?.addEventListener('click', async () => {
+    if (navigator.share) {
+      await navigator.share({ title: 'TrustMeBro', text: 'Check out this fire news portal! ��', url: window.location.origin });
+    } else {
+      await navigator.clipboard.writeText(window.location.origin);
+      alert('Link copied! 📋');
+    }
+  });
+</script>

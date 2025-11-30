@@ -1,0 +1,158 @@
+---
+const categories = [
+  { name: 'Tech', emoji: '💻', slug: 'tech' },
+  { name: 'Business', emoji: '💰', slug: 'business' },
+  { name: 'AI', emoji: '🤖', slug: 'ai' },
+  { name: 'World', emoji: '🌍', slug: 'world' },
+  { name: 'Viral', emoji: '🔥', slug: 'viral' },
+];
+---
+
+<!-- Top Bar -->
+<div class="topbar border-b py-2 text-xs">
+  <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
+    <div class="flex items-center gap-3 topbar-text">
+      <span>{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
+      <span class="opacity-30">|</span>
+      <span class="text-cyan-500 font-semibold">🔥 trending</span>
+    </div>
+    <button id="theme-toggle" class="w-8 h-8 rounded-full glass flex items-center justify-center hover:bg-purple-500 hover:text-white transition-all">
+      🌙
+    </button>
+  </div>
+</div>
+
+<!-- Main Header -->
+<header class="main-header sticky top-0 z-50 backdrop-blur-xl border-b">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+    <!-- Logo -->
+    <a href="/" class="flex items-center gap-3 group">
+      <div class="logo-icon w-12 h-12 rounded-xl gradient-bg flex items-center justify-center text-2xl neon-glow transition-all group-hover:scale-110">
+        🔥
+      </div>
+      <div>
+        <div class="font-black text-xl tracking-tight">
+          <span class="gradient-text">Trust</span><span class="text-white">Me</span><span class="gradient-text">Bro</span>
+        </div>
+        <div class="text-xs opacity-60">news that hits different 💅</div>
+      </div>
+    </a>
+    
+    <!-- Navigation -->
+    <nav class="hidden md:flex items-center gap-1">
+      <a href="/" class="nav-link px-4 py-2 rounded-lg text-sm font-medium transition-all">
+        🏠 Home
+      </a>
+      {categories.map(cat => (
+        <a href={`/category/${cat.slug}`} class="nav-link px-4 py-2 rounded-lg text-sm font-medium transition-all">
+          {cat.emoji} {cat.name}
+        </a>
+      ))}
+      <a href="/search" class="ml-2 w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-cyan-500 hover:text-white transition-all">
+        🔍
+      </a>
+    </nav>
+    
+    <!-- Mobile Menu Button -->
+    <button id="mobile-menu-btn" class="md:hidden w-10 h-10 rounded-lg glass flex items-center justify-center">
+      ☰
+    </button>
+  </div>
+  
+  <!-- Category Bar -->
+  <div class="border-t py-3 overflow-x-auto category-bar">
+    <div class="max-w-7xl mx-auto px-4 flex gap-2">
+      <a href="/" class="pill whitespace-nowrap">🔥 For You</a>
+      {categories.map(cat => (
+        <a href={`/category/${cat.slug}`} class="pill whitespace-nowrap">
+          {cat.emoji} {cat.name}
+        </a>
+      ))}
+      <a href="/category/entertainment" class="pill whitespace-nowrap">🎬 Entertainment</a>
+      <a href="/category/gaming" class="pill whitespace-nowrap">🎮 Gaming</a>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile Menu -->
+<div id="mobile-menu" class="fixed inset-0 mobile-menu backdrop-blur-xl z-[9998] hidden flex-col p-6 pt-20">
+  <button id="mobile-close" class="absolute top-6 right-6 w-12 h-12 rounded-full glass text-2xl">✕</button>
+  <nav class="flex flex-col gap-2">
+    <a href="/" class="px-4 py-3 rounded-xl glass text-lg font-medium">🏠 Home</a>
+    <a href="/search" class="px-4 py-3 rounded-xl glass text-lg font-medium">🔍 Search</a>
+    {categories.map(cat => (
+      <a href={`/category/${cat.slug}`} class="px-4 py-3 rounded-xl glass text-lg font-medium">
+        {cat.emoji} {cat.name}
+      </a>
+    ))}
+    <a href="/categories" class="px-4 py-3 rounded-xl glass text-lg font-medium">📂 All Categories</a>
+  </nav>
+</div>
+
+<style>
+  .topbar {
+    background: var(--color-bg-secondary);
+    border-color: var(--color-border);
+  }
+  .topbar-text {
+    color: var(--color-text-secondary);
+  }
+  .main-header {
+    background: var(--color-bg);
+    border-color: var(--color-border);
+  }
+  :global(.light) .main-header {
+    background: rgba(248, 250, 252, 0.95);
+  }
+  :global(.light) .text-white {
+    color: #0f172a !important;
+  }
+  .logo-icon {
+    box-shadow: 0 0 25px rgba(255, 110, 199, 0.5), 0 0 50px rgba(138, 92, 255, 0.3);
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 25px rgba(255, 110, 199, 0.5), 0 0 50px rgba(138, 92, 255, 0.3); }
+    50% { box-shadow: 0 0 35px rgba(255, 110, 199, 0.7), 0 0 70px rgba(138, 92, 255, 0.5); }
+  }
+  .nav-link:hover {
+    background: var(--color-glass);
+    color: var(--color-neon-cyan);
+  }
+  .category-bar {
+    border-color: var(--color-border);
+  }
+  .mobile-menu {
+    background: var(--color-bg);
+    opacity: 0.98;
+  }
+</style>
+
+<script>
+  // Mobile menu
+  document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {
+    document.getElementById('mobile-menu')?.classList.remove('hidden');
+    document.getElementById('mobile-menu')?.classList.add('flex');
+  });
+  
+  document.getElementById('mobile-close')?.addEventListener('click', () => {
+    document.getElementById('mobile-menu')?.classList.add('hidden');
+    document.getElementById('mobile-menu')?.classList.remove('flex');
+  });
+  
+  // Close on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.getElementById('mobile-menu')?.classList.add('hidden');
+      document.getElementById('mobile-menu')?.classList.remove('flex');
+    }
+  });
+
+  // Update theme toggle icon on load
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggle = document.getElementById('theme-toggle');
+    if (toggle && document.documentElement.classList.contains('light')) {
+      toggle.textContent = '☀️';
+    }
+  });
+</script>

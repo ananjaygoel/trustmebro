@@ -1,0 +1,103 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import PostCard from '../../components/PostCard.astro';
+
+export async function getStaticPaths() {
+  // Define ALL categories here so pages are always generated
+  const allCategories = [
+    { slug: 'tech', name: 'Tech', emoji: '💻' },
+    { slug: 'business', name: 'Business', emoji: '💰' },
+    { slug: 'ai', name: 'AI', emoji: '🤖' },
+    { slug: 'world', name: 'World', emoji: '🌍' },
+    { slug: 'viral', name: 'Viral', emoji: '🔥' },
+    { slug: 'entertainment', name: 'Entertainment', emoji: '🎬' },
+    { slug: 'gaming', name: 'Gaming', emoji: '🎮' },
+    { slug: 'science', name: 'Science', emoji: '🔬' },
+    { slug: 'sports', name: 'Sports', emoji: '⚽' },
+    { slug: 'health', name: 'Health', emoji: '🏥' },
+    { slug: 'politics', name: 'Politics', emoji: '🏛️' },
+  ];
+
+  return allCategories.map(cat => ({
+    params: { category: cat.slug },
+    props: { categoryInfo: cat }
+  }));
+}
+
+const { categoryInfo } = Astro.props;
+const allPosts = await getCollection('posts');
+const posts = allPosts
+  .filter(post => post.data.category.toLowerCase() === categoryInfo.slug.toLowerCase())
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+---
+
+<Layout title={`${categoryInfo.name} News - trust me bro`} description={`Latest ${categoryInfo.name} news, rewritten for Gen Z`}>
+  <Header />
+  
+  <main class="min-h-screen pt-8 pb-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Category Header -->
+      <div class="mb-12 text-center">
+        <div class="inline-flex items-center gap-3 mb-4">
+          <span class="text-6xl">{categoryInfo.emoji}</span>
+          <h1 class="text-4xl md:text-5xl font-black">
+            <span class="gradient-text">{categoryInfo.name}</span> News
+          </h1>
+        </div>
+        <p class="text-gray-400 text-lg">
+          {posts.length} {posts.length === 1 ? 'story' : 'stories'} • Updated daily
+        </p>
+      </div>
+
+      <!-- Posts Grid -->
+      {posts.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {posts.map((post, index) => (
+            <PostCard 
+              title={post.data.title}
+              slug={post.slug}
+              excerpt={post.data.excerpt}
+              category={post.data.category}
+              categoryEmoji={categoryInfo.emoji}
+              date={post.data.date}
+              image={post.data.image}
+              featured={index === 0}
+            />
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-16">
+          <div class="text-8xl mb-6">{categoryInfo.emoji}</div>
+          <h2 class="text-2xl font-bold mb-3">No {categoryInfo.name} stories yet</h2>
+          <p class="opacity-60 mb-8">Check back soon! We're cooking up some fire content 🔥</p>
+          <a 
+            href="/" 
+            class="inline-flex items-center gap-2 px-6 py-3 rounded-full gradient-bg text-white font-bold hover:scale-105 transition-all"
+          >
+            ← Back to Home
+          </a>
+        </div>
+      )}
+
+      <!-- Back to Home (when posts exist) -->
+      {posts.length > 0 && (
+        <div class="mt-12 text-center">
+          <a 
+            href="/" 
+            class="inline-flex items-center gap-2 px-6 py-3 rounded-full glass hover:bg-purple-500/20 font-semibold transition-all"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Back to Home
+          </a>
+        </div>
+      )}
+    </div>
+  </main>
+
+  <Footer />
+</Layout>

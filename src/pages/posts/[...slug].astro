@@ -1,0 +1,163 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  return posts.map(post => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+const categoryEmojis: Record<string, string> = {
+  tech: '💻', business: '💰', ai: '🤖', world: '🌍', viral: '🔥',
+  entertainment: '🎬', gaming: '🎮', science: '🔬'
+};
+
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString('en-US', { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+};
+
+// Get related posts
+const allPosts = await getCollection('posts');
+const relatedPosts = allPosts
+  .filter(p => p.slug !== post.slug && p.data.category === post.data.category)
+  .slice(0, 3);
+---
+
+<Layout title={post.data.title} description={post.data.excerpt} image={post.data.image}>
+  <Header />
+  
+  <main class="max-w-4xl mx-auto px-4 py-12">
+    <!-- Article Header -->
+    <article>
+      <header class="mb-8">
+        <a href={`/category/${post.data.category}`} class="inline-flex items-center gap-2 text-sm font-semibold text-cyan-400 uppercase tracking-wide mb-4 hover:text-purple-400 transition-colors">
+          {categoryEmojis[post.data.category] || '📰'} {post.data.category}
+        </a>
+        
+        <h1 class="text-3xl md:text-4xl font-extrabold leading-tight mb-6">
+          {post.data.title}
+        </h1>
+        
+        <div class="flex items-center gap-4 text-sm text-gray-400 mb-6">
+          <div class="flex items-center gap-2">
+            <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center text-lg">🤖</div>
+            <span>{post.data.author}</span>
+          </div>
+          <span>•</span>
+          <span>{formatDate(post.data.date)}</span>
+        </div>
+        
+        <!-- Share Buttons -->
+        <div class="flex gap-3 mb-8">
+          <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.data.title)}&url=${Astro.url}`} target="_blank" class="pill hover:bg-[#1da1f2]">
+            𝕏 Share
+          </a>
+          <button id="copy-link" class="pill">
+            🔗 Copy Link
+          </button>
+          <button id="native-share" class="pill">
+            📤 Share
+          </button>
+        </div>
+      </header>
+      
+      <!-- Featured Image -->
+      {post.data.image && (
+        <div class="rounded-2xl overflow-hidden mb-10">
+          <img 
+            src={post.data.image} 
+            alt={post.data.title}
+            class="w-full h-auto"
+          />
+        </div>
+      )}
+      
+      <!-- Article Content -->
+      <div class="prose max-w-none">
+        <Content />
+      </div>
+      
+      <!-- Source -->
+      {post.data.source && (
+        <p class="mt-8 text-sm text-gray-500">
+          Source: {post.data.source}
+        </p>
+      )}
+      
+      <!-- Reactions -->
+      <div class="mt-12 p-6 glass rounded-2xl">
+        <p class="text-sm text-gray-400 mb-4">vibe check:</p>
+        <div class="flex gap-3">
+          <button class="reaction-btn text-2xl p-3 rounded-xl glass hover:scale-110 transition-all" data-reaction="fire">🔥</button>
+          <button class="reaction-btn text-2xl p-3 rounded-xl glass hover:scale-110 transition-all" data-reaction="cap">🧢</button>
+          <button class="reaction-btn text-2xl p-3 rounded-xl glass hover:scale-110 transition-all" data-reaction="skull">💀</button>
+          <button class="reaction-btn text-2xl p-3 rounded-xl glass hover:scale-110 transition-all" data-reaction="goat">🐐</button>
+        </div>
+      </div>
+    </article>
+    
+    <!-- Related Posts -->
+    {relatedPosts.length > 0 && (
+      <section class="mt-16">
+        <h2 class="text-xl font-extrabold gradient-text mb-6">more like this 👀</h2>
+        <div class="grid md:grid-cols-3 gap-6">
+          {relatedPosts.map(rpost => (
+            <a href={`/posts/${rpost.slug}`} class="card p-4 group">
+              {rpost.data.image && (
+                <img src={rpost.data.image} alt={rpost.data.title} class="w-full h-32 object-cover rounded-lg mb-3" />
+              )}
+              <h3 class="font-bold text-sm line-clamp-2 group-hover:text-cyan-400 transition-colors">{rpost.data.title}</h3>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+  </main>
+  
+  <Footer />
+</Layout>
+
+<script>
+  // Copy link
+  document.getElementById('copy-link')?.addEventListener('click', async () => {
+    await navigator.clipboard.writeText(window.location.href);
+    const btn = document.getElementById('copy-link');
+    if (btn) {
+      btn.textContent = '✅ Copied!';
+      setTimeout(() => btn.textContent = '🔗 Copy Link', 2000);
+    }
+  });
+  
+  // Native share
+  document.getElementById('native-share')?.addEventListener('click', async () => {
+    if (navigator.share) {
+      await navigator.share({
+        title: document.title,
+        url: window.location.href
+      });
+    }
+  });
+  
+  // Reactions
+  document.querySelectorAll('.reaction-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.reaction-btn').forEach(b => b.classList.remove('bg-purple-500'));
+      btn.classList.add('bg-purple-500');
+      btn.classList.add('scale-125');
+      setTimeout(() => btn.classList.remove('scale-125'), 200);
+    });
+  });
+</script>
