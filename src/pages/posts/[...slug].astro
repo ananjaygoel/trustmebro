@@ -100,12 +100,21 @@ const relatedPosts = allPosts
       <!-- Reactions -->
       <div class="mt-12 p-6 glass rounded-2xl">
         <p class="text-sm text-gray-400 mb-4">vibe check:</p>
-        <div class="flex gap-3">
-          <button class="reaction-btn text-2xl p-3 rounded-xl glass hover:scale-110 transition-all" data-reaction="fire">🔥</button>
-          <button class="reaction-btn text-2xl p-3 rounded-xl glass hover:scale-110 transition-all" data-reaction="cap">🧢</button>
-          <button class="reaction-btn text-2xl p-3 rounded-xl glass hover:scale-110 transition-all" data-reaction="skull">💀</button>
-          <button class="reaction-btn text-2xl p-3 rounded-xl glass hover:scale-110 transition-all" data-reaction="goat">🐐</button>
+        <div class="flex flex-wrap gap-3" id="reactions-container" data-slug={post.slug}>
+          <button class="reaction-btn flex items-center gap-2 text-xl p-3 px-4 rounded-xl glass hover:scale-105 transition-all" data-reaction="fire">
+            🔥 <span class="text-sm font-bold count">0</span>
+          </button>
+          <button class="reaction-btn flex items-center gap-2 text-xl p-3 px-4 rounded-xl glass hover:scale-105 transition-all" data-reaction="cap">
+            🧢 <span class="text-sm font-bold count">0</span>
+          </button>
+          <button class="reaction-btn flex items-center gap-2 text-xl p-3 px-4 rounded-xl glass hover:scale-105 transition-all" data-reaction="skull">
+            💀 <span class="text-sm font-bold count">0</span>
+          </button>
+          <button class="reaction-btn flex items-center gap-2 text-xl p-3 px-4 rounded-xl glass hover:scale-105 transition-all" data-reaction="goat">
+            🐐 <span class="text-sm font-bold count">0</span>
+          </button>
         </div>
+        <p class="text-xs text-gray-500 mt-3" id="vote-status"></p>
       </div>
     </article>
     
@@ -151,13 +160,60 @@ const relatedPosts = allPosts
     }
   });
   
-  // Reactions
+  // Reactions with localStorage persistence
+  const container = document.getElementById('reactions-container');
+  const slug = container?.dataset.slug || 'unknown';
+  const storageKey = `vibes_${slug}`;
+  const votedKey = `voted_${slug}`;
+  
+  // Load saved reactions
+  function loadReactions() {
+    const saved = localStorage.getItem(storageKey);
+    const reactions = saved ? JSON.parse(saved) : { fire: 0, cap: 0, skull: 0, goat: 0 };
+    
+    document.querySelectorAll('.reaction-btn').forEach(btn => {
+      const reaction = (btn as HTMLElement).dataset.reaction || '';
+      const countEl = btn.querySelector('.count');
+      if (countEl) countEl.textContent = reactions[reaction] || '0';
+    });
+    
+    // Show if user already voted
+    const voted = localStorage.getItem(votedKey);
+    if (voted) {
+      const votedBtn = document.querySelector(`[data-reaction="${voted}"]`);
+      votedBtn?.classList.add('bg-purple-500/50', 'border-purple-500');
+      const status = document.getElementById('vote-status');
+      if (status) status.textContent = `you vibed with ${voted === 'fire' ? '🔥' : voted === 'cap' ? '🧢' : voted === 'skull' ? '💀' : '🐐'}`;
+    }
+  }
+  
+  loadReactions();
+  
   document.querySelectorAll('.reaction-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.reaction-btn').forEach(b => b.classList.remove('bg-purple-500'));
-      btn.classList.add('bg-purple-500');
-      btn.classList.add('scale-125');
-      setTimeout(() => btn.classList.remove('scale-125'), 200);
+      const voted = localStorage.getItem(votedKey);
+      if (voted) {
+        const status = document.getElementById('vote-status');
+        if (status) status.textContent = "bestie you already vibed on this one 💅";
+        return;
+      }
+      
+      const reaction = (btn as HTMLElement).dataset.reaction || '';
+      const saved = localStorage.getItem(storageKey);
+      const reactions = saved ? JSON.parse(saved) : { fire: 0, cap: 0, skull: 0, goat: 0 };
+      
+      reactions[reaction] = (reactions[reaction] || 0) + 1;
+      localStorage.setItem(storageKey, JSON.stringify(reactions));
+      localStorage.setItem(votedKey, reaction);
+      
+      // Update UI
+      const countEl = btn.querySelector('.count');
+      if (countEl) countEl.textContent = reactions[reaction];
+      btn.classList.add('bg-purple-500/50', 'border-purple-500', 'scale-110');
+      setTimeout(() => btn.classList.remove('scale-110'), 200);
+      
+      const status = document.getElementById('vote-status');
+      if (status) status.textContent = "vibe recorded ✨";
     });
   });
 </script>

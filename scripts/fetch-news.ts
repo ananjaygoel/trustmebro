@@ -263,13 +263,24 @@ function savePost(article: RewrittenArticle, category: string, source: string, i
     return false;
   }
 
+  const coolAuthors = [
+    "your fave news bestie 💅",
+    "certified yapper 🗣️",
+    "the tea spiller ☕",
+    "no cap correspondent 🧢",
+    "vibes curator ✨",
+    "main character energy 💫",
+    "ur news bff 💕",
+  ];
+  const randomAuthor = coolAuthors[Math.floor(Math.random() * coolAuthors.length)];
+
   const frontmatter = `---
 title: "${article.title.replace(/"/g, '\\"')}"
 excerpt: "${article.excerpt.replace(/"/g, '\\"')}"
 category: "${category}"
 date: ${date}
 image: "${image || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800'}"
-author: "TrustMeBro Bot"
+author: "${randomAuthor}"
 source: "${source}"
 featured: false
 ---
