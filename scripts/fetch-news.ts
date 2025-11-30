@@ -393,11 +393,12 @@ Respond ONLY with valid JSON (no markdown, no code blocks). Use escaped characte
       body: JSON.stringify({
         model: 'llama-3.1-8b-instant',
         messages: [
-          { role: 'system', content: 'You are a helpful assistant that outputs only valid JSON. Always escape special characters properly. Use \\n for newlines in strings.' },
+          { role: 'system', content: 'You MUST output ONLY valid JSON. No explanations, no markdown code blocks, no text before or after. Start with { and end with }. Escape all special characters: use \\n for newlines, \\" for quotes inside strings.' },
           { role: 'user', content: prompt }
         ],
-        temperature: 0.8, // Slightly lower for more consistent JSON output
-        max_tokens: 1500, // Reduced to help with rate limits
+        temperature: 0.7, // Lower for more consistent JSON output
+        max_tokens: 1500,
+        response_format: { type: "json_object" }, // Force JSON mode if supported
       }),
     });
 
@@ -432,40 +433,61 @@ Respond ONLY with valid JSON (no markdown, no code blocks). Use escaped characte
     consecutiveRateLimits = 0;
 
     const content = data.choices?.[0]?.message?.content;
-    if (!content) return null;
+    if (!content) {
+      console.log('❌ Empty response from Groq');
+      return null;
+    }
 
     // Parse JSON from response (clean up any markdown code blocks)
-    let cleanedContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    let cleanedContent = content
+      .replace(/```json\n?/gi, '')
+      .replace(/```\n?/g, '')
+      .replace(/^[^{]*/, '') // Remove any text before the first {
+      .replace(/[^}]*$/, '') // Remove any text after the last }
+      .trim();
     
-    // Fix common JSON issues - remove control characters
-    cleanedContent = cleanedContent
-      .replace(/[\x00-\x1F\x7F]/g, (char: string) => {
-        // Keep escaped versions, remove raw control chars
-        if (char === '\n') return '\\n';
-        if (char === '\r') return '\\r';
-        if (char === '\t') return '\\t';
-        return ' '; // Replace other control chars with space
-      });
-    
+    // Try to find JSON object in the response
     const jsonMatch = cleanedContent.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) return null;
+    if (!jsonMatch) {
+      console.log('❌ No JSON object found in response');
+      console.log('   Response preview:', content.slice(0, 200));
+      return null;
+    }
+
+    let jsonStr = jsonMatch[0];
+    
+    // Fix common JSON issues
+    jsonStr = jsonStr
+      // Remove control characters except in escaped form
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, ' ')
+      // Fix unescaped newlines in string values
+      .replace(/:\s*"([^"]*?)(?<!\\)\n([^"]*?)"/g, ': "$1\\n$2"')
+      // Fix trailing commas
+      .replace(/,(\s*[}\]])/g, '$1');
 
     try {
-      return JSON.parse(jsonMatch[0]);
+      return JSON.parse(jsonStr);
     } catch (parseError) {
-      // Try to fix common JSON issues
-      let fixedJson = jsonMatch[0]
-        .replace(/\n/g, '\\n') // Escape literal newlines
-        .replace(/\r/g, '\\r')
-        .replace(/\t/g, '\\t')
-        .replace(/\\n\\n/g, '\\n'); // Avoid double escaping
+      // More aggressive fixes
+      let fixedJson = jsonStr
+        // Replace all actual newlines with escaped ones
+        .split('\n').map((line: string) => line.trim()).join(' ')
+        // Try to fix quotes issues
+        .replace(/"\s+"/g, '" "')
+        .replace(/\\"/g, "'"); // Replace escaped quotes with single quotes as fallback
       
-      try {
-        return JSON.parse(fixedJson);
-      } catch {
-        console.error('❌ JSON parse failed after fixes:', parseError);
-        return null;
+      // Re-extract just the JSON structure
+      const reMatch = fixedJson.match(/\{\s*"title"\s*:\s*"[^"]*"\s*,\s*"excerpt"\s*:\s*"[^"]*"\s*,\s*"content"\s*:\s*"[^"]*"\s*\}/);
+      if (reMatch) {
+        try {
+          return JSON.parse(reMatch[0]);
+        } catch {
+          // Continue to next fallback
+        }
       }
+      
+      console.log('❌ JSON parse failed, response preview:', content.slice(0, 150));
+      return null;
     }
   } catch (error) {
     console.error('❌ Rewrite failed:', error);
