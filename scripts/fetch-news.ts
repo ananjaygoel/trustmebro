@@ -10,12 +10,12 @@ import * as path from 'path';
 
 // ============ CONFIGURATION ============
 const NEWS_API_KEY = process.env.NEWS_API_KEY || '';
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
+const GROQ_API_KEY = process.env.GROQ_API_KEY || '';
 const POSTS_DIR = './src/content/posts';
 
-// Articles per category - reduced for GitHub Models rate limits (150 req/day free)
-const ARTICLES_PER_CATEGORY = 3;
-const PAGE_SIZE = 10;
+// Articles per category - Groq has 14,400 req/day FREE!
+const ARTICLES_PER_CATEGORY = 5;
+const PAGE_SIZE = 15;
 
 // Categories to fetch news for
 const CATEGORIES = ['technology', 'business', 'entertainment', 'sports', 'science', 'health', 'general'];
@@ -150,11 +150,11 @@ async function fetchRSS(feedUrl: string): Promise<NewsArticle[]> {
   }
 }
 
-// ============ REWRITE WITH GITHUB MODELS (FREE!) ============
-// Uses GPT-4o-mini via GitHub Models API - 150 requests/day free tier
-async function rewriteWithGitHub(article: NewsArticle): Promise<RewrittenArticle | null> {
-  if (!GITHUB_TOKEN) {
-    console.log('⚠️  No GITHUB_TOKEN found, using original content');
+// ============ REWRITE WITH GROQ (FREE - 14,400 req/day!) ============
+// Uses Llama 3.1 8B via Groq API - blazing fast LPU inference
+async function rewriteWithGroq(article: NewsArticle): Promise<RewrittenArticle | null> {
+  if (!GROQ_API_KEY) {
+    console.log('⚠️  No GROQ_API_KEY found, using original content');
     return {
       title: article.title,
       excerpt: article.description,
@@ -196,15 +196,15 @@ Respond ONLY with valid JSON (no markdown, no code blocks):
 }`;
 
   try {
-    // GitHub Models API endpoint - using gpt-4o-mini (high rate limit tier)
-    const response = await fetch('https://models.inference.ai.azure.com/chat/completions', {
+    // Groq API - OpenAI compatible, using Llama 3.1 8B (fast & free!)
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GITHUB_TOKEN}`,
+        'Authorization': `Bearer ${GROQ_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'llama-3.1-8b-instant',
         messages: [
           { role: 'system', content: 'You are a helpful assistant that outputs only valid JSON.' },
           { role: 'user', content: prompt }
@@ -217,7 +217,7 @@ Respond ONLY with valid JSON (no markdown, no code blocks):
     const data = await response.json();
     
     if (data.error) {
-      console.error('❌ GitHub Models error:', data.error.message || data.error);
+      console.error('❌ Groq error:', data.error.message || data.error);
       return null;
     }
 
@@ -317,7 +317,7 @@ async function main() {
       console.log(`   📝 Processing: ${article.title.slice(0, 50)}...`);
       totalProcessed++;
       
-      const rewritten = await rewriteWithGitHub(article);
+      const rewritten = await rewriteWithGroq(article);
       if (rewritten) {
         const saved = savePost(
           rewritten,
@@ -357,7 +357,7 @@ async function main() {
       console.log(`   📝 Processing: ${article.title.slice(0, 50)}...`);
       totalProcessed++;
       
-      const rewritten = await rewriteWithGitHub(article);
+      const rewritten = await rewriteWithGroq(article);
       if (rewritten) {
         const saved = savePost(
           rewritten,
