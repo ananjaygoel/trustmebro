@@ -300,6 +300,13 @@ async function fetchRSS(feedUrl: string): Promise<NewsArticle[]> {
       }
     }
     
+    // Sort by publishedAt date (most recent first)
+    items.sort((a, b) => {
+      const dateA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+      const dateB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+      return dateB - dateA;
+    });
+    
     return items;
   } catch (error) {
     console.error(`❌ Failed to fetch RSS ${feedUrl}:`, error);
