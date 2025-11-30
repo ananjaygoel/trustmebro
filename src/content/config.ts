@@ -7,6 +7,7 @@ const postsCollection = defineCollection({
     excerpt: z.string(),
     category: z.string(),
     date: z.date(),
+    publishedAt: z.string().optional(), // ISO timestamp for precise sorting
     image: z.string().optional(),
     author: z.string().default('TrustMeBro Bot'),
     source: z.string().optional(),

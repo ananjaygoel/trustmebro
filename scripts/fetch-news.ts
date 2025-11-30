@@ -531,7 +531,9 @@ function postExists(slug: string): boolean {
 
 function savePost(article: RewrittenArticle, category: string, source: string, image: string): boolean {
   const slug = slugify(article.title);
-  const date = new Date().toISOString().split('T')[0];
+  const now = new Date();
+  const date = now.toISOString().split('T')[0];
+  const publishedAt = now.toISOString();
   const filename = `${slug}.mdx`;
   const filepath = path.join(POSTS_DIR, filename);
 
@@ -557,6 +559,7 @@ title: "${article.title.replace(/"/g, '\\"')}"
 excerpt: "${article.excerpt.replace(/"/g, '\\"')}"
 category: "${category}"
 date: ${date}
+publishedAt: ${publishedAt}
 image: "${image || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800'}"
 author: "${randomAuthor}"
 source: "${source}"

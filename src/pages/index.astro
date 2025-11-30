@@ -5,9 +5,14 @@ import Footer from '../components/Footer.astro';
 import PostCard from '../components/PostCard.astro';
 import { getCollection } from 'astro:content';
 
-// Get all posts sorted by date
+// Get all posts sorted by publishedAt (most recent first)
 const posts = await getCollection('posts');
-const sortedPosts = posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const sortedPosts = posts.sort((a, b) => {
+  // Use publishedAt if available, fallback to date
+  const aTime = a.data.publishedAt ? new Date(a.data.publishedAt).getTime() : a.data.date.getTime();
+  const bTime = b.data.publishedAt ? new Date(b.data.publishedAt).getTime() : b.data.date.getTime();
+  return bTime - aTime;
+});
 const featuredPost = sortedPosts[0];
 const latestPosts = sortedPosts.slice(1, 7);
 const trendingPosts = sortedPosts.slice(0, 5);
