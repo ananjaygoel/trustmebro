@@ -10,12 +10,12 @@ import * as path from 'path';
 
 // ============ CONFIGURATION ============
 const NEWS_API_KEY = process.env.NEWS_API_KEY || '';
-const AIPIPE_TOKEN = process.env.AIPIPE_TOKEN || '';
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
 const POSTS_DIR = './src/content/posts';
 
-// Articles per category (increased from 3)
-const ARTICLES_PER_CATEGORY = 10;
-const PAGE_SIZE = 15; // Fetch more to have buffer for filtering
+// Articles per category - reduced for GitHub Models rate limits (150 req/day free)
+const ARTICLES_PER_CATEGORY = 3;
+const PAGE_SIZE = 10;
 
 // Categories to fetch news for
 const CATEGORIES = ['technology', 'business', 'entertainment', 'sports', 'science', 'health', 'general'];
@@ -150,10 +150,11 @@ async function fetchRSS(feedUrl: string): Promise<NewsArticle[]> {
   }
 }
 
-// ============ REWRITE WITH AI PIPE + CLAUDE ============
-async function rewriteWithAIPipe(article: NewsArticle): Promise<RewrittenArticle | null> {
-  if (!AIPIPE_TOKEN) {
-    console.log('⚠️  No AIPIPE_TOKEN found, using original content');
+// ============ REWRITE WITH GITHUB MODELS (FREE!) ============
+// Uses GPT-4o-mini via GitHub Models API - 150 requests/day free tier
+async function rewriteWithGitHub(article: NewsArticle): Promise<RewrittenArticle | null> {
+  if (!GITHUB_TOKEN) {
+    console.log('⚠️  No GITHUB_TOKEN found, using original content');
     return {
       title: article.title,
       excerpt: article.description,
@@ -182,13 +183,12 @@ Rewrite this news article to be:
   - First paragraph should contain the main keyword
   - Use semantic/related keywords throughout
   - Include numbers, statistics, or data when available
-  - Add internal linking suggestions in brackets like [LINK: category-name]
   - Aim for 300-500 words minimum for SEO value
 
 Original Title: ${article.title}
 Original Content: ${article.description} ${article.content || ''}
 
-Respond in JSON format:
+Respond ONLY with valid JSON (no markdown, no code blocks):
 {
   "title": "SEO-optimized catchy title (max 60 chars, include keyword + emoji)",
   "excerpt": "SEO meta description with keywords, 120-160 chars, compelling",
@@ -196,31 +196,37 @@ Respond in JSON format:
 }`;
 
   try {
-    const response = await fetch('https://aipipe.org/openrouter/v1/chat/completions', {
+    // GitHub Models API endpoint - using gpt-4o-mini (high rate limit tier)
+    const response = await fetch('https://models.inference.ai.azure.com/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${AIPIPE_TOKEN}`,
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${GITHUB_TOKEN}`,
       },
       body: JSON.stringify({
-        model: 'anthropic/claude-sonnet-4',
-        messages: [{ role: 'user', content: prompt }],
-        max_tokens: 1500,
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: 'You are a helpful assistant that outputs only valid JSON.' },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.9,
+        max_tokens: 2048,
       }),
     });
 
     const data = await response.json();
     
     if (data.error) {
-      console.error('❌ AI Pipe error:', data.error);
+      console.error('❌ GitHub Models error:', data.error.message || data.error);
       return null;
     }
 
     const content = data.choices?.[0]?.message?.content;
     if (!content) return null;
 
-    // Parse JSON from response
-    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    // Parse JSON from response (clean up any markdown code blocks)
+    const cleanedContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    const jsonMatch = cleanedContent.match(/\{[\s\S]*\}/);
     if (!jsonMatch) return null;
 
     return JSON.parse(jsonMatch[0]);
@@ -311,7 +317,7 @@ async function main() {
       console.log(`   📝 Processing: ${article.title.slice(0, 50)}...`);
       totalProcessed++;
       
-      const rewritten = await rewriteWithAIPipe(article);
+      const rewritten = await rewriteWithGitHub(article);
       if (rewritten) {
         const saved = savePost(
           rewritten,
@@ -351,7 +357,7 @@ async function main() {
       console.log(`   📝 Processing: ${article.title.slice(0, 50)}...`);
       totalProcessed++;
       
-      const rewritten = await rewriteWithAIPipe(article);
+      const rewritten = await rewriteWithGitHub(article);
       if (rewritten) {
         const saved = savePost(
           rewritten,

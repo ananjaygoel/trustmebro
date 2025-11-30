@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  models: read  # Required for GitHub Models API
 
 jobs:
   fetch-and-deploy:
@@ -29,7 +30,7 @@ jobs:
       - name: Fetch and rewrite news
         env:
           NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
-          AIPIPE_TOKEN: ${{ secrets.AIPIPE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Auto-provided, no setup needed!
         run: npm run fetch-news
         
       - name: Commit new posts
