@@ -1,4 +1,9 @@
 ---
 // Redirect /category to /categories
-return Astro.redirect('/categories', 301);
 ---
+
+<meta http-equiv="refresh" content="0;url=/categories" />
+<script>
+  window.location.href = '/categories';
+</script>
+<p>Redirecting to <a href="/categories">categories</a>...</p>
