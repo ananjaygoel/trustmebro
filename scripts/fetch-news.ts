@@ -8,6 +8,39 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+// ============ SANITIZATION ============
+// Strip HTML tags and problematic content that breaks MDX
+function sanitizeForMDX(text: string, keepNewlines = false): string {
+  if (!text) return '';
+  let result = text
+    // Remove HTML comments (<!-- -->) - these BREAK MDX!
+    .replace(/<!--[\s\S]*?-->/g, '')
+    // Remove script/style tags and content
+    .replace(/<(script|style)[^>]*>[\s\S]*?<\/\1>/gi, '')
+    // Remove dangerous HTML tags
+    .replace(/<(table|tr|td|th|div|span|img|iframe|form|input|button|a|p)[^>]*>/gi, ' ')
+    .replace(/<\/(table|tr|td|th|div|span|iframe|form|input|button|a|p)>/gi, ' ')
+    // Decode HTML entities
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+    // Remove any remaining HTML entities
+    .replace(/&#\d+;/g, '')
+    .replace(/&[a-z]+;/gi, ' ');
+  
+  if (keepNewlines) {
+    // Clean up excessive whitespace but keep paragraph structure
+    result = result.replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+  } else {
+    // Single line - collapse all whitespace
+    result = result.replace(/\s+/g, ' ').trim();
+  }
+  return result;
+}
+
 // ============ CONFIGURATION ============
 const NEWS_API_KEY = process.env.NEWS_API_KEY || '';
 const GROQ_API_KEY = process.env.GROQ_API_KEY || '';
@@ -516,20 +549,25 @@ function fallbackGenZRewrite(article: NewsArticle): RewrittenArticle {
   const randomSuffix = genZSuffixes[Math.floor(Math.random() * genZSuffixes.length)];
   const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
   
+  // Sanitize inputs to remove HTML that breaks MDX
+  const cleanTitle = sanitizeForMDX(article.title);
+  const cleanDescription = sanitizeForMDX(article.description);
+  const cleanContent = sanitizeForMDX(article.content || article.description);
+  
   // Add emoji to title
-  const title = `${article.title.slice(0, 55)} ${randomEmoji}`;
+  const title = `${cleanTitle.slice(0, 55)} ${randomEmoji}`;
   
   // GenZ-ify the excerpt
-  const excerpt = `${randomPrefix}${article.description.slice(0, 120)}...`;
+  const excerpt = `${randomPrefix}${cleanDescription.slice(0, 120)}...`;
   
   // Build content with GenZ flavor
   const content = `## The Tea ☕
 
-${randomPrefix}${article.description}${randomSuffix}
+${randomPrefix}${cleanDescription}${randomSuffix}
 
 ## What's Actually Happening 👀
 
-${article.content || article.description}
+${cleanContent}
 
 ## The Vibe Check 💅
 
@@ -565,6 +603,12 @@ function savePost(article: RewrittenArticle, category: string, source: string, i
   const filename = `${slug}.mdx`;
   const filepath = path.join(POSTS_DIR, filename);
 
+  // Skip if empty slug (broken title)
+  if (!slug || slug.length < 3) {
+    console.log(`⏭️  Skipping (invalid slug): ${article.title}`);
+    return false;
+  }
+
   // Skip if already exists
   if (fs.existsSync(filepath)) {
     console.log(`⏭️  Skipping (exists): ${slug}`);
@@ -582,9 +626,14 @@ function savePost(article: RewrittenArticle, category: string, source: string, i
   ];
   const randomAuthor = coolAuthors[Math.floor(Math.random() * coolAuthors.length)];
 
+  // Final sanitization pass to catch any HTML that slipped through
+  const safeTitle = sanitizeForMDX(article.title).replace(/"/g, '\\"');
+  const safeExcerpt = sanitizeForMDX(article.excerpt).replace(/"/g, '\\"');
+  const safeContent = sanitizeForMDX(article.content, true); // Keep newlines for content
+
   const frontmatter = `---
-title: "${article.title.replace(/"/g, '\\"')}"
-excerpt: "${article.excerpt.replace(/"/g, '\\"')}"
+title: "${safeTitle}"
+excerpt: "${safeExcerpt}"
 category: "${category}"
 date: ${date}
 publishedAt: "${publishedAt}"
@@ -594,7 +643,7 @@ source: "${source}"
 featured: false
 ---
 
-${article.content}
+${safeContent}
 `;
 
   fs.writeFileSync(filepath, frontmatter);
