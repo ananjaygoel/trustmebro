@@ -33,16 +33,42 @@ const CATEGORY_MAP: Record<string, string> = {
 
 // RSS Feeds for additional content (unlimited!)
 const RSS_FEEDS = [
+  // Tech
   { url: 'https://feeds.arstechnica.com/arstechnica/technology-lab', category: 'tech', source: 'Ars Technica' },
   { url: 'https://www.theverge.com/rss/index.xml', category: 'tech', source: 'The Verge' },
   { url: 'https://techcrunch.com/feed/', category: 'tech', source: 'TechCrunch' },
   { url: 'https://feeds.bbci.co.uk/news/technology/rss.xml', category: 'tech', source: 'BBC Tech' },
   { url: 'https://www.wired.com/feed/rss', category: 'tech', source: 'Wired' },
+  
+  // AI - GenZ loves this!
+  { url: 'https://openai.com/blog/rss/', category: 'ai', source: 'OpenAI Blog' },
+  { url: 'https://blog.google/technology/ai/rss/', category: 'ai', source: 'Google AI' },
+  { url: 'https://www.artificialintelligence-news.com/feed/', category: 'ai', source: 'AI News' },
+  { url: 'https://syncedreview.com/feed/', category: 'ai', source: 'Synced AI' },
+  { url: 'https://www.marktechpost.com/feed/', category: 'ai', source: 'MarkTechPost' },
+  { url: 'https://venturebeat.com/category/ai/feed/', category: 'ai', source: 'VentureBeat AI' },
+  
+  // Gaming - GenZ core!
+  { url: 'https://www.ign.com/rss/articles', category: 'gaming', source: 'IGN' },
+  { url: 'https://kotaku.com/rss', category: 'gaming', source: 'Kotaku' },
+  { url: 'https://www.gamespot.com/feeds/mashup/', category: 'gaming', source: 'GameSpot' },
+  { url: 'https://www.polygon.com/rss/index.xml', category: 'gaming', source: 'Polygon' },
+  { url: 'https://www.pcgamer.com/rss/', category: 'gaming', source: 'PC Gamer' },
+  { url: 'https://www.eurogamer.net/feed', category: 'gaming', source: 'Eurogamer' },
+  
+  // World
   { url: 'https://feeds.bbci.co.uk/news/world/rss.xml', category: 'world', source: 'BBC World' },
   { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', category: 'world', source: 'NY Times' },
+  
+  // Entertainment
   { url: 'https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml', category: 'entertainment', source: 'BBC Entertainment' },
+  
+  // Science
   { url: 'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml', category: 'science', source: 'BBC Science' },
+  
+  // Viral
   { url: 'https://www.reddit.com/r/technology/.rss', category: 'viral', source: 'Reddit Tech' },
+  { url: 'https://www.reddit.com/r/gaming/.rss', category: 'viral', source: 'Reddit Gaming' },
   { url: 'https://www.reddit.com/r/worldnews/.rss', category: 'viral', source: 'Reddit World' },
 ];
 

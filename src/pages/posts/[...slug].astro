@@ -160,37 +160,41 @@ const relatedPosts = allPosts
     }
   });
   
-  // Reactions with localStorage persistence
+  // Global Reactions using Netlify Functions
   const container = document.getElementById('reactions-container');
   const slug = container?.dataset.slug || 'unknown';
-  const storageKey = `vibes_${slug}`;
   const votedKey = `voted_${slug}`;
+  const API_URL = '/.netlify/functions/vibes';
   
-  // Load saved reactions
-  function loadReactions() {
-    const saved = localStorage.getItem(storageKey);
-    const reactions = saved ? JSON.parse(saved) : { fire: 0, cap: 0, skull: 0, goat: 0 };
-    
-    document.querySelectorAll('.reaction-btn').forEach(btn => {
-      const reaction = (btn as HTMLElement).dataset.reaction || '';
-      const countEl = btn.querySelector('.count');
-      if (countEl) countEl.textContent = reactions[reaction] || '0';
-    });
-    
-    // Show if user already voted
-    const voted = localStorage.getItem(votedKey);
-    if (voted) {
-      const votedBtn = document.querySelector(`[data-reaction="${voted}"]`);
-      votedBtn?.classList.add('bg-purple-500/50', 'border-purple-500');
-      const status = document.getElementById('vote-status');
-      if (status) status.textContent = `you vibed with ${voted === 'fire' ? '🔥' : voted === 'cap' ? '🧢' : voted === 'skull' ? '💀' : '🐐'}`;
+  // Load reactions from API
+  async function loadReactions() {
+    try {
+      const res = await fetch(`${API_URL}?slug=${encodeURIComponent(slug)}`);
+      const reactions = await res.json();
+      
+      document.querySelectorAll('.reaction-btn').forEach(btn => {
+        const reaction = (btn as HTMLElement).dataset.reaction || '';
+        const countEl = btn.querySelector('.count');
+        if (countEl) countEl.textContent = reactions[reaction] || '0';
+      });
+      
+      // Show if user already voted (still use localStorage for this)
+      const voted = localStorage.getItem(votedKey);
+      if (voted) {
+        const votedBtn = document.querySelector(`[data-reaction="${voted}"]`);
+        votedBtn?.classList.add('bg-purple-500/50', 'border-purple-500');
+        const status = document.getElementById('vote-status');
+        if (status) status.textContent = `you vibed with ${voted === 'fire' ? '🔥' : voted === 'cap' ? '🧢' : voted === 'skull' ? '💀' : '🐐'}`;
+      }
+    } catch (err) {
+      console.error('Failed to load vibes:', err);
     }
   }
   
   loadReactions();
   
   document.querySelectorAll('.reaction-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       const voted = localStorage.getItem(votedKey);
       if (voted) {
         const status = document.getElementById('vote-status');
@@ -199,21 +203,39 @@ const relatedPosts = allPosts
       }
       
       const reaction = (btn as HTMLElement).dataset.reaction || '';
-      const saved = localStorage.getItem(storageKey);
-      const reactions = saved ? JSON.parse(saved) : { fire: 0, cap: 0, skull: 0, goat: 0 };
       
-      reactions[reaction] = (reactions[reaction] || 0) + 1;
-      localStorage.setItem(storageKey, JSON.stringify(reactions));
-      localStorage.setItem(votedKey, reaction);
-      
-      // Update UI
-      const countEl = btn.querySelector('.count');
-      if (countEl) countEl.textContent = reactions[reaction];
+      // Show optimistic update
       btn.classList.add('bg-purple-500/50', 'border-purple-500', 'scale-110');
       setTimeout(() => btn.classList.remove('scale-110'), 200);
       
       const status = document.getElementById('vote-status');
-      if (status) status.textContent = "vibe recorded ✨";
+      if (status) status.textContent = "saving vibe... ⏳";
+      
+      try {
+        // Send to API
+        const res = await fetch(`${API_URL}?slug=${encodeURIComponent(slug)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reaction })
+        });
+        
+        const reactions = await res.json();
+        
+        // Update all counts from server response
+        document.querySelectorAll('.reaction-btn').forEach(b => {
+          const r = (b as HTMLElement).dataset.reaction || '';
+          const countEl = b.querySelector('.count');
+          if (countEl) countEl.textContent = reactions[r] || '0';
+        });
+        
+        // Save that user voted
+        localStorage.setItem(votedKey, reaction);
+        if (status) status.textContent = "vibe recorded globally ✨";
+      } catch (err) {
+        console.error('Failed to save vibe:', err);
+        if (status) status.textContent = "couldn't save vibe, try again 😢";
+        btn.classList.remove('bg-purple-500/50', 'border-purple-500');
+      }
     });
   });
 </script>
