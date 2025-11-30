@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://trustmebro.pro/sitemap-index.xml
+
+# Google News Bot
+User-agent: Googlebot-News
+Allow: /
+
+Crawl-delay: 1

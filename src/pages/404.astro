@@ -1,0 +1,39 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="404 - Page Not Found" description="Oops! This page doesn't exist.">
+  <Header />
+  
+  <main class="min-h-screen flex items-center justify-center px-4">
+    <div class="text-center">
+      <div class="text-9xl mb-6">🫠</div>
+      <h1 class="text-6xl font-black mb-4">
+        <span class="gradient-text">404</span>
+      </h1>
+      <h2 class="text-2xl font-bold mb-4">page went ghost mode</h2>
+      <p class="text-gray-400 mb-8 max-w-md mx-auto">
+        either this page doesn't exist, or it got ratio'd into oblivion. 
+        either way, it's not here rn.
+      </p>
+      <div class="flex gap-4 justify-center">
+        <a 
+          href="/" 
+          class="px-6 py-3 rounded-full gradient-bg text-black font-bold hover:scale-105 transition-all"
+        >
+          🏠 Go Home
+        </a>
+        <a 
+          href="/categories" 
+          class="px-6 py-3 rounded-full glass hover:border-purple-500 font-bold transition-all"
+        >
+          📂 Browse Categories
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>

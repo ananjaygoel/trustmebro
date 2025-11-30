@@ -1,0 +1,92 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="About Us" description="Learn about TrustMeBro - the Gen Z news platform that makes boring news actually interesting.">
+  <Header />
+  
+  <main class="min-h-screen pt-8 pb-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Header -->
+      <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-black mb-4">
+          <span class="gradient-text">About</span> TrustMeBro
+        </h1>
+        <p class="text-gray-400 text-lg">the news site that actually slaps 🔥</p>
+      </div>
+
+      <!-- Content -->
+      <div class="prose max-w-none">
+        <div class="glass rounded-2xl p-8 mb-8">
+          <h2 class="text-2xl font-bold gradient-text mb-4">Our Mission 🎯</h2>
+          <p class="text-gray-300 mb-4">
+            Let's be real - traditional news is boring. Like, genuinely sleep-inducing. 
+            We started TrustMeBro because we believe staying informed shouldn't feel like homework.
+          </p>
+          <p class="text-gray-300">
+            We take real news from trusted sources and rewrite it in a way that actually makes sense 
+            to people who grew up on the internet. No cap, just facts - served with a side of humor.
+          </p>
+        </div>
+
+        <div class="glass rounded-2xl p-8 mb-8">
+          <h2 class="text-2xl font-bold gradient-text mb-4">How It Works 🤖</h2>
+          <div class="grid md:grid-cols-3 gap-6">
+            <div class="text-center">
+              <div class="text-4xl mb-3">📰</div>
+              <h3 class="font-bold mb-2">We Gather News</h3>
+              <p class="text-gray-400 text-sm">From legit sources like Reuters, AP, TechCrunch, and more</p>
+            </div>
+            <div class="text-center">
+              <div class="text-4xl mb-3">🤖</div>
+              <h3 class="font-bold mb-2">AI Rewrites It</h3>
+              <p class="text-gray-400 text-sm">Our AI makes it entertaining while keeping facts accurate</p>
+            </div>
+            <div class="text-center">
+              <div class="text-4xl mb-3">🔥</div>
+              <h3 class="font-bold mb-2">You Stay Informed</h3>
+              <p class="text-gray-400 text-sm">Without wanting to fall asleep. Revolutionary, we know.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass rounded-2xl p-8 mb-8">
+          <h2 class="text-2xl font-bold gradient-text mb-4">Our Values 💜</h2>
+          <ul class="space-y-3 text-gray-300">
+            <li class="flex items-start gap-3">
+              <span class="text-xl">✅</span>
+              <span><strong>Facts First:</strong> We never make stuff up. All news is from verified sources.</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-xl">😂</span>
+              <span><strong>Entertainment:</strong> News should be engaging, not a snooze-fest.</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-xl">🌍</span>
+              <span><strong>Accessible:</strong> No jargon, no gatekeeping. Just the tea.</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-xl">⚡</span>
+              <span><strong>Fast:</strong> Breaking news, but make it digestible.</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="glass rounded-2xl p-8">
+          <h2 class="text-2xl font-bold gradient-text mb-4">The Team 👥</h2>
+          <p class="text-gray-300 mb-4">
+            We're a small team of chronically online individuals who wanted to make news better. 
+            Our AI bot does the heavy lifting, but humans make sure everything stays accurate and on point.
+          </p>
+          <p class="text-gray-400 text-sm">
+            Got feedback? We'd love to hear from you → <a href="/contact" class="text-cyan-400 hover:underline">Contact Us</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>

@@ -1,0 +1,131 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="Contact Us" description="Get in touch with TrustMeBro. We'd love to hear from you!">
+  <Header />
+  
+  <main class="min-h-screen pt-8 pb-16">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Header -->
+      <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-black mb-4">
+          <span class="gradient-text">Contact</span> Us
+        </h1>
+        <p class="text-gray-400 text-lg">slide into our DMs (professionally) 📬</p>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="glass rounded-2xl p-8 mb-8">
+        <form id="contact-form" class="space-y-6">
+          <div>
+            <label for="name" class="block text-sm font-medium mb-2">Your Name</label>
+            <input 
+              type="text" 
+              id="name" 
+              name="name"
+              required
+              class="w-full px-4 py-3 rounded-xl bg-[#0f1724] border border-white/10 focus:outline-none focus:border-purple-500 transition-all"
+              placeholder="What do we call you?"
+            />
+          </div>
+          
+          <div>
+            <label for="email" class="block text-sm font-medium mb-2">Email</label>
+            <input 
+              type="email" 
+              id="email" 
+              name="email"
+              required
+              class="w-full px-4 py-3 rounded-xl bg-[#0f1724] border border-white/10 focus:outline-none focus:border-purple-500 transition-all"
+              placeholder="your@email.com"
+            />
+          </div>
+          
+          <div>
+            <label for="subject" class="block text-sm font-medium mb-2">Subject</label>
+            <select 
+              id="subject" 
+              name="subject"
+              required
+              class="w-full px-4 py-3 rounded-xl bg-[#0f1724] border border-white/10 focus:outline-none focus:border-purple-500 transition-all"
+            >
+              <option value="">Pick one...</option>
+              <option value="feedback">💬 General Feedback</option>
+              <option value="bug">🐛 Report a Bug</option>
+              <option value="suggestion">💡 Story Suggestion</option>
+              <option value="business">💼 Business Inquiry</option>
+              <option value="press">📰 Press/Media</option>
+              <option value="other">🤷 Other</option>
+            </select>
+          </div>
+          
+          <div>
+            <label for="message" class="block text-sm font-medium mb-2">Message</label>
+            <textarea 
+              id="message" 
+              name="message"
+              rows="5"
+              required
+              class="w-full px-4 py-3 rounded-xl bg-[#0f1724] border border-white/10 focus:outline-none focus:border-purple-500 transition-all resize-none"
+              placeholder="Spill the tea..."
+            ></textarea>
+          </div>
+          
+          <button 
+            type="submit" 
+            class="w-full py-4 rounded-xl gradient-bg font-bold text-black hover:scale-[1.02] transition-all"
+          >
+            Send Message 🚀
+          </button>
+        </form>
+        
+        <div id="form-message" class="mt-4 hidden text-center"></div>
+      </div>
+
+      <!-- Alternative Contact -->
+      <div class="glass rounded-2xl p-8">
+        <h2 class="text-xl font-bold mb-4">Other Ways to Reach Us</h2>
+        <div class="space-y-4">
+          <div class="flex items-center gap-4">
+            <span class="text-2xl">📧</span>
+            <div>
+              <p class="font-medium">Email</p>
+              <a href="mailto:hello@trustmebro.pro" class="text-cyan-400 hover:underline">hello@trustmebro.pro</a>
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="text-2xl">𝕏</span>
+            <div>
+              <p class="font-medium">Twitter/X</p>
+              <a href="https://twitter.com/trustmebro" target="_blank" class="text-cyan-400 hover:underline">@trustmebro</a>
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="text-2xl">💬</span>
+            <div>
+              <p class="font-medium">Discord</p>
+              <a href="https://discord.gg/trustmebro" target="_blank" class="text-cyan-400 hover:underline">Join our server</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+  document.getElementById('contact-form')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const msg = document.getElementById('form-message');
+    if (msg) {
+      msg.classList.remove('hidden');
+      msg.className = 'mt-4 text-center text-green-400';
+      msg.textContent = '✅ Message sent! We\'ll get back to you soon (hopefully before the heat death of the universe)';
+    }
+  });
+</script>

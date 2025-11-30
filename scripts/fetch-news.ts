@@ -79,8 +79,10 @@ async function rewriteWithAIPipe(article: NewsArticle): Promise<RewrittenArticle
     };
   }
 
-  const prompt = `You are a Gen Z news writer for "TrustMeBro" - a sarcastic, funny news site. 
+  const prompt = `You are a Gen Z news writer AND SEO expert for "TrustMeBro" - a sarcastic, funny news site. 
 Rewrite this news article to be:
+
+**TONE & STYLE:**
 - Hilarious and sarcastic (but still informative)
 - Full of Gen Z slang (no cap, fr fr, lowkey, highkey, slay, ate, understood the assignment, main character energy, it's giving, etc.)
 - Include jokes, memes references, and witty observations
@@ -89,14 +91,26 @@ Rewrite this news article to be:
 - Add funny commentary and hot takes
 - Make it sound like a friend telling you the news
 
+**SEO REQUIREMENTS (IMPORTANT):**
+- Title: Include primary keyword naturally, keep under 60 characters, make it click-worthy
+- Excerpt: Include secondary keywords, keep between 120-160 characters for meta description
+- Content: 
+  - Use H2 (##) and H3 (###) headings with keywords
+  - Include relevant keywords naturally throughout (don't keyword stuff)
+  - First paragraph should contain the main keyword
+  - Use semantic/related keywords throughout
+  - Include numbers, statistics, or data when available
+  - Add internal linking suggestions in brackets like [LINK: category-name]
+  - Aim for 300-500 words minimum for SEO value
+
 Original Title: ${article.title}
 Original Content: ${article.description} ${article.content || ''}
 
 Respond in JSON format:
 {
-  "title": "catchy Gen Z title with emoji",
-  "excerpt": "funny 1-2 sentence summary",
-  "content": "full rewritten article in markdown (3-5 paragraphs)"
+  "title": "SEO-optimized catchy title (max 60 chars, include keyword + emoji)",
+  "excerpt": "SEO meta description with keywords, 120-160 chars, compelling",
+  "content": "full rewritten article in markdown with proper headings, keywords, 300-500 words"
 }`;
 
   try {

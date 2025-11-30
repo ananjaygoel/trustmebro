@@ -5,9 +5,30 @@ interface Props {
   title: string;
   description?: string;
   image?: string;
+  article?: boolean;
+  publishedTime?: string;
+  modifiedTime?: string;
+  author?: string;
+  keywords?: string[];
 }
 
-const { title, description = "GenZ news that hits different. No cap.", image = "/og-image.png" } = Astro.props;
+const { 
+  title, 
+  description = "GenZ news that hits different. No cap.", 
+  image = "/og-image.png",
+  article = false,
+  publishedTime,
+  modifiedTime,
+  author = "TrustMeBro",
+  keywords = ["news", "genz", "trending", "viral"]
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://trustmebro.pro");
+const fullImageURL = image.startsWith('http') ? image : new URL(image, Astro.site || "https://trustmebro.pro").toString();
+
+// These will be replaced with your actual IDs
+const GA_MEASUREMENT_ID = import.meta.env.PUBLIC_GA_ID || ""; // e.g., G-XXXXXXXXXX
+const ADSENSE_CLIENT_ID = import.meta.env.PUBLIC_ADSENSE_ID || ""; // e.g., ca-pub-XXXXXXXXXX
 ---
 
 <!doctype html>
@@ -15,23 +36,107 @@ const { title, description = "GenZ news that hits different. No cap.", image = "
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content={description} />
     <meta name="theme-color" content="#0b0f1a" />
     
-    <!-- Open Graph -->
+    <!-- Canonical URL -->
+    <link rel="canonical" href={canonicalURL} />
+    
+    <!-- Primary Meta Tags -->
+    <title>{title} | TrustMeBro</title>
+    <meta name="title" content={`${title} | TrustMeBro`} />
+    <meta name="description" content={description} />
+    <meta name="keywords" content={keywords.join(", ")} />
+    <meta name="author" content={author} />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={article ? "article" : "website"} />
+    <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={image} />
-    <meta property="og:type" content="website" />
+    <meta property="og:image" content={fullImageURL} />
+    <meta property="og:site_name" content="TrustMeBro" />
+    <meta property="og:locale" content="en_US" />
+    
+    {article && publishedTime && (
+      <meta property="article:published_time" content={publishedTime} />
+    )}
+    {article && modifiedTime && (
+      <meta property="article:modified_time" content={modifiedTime} />
+    )}
+    {article && (
+      <meta property="article:author" content={author} />
+    )}
+    
+    <!-- Google News specific tags -->
+    {article && (
+      <>
+        <meta name="news_keywords" content={keywords.join(", ")} />
+        <meta name="original-source" content={canonicalURL} />
+      </>
+    )}
+    
+    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalURL} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={fullImageURL} />
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>{title} | TrustMeBro</title>
+    
+    <!-- Google Analytics 4 -->
+    {GA_MEASUREMENT_ID && (
+      <>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}></script>
+        <script define:vars={{ GA_MEASUREMENT_ID }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', GA_MEASUREMENT_ID);
+        </script>
+      </>
+    )}
+    
+    <!-- Google AdSense -->
+    {ADSENSE_CLIENT_ID && (
+      <script 
+        async 
+        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
+        crossorigin="anonymous"
+      ></script>
+    )}
+    
+    <!-- JSON-LD Structured Data for SEO -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": article ? "NewsArticle" : "WebSite",
+      "name": "TrustMeBro",
+      "url": canonicalURL,
+      "description": description,
+      "publisher": {
+        "@type": "Organization",
+        "name": "TrustMeBro",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://trustmebro.pro/favicon.svg"
+        }
+      },
+      ...(article && {
+        "headline": title,
+        "image": fullImageURL,
+        "datePublished": publishedTime,
+        "dateModified": modifiedTime || publishedTime,
+        "author": {
+          "@type": "Person",
+          "name": author
+        }
+      })
+    })} />
   </head>
   <body class="antialiased">
     <slot />
