@@ -316,7 +316,9 @@ function getRecentArticles(): ArticleMeta[] {
       const title = frontmatter.match(/title:\s*"([^"]+)"/)?.[1] || '';
       const excerpt = frontmatter.match(/excerpt:\s*"([^"]+)"/)?.[1] || '';
       const category = frontmatter.match(/category:\s*"([^"]+)"/)?.[1] || '';
-      const date = frontmatter.match(/date:\s*"([^"]+)"/)?.[1] || '';
+      // Use publishedAt (quoted ISO string) or fall back to date (unquoted)
+      const publishedAt = frontmatter.match(/publishedAt:\s*"([^"]+)"/)?.[1] || '';
+      const date = publishedAt || frontmatter.match(/date:\s*(\d{4}-\d{2}-\d{2})/)?.[1] || '';
       
       const slug = file.replace('.mdx', '');
       
