@@ -691,7 +691,8 @@ async function main() {
     }
   });
 
-  // Shuffle feeds within each category for variety
+  // Shuffle feeds within each category for variety EACH RUN
+  // This ensures different feeds are used each time the workflow runs
   Object.values(feedsByCategory).forEach(feeds => {
     for (let i = feeds.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -699,35 +700,43 @@ async function main() {
     }
   });
 
-  console.log(`📊 Target: ${ARTICLES_PER_CATEGORY} articles per category (${ALL_CATEGORIES.length} categories)\n`);
+  // Track which feed index to use next for each category (for round-robin within a run)
+  const feedIndexByCategory: Record<string, number> = {};
+  ALL_CATEGORIES.forEach(cat => feedIndexByCategory[cat] = 0);
 
-  // ============ ROUND-ROBIN FETCH ============
-  // Keep fetching until we hit limits or run out of sources
-  let round = 0;
-  const maxRounds = 20; // Safety limit
-  
-  while (totalSaved < MAX_TOTAL_ARTICLES && round < maxRounds) {
-    round++;
-    let foundAnyThisRound = false;
+  console.log(`📊 Target: ${ARTICLES_PER_CATEGORY} articles per category (${ALL_CATEGORIES.length} categories)`);
+  console.log(`📡 RSS Feeds per category: ${Object.entries(feedsByCategory).map(([cat, feeds]) => `${cat}:${feeds.length}`).join(', ')}\n`);
+
+  // ============ FETCH WITH TRUE VARIETY ============
+  // For each category, we try different feeds until we get enough articles
+  for (const category of ALL_CATEGORIES) {
+    if (totalSaved >= MAX_TOTAL_ARTICLES) break;
     
-    for (const category of ALL_CATEGORIES) {
+    const feeds = feedsByCategory[category];
+    if (!feeds || feeds.length === 0) continue;
+    
+    console.log(`\n📂 [${category.toUpperCase()}] Need ${ARTICLES_PER_CATEGORY} articles from ${feeds.length} available feeds`);
+    
+    // Try feeds one by one until we have enough articles for this category
+    let feedsTried = 0;
+    while (categoryCounts[category] < ARTICLES_PER_CATEGORY && feedsTried < feeds.length) {
       if (totalSaved >= MAX_TOTAL_ARTICLES) break;
-      if (categoryCounts[category] >= ARTICLES_PER_CATEGORY) continue;
       
-      const feeds = feedsByCategory[category];
-      if (!feeds || feeds.length === 0) continue;
+      const feed = feeds[feedsTried];
+      feedsTried++;
       
-      // Pick next feed for this category (rotate through them)
-      const feedIndex = (round - 1) % feeds.length;
-      const feed = feeds[feedIndex];
-      
-      console.log(`\n🔗 [${category.toUpperCase()}] Fetching ${feed.source}...`);
+      console.log(`   🔗 Trying ${feed.source}...`);
       const articles = await fetchRSS(feed.url);
       
-      if (articles.length === 0) continue;
+      if (articles.length === 0) {
+        console.log(`   ⚠️  No articles from ${feed.source}`);
+        continue;
+      }
       
-      // Try to get 1 article from this feed
+      // Try to get 1 article from this feed (variety = 1 per source)
+      let gotOneFromThisFeed = false;
       for (const article of articles) {
+        if (gotOneFromThisFeed) break; // Only 1 per feed for variety
         if (categoryCounts[category] >= ARTICLES_PER_CATEGORY) break;
         if (totalSaved >= MAX_TOTAL_ARTICLES) break;
         
@@ -756,16 +765,14 @@ async function main() {
         if (saved) {
           totalSaved++;
           categoryCounts[category]++;
-          foundAnyThisRound = true;
+          gotOneFromThisFeed = true;
           console.log(`   ✅ Saved! [${category}: ${categoryCounts[category]}/${ARTICLES_PER_CATEGORY}] (Total: ${totalSaved}/${MAX_TOTAL_ARTICLES})${usedFallback ? ' [FALLBACK]' : ''}`);
-          break; // Move to next category
         }
       }
     }
     
-    if (!foundAnyThisRound) {
-      console.log('\n⚠️  No new articles found this round, stopping...');
-      break;
+    if (categoryCounts[category] < ARTICLES_PER_CATEGORY) {
+      console.log(`   ⚠️  Only got ${categoryCounts[category]}/${ARTICLES_PER_CATEGORY} for ${category} (tried ${feedsTried} feeds)`);
     }
   }
 
