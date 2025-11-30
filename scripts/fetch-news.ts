@@ -604,8 +604,13 @@ ${article.content}
 
 // ============ MAIN ============
 async function main() {
-  console.log('🔥 TrustMeBro News Fetcher v2.1\n');
-  console.log(`📊 Config: ${ARTICLES_PER_CATEGORY} articles per category, ${PAGE_SIZE} fetched per request\n`);
+  // Distribution settings
+  const MAX_TOTAL_ARTICLES = 30;
+  const ALL_CATEGORIES = ['tech', 'ai', 'gaming', 'business', 'entertainment', 'sports', 'science', 'health', 'world', 'viral'];
+  const ARTICLES_PER_CATEGORY = Math.floor(MAX_TOTAL_ARTICLES / ALL_CATEGORIES.length); // 3 per category
+  
+  console.log('🔥 TrustMeBro News Fetcher v2.2 - Fair Distribution Edition\n');
+  console.log(`📊 Config: ${MAX_TOTAL_ARTICLES} total articles, ${ARTICLES_PER_CATEGORY} per category across ${ALL_CATEGORIES.length} categories\n`);
   console.log('⚡ Rate limiting: 5s between requests (Groq free tier: 6K TPM)\n');
   
   // Ensure posts directory exists
@@ -618,112 +623,94 @@ async function main() {
   let aiRewrites = 0;      // Track successful AI rewrites
   let fallbackRewrites = 0; // Track fallback rewrites (indicates AI issues)
   
-  // Global limit to prevent rate limit issues
-  const MAX_TOTAL_ARTICLES = 30;
+  // Track how many we've saved per category
+  const categoryCounts: Record<string, number> = {};
+  ALL_CATEGORIES.forEach(cat => categoryCounts[cat] = 0);
 
-  // ============ FETCH FROM NEWSAPI ============
-  console.log('📡 === NEWSAPI SOURCES ===\n');
-  
-  for (const category of CATEGORIES) {
-    if (totalSaved >= MAX_TOTAL_ARTICLES) {
-      console.log(`\n🛑 Reached max articles limit (${MAX_TOTAL_ARTICLES}), stopping NewsAPI...`);
-      break;
+  // Group RSS feeds by category
+  const feedsByCategory: Record<string, typeof RSS_FEEDS> = {};
+  ALL_CATEGORIES.forEach(cat => feedsByCategory[cat] = []);
+  RSS_FEEDS.forEach(feed => {
+    if (feedsByCategory[feed.category]) {
+      feedsByCategory[feed.category].push(feed);
     }
-    
-    console.log(`\n📰 Fetching ${category} news...`);
-    const articles = await fetchNews(category);
-    console.log(`   Found ${articles.length} articles`);
-    
-    let categoryCount = 0;
-    for (const article of articles) {
-      if (categoryCount >= 2) break; // Reduced from 5 to 2 per category
-      if (totalSaved >= MAX_TOTAL_ARTICLES) break;
-      
-      // Skip if we might already have this
-      const potentialSlug = slugify(article.title);
-      if (postExists(potentialSlug)) {
-        console.log(`   ⏭️  Skipping (likely exists): ${article.title.slice(0, 40)}...`);
-        continue;
-      }
-      
-      console.log(`   📝 Processing: ${article.title.slice(0, 50)}...`);
-      totalProcessed++;
-      
-      // Try AI rewrite, fallback to GenZ template if fails
-      let rewritten = await rewriteWithGroq(article);
-      let usedFallback = false;
-      if (!rewritten) {
-        rewritten = fallbackGenZRewrite(article);
-        usedFallback = true;
-        fallbackRewrites++;
-      } else {
-        aiRewrites++;
-      }
-      
-      const saved = savePost(
-        rewritten,
-        CATEGORY_MAP[category] || 'world',
-        article.source.name,
-        article.urlToImage
-      );
-      if (saved) {
-        totalSaved++;
-        categoryCount++;
-        console.log(`   ✅ Saved! (${totalSaved}/${MAX_TOTAL_ARTICLES})${usedFallback ? ' [FALLBACK]' : ''}`);
-      }
-    }
-  }
+  });
 
-  // ============ FETCH FROM RSS FEEDS ============
-  console.log('\n\n📡 === RSS FEED SOURCES ===\n');
+  // Shuffle feeds within each category for variety
+  Object.values(feedsByCategory).forEach(feeds => {
+    for (let i = feeds.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [feeds[i], feeds[j]] = [feeds[j], feeds[i]];
+    }
+  });
+
+  console.log(`📊 Target: ${ARTICLES_PER_CATEGORY} articles per category (${ALL_CATEGORIES.length} categories)\n`);
+
+  // ============ ROUND-ROBIN FETCH ============
+  // Keep fetching until we hit limits or run out of sources
+  let round = 0;
+  const maxRounds = 20; // Safety limit
   
-  for (const feed of RSS_FEEDS) {
-    // Stop if we've saved enough articles
-    if (totalSaved >= MAX_TOTAL_ARTICLES) {
-      console.log(`\n🛑 Reached max articles limit (${MAX_TOTAL_ARTICLES}), stopping...`);
-      break;
+  while (totalSaved < MAX_TOTAL_ARTICLES && round < maxRounds) {
+    round++;
+    let foundAnyThisRound = false;
+    
+    for (const category of ALL_CATEGORIES) {
+      if (totalSaved >= MAX_TOTAL_ARTICLES) break;
+      if (categoryCounts[category] >= ARTICLES_PER_CATEGORY) continue;
+      
+      const feeds = feedsByCategory[category];
+      if (!feeds || feeds.length === 0) continue;
+      
+      // Pick next feed for this category (rotate through them)
+      const feedIndex = (round - 1) % feeds.length;
+      const feed = feeds[feedIndex];
+      
+      console.log(`\n🔗 [${category.toUpperCase()}] Fetching ${feed.source}...`);
+      const articles = await fetchRSS(feed.url);
+      
+      if (articles.length === 0) continue;
+      
+      // Try to get 1 article from this feed
+      for (const article of articles) {
+        if (categoryCounts[category] >= ARTICLES_PER_CATEGORY) break;
+        if (totalSaved >= MAX_TOTAL_ARTICLES) break;
+        
+        const potentialSlug = slugify(article.title);
+        if (postExists(potentialSlug)) continue;
+        
+        console.log(`   📝 Processing: ${article.title.slice(0, 50)}...`);
+        totalProcessed++;
+        
+        let rewritten = await rewriteWithGroq(article);
+        let usedFallback = false;
+        if (!rewritten) {
+          rewritten = fallbackGenZRewrite(article);
+          usedFallback = true;
+          fallbackRewrites++;
+        } else {
+          aiRewrites++;
+        }
+        
+        const saved = savePost(
+          rewritten,
+          category,
+          feed.source,
+          article.urlToImage
+        );
+        if (saved) {
+          totalSaved++;
+          categoryCounts[category]++;
+          foundAnyThisRound = true;
+          console.log(`   ✅ Saved! [${category}: ${categoryCounts[category]}/${ARTICLES_PER_CATEGORY}] (Total: ${totalSaved}/${MAX_TOTAL_ARTICLES})${usedFallback ? ' [FALLBACK]' : ''}`);
+          break; // Move to next category
+        }
+      }
     }
     
-    console.log(`\n🔗 Fetching ${feed.source}...`);
-    const articles = await fetchRSS(feed.url);
-    console.log(`   Found ${articles.length} articles`);
-    
-    let feedCount = 0;
-    for (const article of articles) {
-      if (feedCount >= 2) break; // Max 2 per RSS feed (reduced from 5)
-      if (totalSaved >= MAX_TOTAL_ARTICLES) break;
-      
-      // Skip if we might already have this
-      const potentialSlug = slugify(article.title);
-      if (postExists(potentialSlug)) {
-        continue;
-      }
-      
-      console.log(`   📝 Processing: ${article.title.slice(0, 50)}...`);
-      totalProcessed++;
-      
-      // Try AI rewrite, fallback to GenZ template if fails
-      let rewritten = await rewriteWithGroq(article);
-      let usedFallback = false;
-      if (!rewritten) {
-        rewritten = fallbackGenZRewrite(article);
-        usedFallback = true;
-        fallbackRewrites++;
-      } else {
-        aiRewrites++;
-      }
-      
-      const saved = savePost(
-        rewritten,
-        feed.category,
-        feed.source,
-        article.urlToImage
-      );
-      if (saved) {
-        totalSaved++;
-        feedCount++;
-        console.log(`   ✅ Saved! (${totalSaved}/${MAX_TOTAL_ARTICLES})${usedFallback ? ' [FALLBACK]' : ''}`);
-      }
+    if (!foundAnyThisRound) {
+      console.log('\n⚠️  No new articles found this round, stopping...');
+      break;
     }
   }
 
@@ -731,6 +718,12 @@ async function main() {
   console.log(`\n\n🎉 Done!`);
   console.log(`   📊 Processed: ${totalProcessed} articles`);
   console.log(`   ✅ Saved: ${totalSaved} new articles`);
+  console.log(`\n   📁 Per Category:`);
+  ALL_CATEGORIES.forEach(cat => {
+    const count = categoryCounts[cat];
+    const bar = '█'.repeat(count) + '░'.repeat(ARTICLES_PER_CATEGORY - count);
+    console.log(`      ${cat.padEnd(15)} [${bar}] ${count}/${ARTICLES_PER_CATEGORY}`);
+  });
   console.log(`\n   🤖 AI Rewrites: ${aiRewrites} (${totalSaved > 0 ? Math.round(aiRewrites/totalSaved*100) : 0}%)`);
   console.log(`   🆘 Fallback Rewrites: ${fallbackRewrites} (${totalSaved > 0 ? Math.round(fallbackRewrites/totalSaved*100) : 0}%)`);
   
