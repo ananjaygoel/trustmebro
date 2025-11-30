@@ -584,6 +584,8 @@ async function main() {
 
   let totalSaved = 0;
   let totalProcessed = 0;
+  let aiRewrites = 0;      // Track successful AI rewrites
+  let fallbackRewrites = 0; // Track fallback rewrites (indicates AI issues)
   
   // Global limit to prevent rate limit issues
   const MAX_TOTAL_ARTICLES = 30;
@@ -618,8 +620,13 @@ async function main() {
       
       // Try AI rewrite, fallback to GenZ template if fails
       let rewritten = await rewriteWithGroq(article);
+      let usedFallback = false;
       if (!rewritten) {
         rewritten = fallbackGenZRewrite(article);
+        usedFallback = true;
+        fallbackRewrites++;
+      } else {
+        aiRewrites++;
       }
       
       const saved = savePost(
@@ -631,7 +638,7 @@ async function main() {
       if (saved) {
         totalSaved++;
         categoryCount++;
-        console.log(`   ✅ Saved! (${totalSaved}/${MAX_TOTAL_ARTICLES})`);
+        console.log(`   ✅ Saved! (${totalSaved}/${MAX_TOTAL_ARTICLES})${usedFallback ? ' [FALLBACK]' : ''}`);
       }
     }
   }
@@ -666,8 +673,13 @@ async function main() {
       
       // Try AI rewrite, fallback to GenZ template if fails
       let rewritten = await rewriteWithGroq(article);
+      let usedFallback = false;
       if (!rewritten) {
         rewritten = fallbackGenZRewrite(article);
+        usedFallback = true;
+        fallbackRewrites++;
+      } else {
+        aiRewrites++;
       }
       
       const saved = savePost(
@@ -679,14 +691,27 @@ async function main() {
       if (saved) {
         totalSaved++;
         feedCount++;
-        console.log(`   ✅ Saved! (${totalSaved}/${MAX_TOTAL_ARTICLES})`);
+        console.log(`   ✅ Saved! (${totalSaved}/${MAX_TOTAL_ARTICLES})${usedFallback ? ' [FALLBACK]' : ''}`);
       }
     }
   }
 
+  // ============ SUMMARY ============
   console.log(`\n\n🎉 Done!`);
   console.log(`   📊 Processed: ${totalProcessed} articles`);
   console.log(`   ✅ Saved: ${totalSaved} new articles`);
+  console.log(`\n   🤖 AI Rewrites: ${aiRewrites} (${totalSaved > 0 ? Math.round(aiRewrites/totalSaved*100) : 0}%)`);
+  console.log(`   🆘 Fallback Rewrites: ${fallbackRewrites} (${totalSaved > 0 ? Math.round(fallbackRewrites/totalSaved*100) : 0}%)`);
+  
+  // Alert if too many fallbacks (indicates AI issues)
+  if (fallbackRewrites > aiRewrites && totalSaved > 5) {
+    console.log(`\n   ⚠️  WARNING: More fallbacks than AI rewrites!`);
+    console.log(`   ⚠️  Check Groq API status or rate limits.`);
+  }
+  
+  if (fallbackRewrites === 0 && totalSaved > 0) {
+    console.log(`\n   ✨ Perfect run! All articles got full AI rewrites.`);
+  }
 }
 
 main().catch(console.error);
