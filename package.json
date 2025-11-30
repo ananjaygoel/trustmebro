@@ -7,7 +7,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "fetch-news": "tsx scripts/fetch-news.ts"
+    "fetch-news": "tsx scripts/fetch-news.ts",
+    "post-social": "tsx scripts/post-social.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.12",
