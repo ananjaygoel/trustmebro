@@ -60,20 +60,6 @@ const categories = [
       ☰
     </button>
   </div>
-  
-  <!-- Category Bar -->
-  <div class="border-t py-3 overflow-x-auto category-bar">
-    <div class="max-w-7xl mx-auto px-4 flex gap-2">
-      <a href="/" class="pill whitespace-nowrap">🔥 For You</a>
-      {categories.map(cat => (
-        <a href={`/category/${cat.slug}`} class="pill whitespace-nowrap">
-          {cat.emoji} {cat.name}
-        </a>
-      ))}
-      <a href="/category/entertainment" class="pill whitespace-nowrap">🎬 Entertainment</a>
-      <a href="/category/gaming" class="pill whitespace-nowrap">🎮 Gaming</a>
-    </div>
-  </div>
 </header>
 
 <!-- Mobile Menu -->
@@ -120,9 +106,6 @@ const categories = [
   .nav-link:hover {
     background: var(--color-glass);
     color: var(--color-neon-cyan);
-  }
-  .category-bar {
-    border-color: var(--color-border);
   }
   .mobile-menu {
     background: var(--color-bg);
