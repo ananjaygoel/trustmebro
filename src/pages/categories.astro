@@ -6,37 +6,27 @@ import Footer from '../components/Footer.astro';
 
 const allPosts = await getCollection('posts');
 
-// Count posts per category
+// Count posts per category (normalize to lowercase for matching)
 const categoryCounts = allPosts.reduce((acc, post) => {
-  const cat = post.data.category;
+  const cat = post.data.category.toLowerCase();
   acc[cat] = (acc[cat] || 0) + 1;
   return acc;
 }, {} as Record<string, number>);
 
-const categoryEmojis: Record<string, string> = {
-  'Tech': '💻',
-  'Business': '💰',
-  'Entertainment': '🎬',
-  'Sports': '⚽',
-  'Science': '🔬',
-  'Health': '🏥',
-  'Politics': '🏛️',
-  'World': '🌍',
+// Category config with lowercase keys for matching
+const categoryConfig: Record<string, { name: string; emoji: string; gradient: string }> = {
+  'tech': { name: 'Tech', emoji: '💻', gradient: 'from-blue-500 to-purple-600' },
+  'business': { name: 'Business', emoji: '💰', gradient: 'from-green-500 to-emerald-600' },
+  'entertainment': { name: 'Entertainment', emoji: '🎬', gradient: 'from-pink-500 to-rose-600' },
+  'sports': { name: 'Sports', emoji: '⚽', gradient: 'from-orange-500 to-red-600' },
+  'science': { name: 'Science', emoji: '🔬', gradient: 'from-cyan-500 to-blue-600' },
+  'health': { name: 'Health', emoji: '🏥', gradient: 'from-lime-500 to-green-600' },
+  'world': { name: 'World', emoji: '🌍', gradient: 'from-amber-500 to-orange-600' },
+  'viral': { name: 'Viral', emoji: '🔥', gradient: 'from-red-500 to-pink-600' },
 };
 
-const categoryColors: Record<string, string> = {
-  'Tech': 'from-blue-500 to-purple-600',
-  'Business': 'from-green-500 to-emerald-600',
-  'Entertainment': 'from-pink-500 to-rose-600',
-  'Sports': 'from-orange-500 to-red-600',
-  'Science': 'from-cyan-500 to-blue-600',
-  'Health': 'from-lime-500 to-green-600',
-  'Politics': 'from-indigo-500 to-violet-600',
-  'World': 'from-amber-500 to-orange-600',
-};
-
-// All categories (including ones with 0 posts)
-const allCategories = ['Tech', 'Business', 'Entertainment', 'Sports', 'Science', 'Health', 'Politics', 'World'];
+// All categories to display (lowercase slugs)
+const allCategories = ['tech', 'business', 'entertainment', 'sports', 'science', 'health', 'world', 'viral'];
 ---
 
 <Layout title="Categories - trust me bro" description="Browse news by category">
@@ -56,20 +46,19 @@ const allCategories = ['Tech', 'Business', 'Entertainment', 'Sports', 'Science',
 
       <!-- Categories Grid -->
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {allCategories.map(category => {
-          const count = categoryCounts[category] || 0;
-          const emoji = categoryEmojis[category] || '📰';
-          const gradient = categoryColors[category] || 'from-gray-500 to-gray-600';
+        {allCategories.map(slug => {
+          const config = categoryConfig[slug] || { name: slug, emoji: '📰', gradient: 'from-gray-500 to-gray-600' };
+          const count = categoryCounts[slug] || 0;
           
           return (
             <a 
-              href={`/category/${category.toLowerCase()}`}
+              href={`/category/${slug}`}
               class="group relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br transition-all hover:scale-105 hover:shadow-xl"
-              class:list={[gradient]}
+              class:list={[config.gradient]}
             >
               <div class="relative z-10">
-                <span class="text-4xl mb-3 block">{emoji}</span>
-                <h2 class="text-xl font-bold text-white mb-1">{category}</h2>
+                <span class="text-4xl mb-3 block">{config.emoji}</span>
+                <h2 class="text-xl font-bold text-white mb-1">{config.name}</h2>
                 <p class="text-white/80 text-sm">
                   {count} {count === 1 ? 'story' : 'stories'}
                 </p>

@@ -6,19 +6,16 @@ import Footer from '../../components/Footer.astro';
 import PostCard from '../../components/PostCard.astro';
 
 export async function getStaticPaths() {
-  // Define ALL categories here so pages are always generated
+  // Define categories that match what we fetch
   const allCategories = [
     { slug: 'tech', name: 'Tech', emoji: '💻' },
     { slug: 'business', name: 'Business', emoji: '💰' },
-    { slug: 'ai', name: 'AI', emoji: '🤖' },
+    { slug: 'entertainment', name: 'Entertainment', emoji: '🎬' },
+    { slug: 'sports', name: 'Sports', emoji: '⚽' },
+    { slug: 'science', name: 'Science', emoji: '🔬' },
+    { slug: 'health', name: 'Health', emoji: '🏥' },
     { slug: 'world', name: 'World', emoji: '🌍' },
     { slug: 'viral', name: 'Viral', emoji: '🔥' },
-    { slug: 'entertainment', name: 'Entertainment', emoji: '🎬' },
-    { slug: 'gaming', name: 'Gaming', emoji: '🎮' },
-    { slug: 'science', name: 'Science', emoji: '🔬' },
-    { slug: 'sports', name: 'Sports', emoji: '⚽' },
-    { slug: 'health', name: 'Health', emoji: '🏥' },
-    { slug: 'politics', name: 'Politics', emoji: '🏛️' },
   ];
 
   return allCategories.map(cat => ({
