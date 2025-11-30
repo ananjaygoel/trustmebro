@@ -19,7 +19,9 @@ import Footer from '../components/Footer.astro';
 
       <!-- Contact Form -->
       <div class="glass rounded-2xl p-8 mb-8">
-        <form id="contact-form" class="space-y-6">
+        <form id="contact-form" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="space-y-6">
+          <input type="hidden" name="form-name" value="contact" />
+          <p class="hidden"><label>Don't fill this out: <input name="bot-field" /></label></p>
           <div>
             <label for="name" class="block text-sm font-medium mb-2">Your Name</label>
             <input 
@@ -119,13 +121,38 @@ import Footer from '../components/Footer.astro';
 </Layout>
 
 <script>
-  document.getElementById('contact-form')?.addEventListener('submit', (e) => {
+  document.getElementById('contact-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
+    const form = e.target as HTMLFormElement;
     const msg = document.getElementById('form-message');
-    if (msg) {
-      msg.classList.remove('hidden');
-      msg.className = 'mt-4 text-center text-green-400';
-      msg.textContent = '✅ Message sent! We\'ll get back to you soon (hopefully before the heat death of the universe)';
+    const btn = form.querySelector('button');
+    
+    if (btn) btn.textContent = 'Sending...';
+    
+    try {
+      const response = await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(new FormData(form) as any).toString()
+      });
+      
+      if (response.ok) {
+        if (msg) {
+          msg.classList.remove('hidden');
+          msg.className = 'mt-4 text-center text-green-400';
+          msg.textContent = '✅ Message sent! We\'ll get back to you soon';
+        }
+        form.reset();
+      } else {
+        throw new Error('Failed');
+      }
+    } catch (err) {
+      if (msg) {
+        msg.classList.remove('hidden');
+        msg.className = 'mt-4 text-center text-red-400';
+        msg.textContent = '❌ Something went wrong, try again?';
+      }
     }
+    if (btn) btn.textContent = 'Send Message 🚀';
   });
 </script>
