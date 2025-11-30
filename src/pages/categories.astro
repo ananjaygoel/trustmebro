@@ -16,6 +16,8 @@ const categoryCounts = allPosts.reduce((acc, post) => {
 // Category config with lowercase keys for matching
 const categoryConfig: Record<string, { name: string; emoji: string; gradient: string }> = {
   'tech': { name: 'Tech', emoji: '💻', gradient: 'from-blue-500 to-purple-600' },
+  'ai': { name: 'AI', emoji: '🤖', gradient: 'from-violet-500 to-purple-600' },
+  'gaming': { name: 'Gaming', emoji: '🎮', gradient: 'from-indigo-500 to-blue-600' },
   'business': { name: 'Business', emoji: '💰', gradient: 'from-green-500 to-emerald-600' },
   'entertainment': { name: 'Entertainment', emoji: '🎬', gradient: 'from-pink-500 to-rose-600' },
   'sports': { name: 'Sports', emoji: '⚽', gradient: 'from-orange-500 to-red-600' },
@@ -26,7 +28,7 @@ const categoryConfig: Record<string, { name: string; emoji: string; gradient: st
 };
 
 // All categories to display (lowercase slugs)
-const allCategories = ['tech', 'business', 'entertainment', 'sports', 'science', 'health', 'world', 'viral'];
+const allCategories = ['tech', 'ai', 'gaming', 'business', 'entertainment', 'sports', 'science', 'health', 'world', 'viral'];
 ---
 
 <Layout title="Categories - trust me bro" description="Browse news by category">
