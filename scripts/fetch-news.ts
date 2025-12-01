@@ -17,18 +17,23 @@ function sanitizeForMDX(text: string, keepNewlines = false): string {
     .replace(/<!--[\s\S]*?-->/g, '')
     // Remove script/style tags and content
     .replace(/<(script|style)[^>]*>[\s\S]*?<\/\1>/gi, '')
+    // Remove img tags with all their attributes (Reddit embeds)
+    .replace(/img\s+src\s*=\s*["'][^"']*["'][^>]*/gi, '')
     // Remove ALL HTML tags completely (Reddit feeds have broken HTML like <a ##)
     .replace(/<[^>]*>/g, ' ')
     // Remove any remaining < or > that could break MDX
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
+    .replace(/</g, '')
+    .replace(/>/g, '')
+    // Remove URLs that look like image embeds
+    .replace(/https?:\/\/[^\s]*\.(jpg|jpeg|png|gif|webp)[^\s]*/gi, '')
     // Decode HTML entities
     .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '')  // Just remove < entirely for safety
-    .replace(/&gt;/g, '')  // Just remove > entirely for safety
+    .replace(/&lt;/g, '')
+    .replace(/&gt;/g, '')
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
     .replace(/&nbsp;/g, ' ')
+    .replace(/&#x[0-9a-f]+;/gi, '')  // Hex entities like &#x2018;
     // Remove any remaining HTML entities
     .replace(/&#\d+;/g, '')
     .replace(/&[a-z]+;/gi, ' ')
@@ -36,6 +41,10 @@ function sanitizeForMDX(text: string, keepNewlines = false): string {
     .replace(/submitted by \/u\/\w+/gi, '')
     .replace(/\[link\]/gi, '')
     .replace(/\[comments\]/gi, '')
+    // Remove "alt=" and "title=" leftovers
+    .replace(/alt\s*=\s*["'][^"']*["']/gi, '')
+    .replace(/title\s*=\s*["'][^"']*["']/gi, '')
+    .replace(/src\s*=\s*["'][^"']*["']/gi, '')
     // Clean up curly braces that might break MDX expressions
     .replace(/\{/g, '(')
     .replace(/\}/g, ')')
@@ -366,7 +375,7 @@ async function fetchRSS(feedUrl: string): Promise<NewsArticle[]> {
 
 // Rate limiting state
 let lastRequestTime = 0;
-const MIN_REQUEST_INTERVAL = 15000; // 15 seconds between requests (guarantees no rate limits)
+const MIN_REQUEST_INTERVAL = 30000; // 30 seconds between requests (Groq 70B needs this)
 let consecutiveRateLimits = 0;
 
 async function rewriteWithGroq(article: NewsArticle, retryCount = 0): Promise<RewrittenArticle | null> {
@@ -767,13 +776,13 @@ ${safeContent}
 // ============ MAIN ============
 async function main() {
   // Distribution settings - Quality over quantity!
-  // 12 articles × 15sec = ~3min per run, zero rate limits, all AI-written
-  const MAX_TOTAL_ARTICLES = 12;  // Optimized for zero fallbacks
+  // 8 articles × 30sec = ~4min per run, ZERO rate limits guaranteed
+  const MAX_TOTAL_ARTICLES = 8;  // Fewer but 100% AI-written, no fallbacks
   const ALL_CATEGORIES = ['tech', 'ai', 'gaming', 'business', 'entertainment', 'sports', 'science', 'health', 'world', 'viral'];
   const ARTICLES_PER_CATEGORY = Math.floor(MAX_TOTAL_ARTICLES / ALL_CATEGORIES.length); // ~1-2 per category
   
-  console.log('🔥 TrustMeBro News Fetcher v3.0 - High Quality Edition\n');
-  console.log(`📊 Config: ${MAX_TOTAL_ARTICLES} articles per run, 15s delay = zero rate limits\n`);
+  console.log('🔥 TrustMeBro News Fetcher v3.1 - Zero Fallback Edition\n');
+  console.log(`📊 Config: ${MAX_TOTAL_ARTICLES} articles × 30s delay = guaranteed AI quality\n`);
   console.log('✨ Focus: Genuinely helpful, in-depth articles that actually inform readers\n');
   
   // Ensure posts directory exists
