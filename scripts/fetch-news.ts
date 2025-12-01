@@ -64,7 +64,7 @@ function sanitizeForMDX(text: string, keepNewlines = false): string {
 
 // ============ CONFIGURATION ============
 const NEWS_API_KEY = process.env.NEWS_API_KEY || '';
-const GROQ_API_KEY = process.env.GROQ_API_KEY || '';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 const POSTS_DIR = './src/content/posts';
 
 // Articles per category - optimized for zero rate limits
@@ -373,22 +373,17 @@ async function fetchRSS(feedUrl: string): Promise<NewsArticle[]> {
 // Uses Llama 3.1 8B via Groq API - blazing fast LPU inference
 // IMPORTANT: Free tier has 6,000 tokens per MINUTE limit!
 
-// Rate limiting state
+// Rate limiting state (minimal for Gemini - much more generous limits)
 let lastRequestTime = 0;
-const MIN_REQUEST_INTERVAL = 30000; // 30 seconds between requests (Groq 70B needs this)
-let consecutiveRateLimits = 0;
+const MIN_REQUEST_INTERVAL = 2000; // 2 seconds is plenty for Gemini
 
-async function rewriteWithGroq(article: NewsArticle, retryCount = 0): Promise<RewrittenArticle | null> {
-  if (!GROQ_API_KEY) {
-    console.log('⚠️  No GROQ_API_KEY found, using original content');
-    return {
-      title: article.title,
-      excerpt: article.description,
-      content: article.content || article.description,
-    };
+async function rewriteWithGemini(article: NewsArticle, retryCount = 0): Promise<RewrittenArticle | null> {
+  if (!GEMINI_API_KEY) {
+    console.log('⚠️  No GEMINI_API_KEY found, skipping article');
+    return null;
   }
 
-  // Rate limiting - wait between requests
+  // Small delay between requests
   const now = Date.now();
   const timeSinceLastRequest = now - lastRequestTime;
   const waitTime = Math.max(0, MIN_REQUEST_INTERVAL - timeSinceLastRequest);
@@ -397,173 +392,137 @@ async function rewriteWithGroq(article: NewsArticle, retryCount = 0): Promise<Re
   }
   lastRequestTime = Date.now();
 
-  // If we've hit too many rate limits, slow down even more
-  if (consecutiveRateLimits >= 3) {
-    console.log('⏳ Cooling down after rate limits (30s)...');
-    await new Promise(r => setTimeout(r, 30000));
-    consecutiveRateLimits = 0;
-  }
+  const prompt = `You are a senior journalist writing a comprehensive, genuinely helpful article for TrustMeBro news site.
 
-  const prompt = `You're a senior journalist writing for TrustMeBro — a news site that actually helps readers understand and USE the information.
+IMPORTANT: Write a COMPLETE article of 500-800 words. Do not cut short. Include all sections fully.
 
-## YOUR MISSION
-Write articles that readers will THANK you for. Every article should leave someone smarter, more informed, or better equipped to make decisions. No fluff, no filler — just genuinely useful content.
-
-## YOUR VOICE
-- Write like a knowledgeable friend who's done the research so they don't have to
-- Be direct and confident, but not arrogant
-- Use specific details: names, numbers, dates, exact figures — vague writing wastes everyone's time
-- Explain complex topics simply without dumbing them down
-- Anticipate and answer the questions readers will have
-- No forced slang, no cringe emojis, no trying to sound young — just be helpful
-
-## WHAT MAKES AN ARTICLE ACTUALLY USEFUL
-- **Actionable info**: What can readers DO with this information?
-- **Context**: How does this connect to things they already know?
-- **Specifics**: Exact numbers, real names, concrete examples
-- **Honest assessment**: What's actually significant vs. what's hype?
-- **What to watch**: What happens next? What should they keep an eye on?
-
-## WHAT TO AVOID
-- Filler phrases: "In today's fast-paced world", "It's worth noting", "Interestingly"
-- Stating the obvious: "This is big news" — if it's big, show don't tell
-- Vague claims: "many experts say" — which experts? what exactly did they say?
-- Hype words: "revolutionary", "game-changing", "unprecedented" — be specific instead
-- Padding: Don't repeat the same point in different words to fill space
-
-## STRUCTURE (400-600 words minimum)
-1. **Title**: Specific and informative, under 65 chars. Tell them what they'll learn.
-2. **Excerpt**: 100-140 chars answering "why should I read this?"
-3. **Content**: Substantial, helpful, well-organized:
-   - **Opening hook**: Start with the most useful or surprising fact
-   - "## What's Actually Happening" — Clear explanation with specifics (who, what, when, where, exact figures)
-   - "## Why This Matters For You" — Practical implications. How does this affect the reader's life, money, decisions, or understanding?
-   - "## What You Should Know" — Key details, context, background that helps them understand the full picture
-   - "## The Bottom Line" — Clear takeaway. If they remember one thing, what should it be?
-   - End with a forward-looking thought or genuine question worth discussing
-
-## EXAMPLE TRANSFORMATIONS
-Weak: "New study shows coffee is healthy" 
-Strong: "3 cups of coffee daily linked to 12% lower heart disease risk, 20-year study finds"
-
-Weak: "Tech company faces problems"
-Strong: "Meta's $15B metaverse bet has lost money for 12 straight quarters — here's why they're doubling down anyway"
-
-Weak: "This could affect many people"
-Strong: "If you have a 401(k), this rule change starting January could cost you $2,400 over 10 years"
-
-## ARTICLE TO REWRITE
+## SOURCE MATERIAL
 Title: ${article.title}
 Content: ${article.description} ${article.content || ''}
 
+## YOUR TASK
+Transform this into a well-researched, helpful article that readers will genuinely appreciate.
+
+## WRITING STYLE
+- Conversational but informative — like a smart friend explaining the news
+- Use specific facts: names, numbers, dates, exact figures
+- No filler phrases like "In today's world" or "It's worth noting"
+- No forced slang or emojis
+- Every sentence should add value
+
+## REQUIRED STRUCTURE
+
+**Title**: Specific, informative, under 65 characters
+
+**Excerpt**: 100-140 characters explaining why this matters
+
+**Content** (500-800 words with these sections):
+
+## What's Happening
+[3-4 paragraphs: Explain the news clearly. Who, what, when, where. Include specific details, quotes if available, and context.]
+
+## Why This Matters
+[2-3 paragraphs: What are the real-world implications? How does this affect readers? Be specific about impacts.]
+
+## The Bigger Picture  
+[2-3 paragraphs: Historical context, related trends, what experts are saying. Connect to broader themes.]
+
+## What To Watch
+[1-2 paragraphs: What happens next? What should readers keep an eye on? End with a thought-provoking question.]
+
 ## OUTPUT FORMAT
-Return ONLY valid JSON. No markdown blocks, no extra text:
-{"title": "your title here", "excerpt": "your excerpt here", "content": "your markdown content here with \\n for newlines"}`
+Return ONLY this JSON (no markdown blocks, no extra text):
+{"title": "Your Title Here", "excerpt": "Your 100-140 char excerpt here", "content": "Your full markdown article here with \\n for line breaks"}`;
 
   try {
-    // Groq API - Using Llama 3.3 70B for quality output
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GROQ_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        messages: [
-          { role: 'system', content: 'You are a senior journalist who writes genuinely helpful, informative articles. Your goal is to leave readers smarter and better informed. Write substantial content (400-600 words) with specific facts, practical insights, and clear explanations. Output ONLY valid JSON, no markdown blocks. Start with { end with }. Use \\n for newlines.' },
-          { role: 'user', content: prompt }
-        ],
-        temperature: 0.7, // Slightly lower for more factual content
-        max_tokens: 2500, // Increased for longer, more helpful articles
-      }),
-    });
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 4096, // Generous limit for long articles
+            topP: 0.95,
+          },
+          safetySettings: [
+            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+          ],
+        }),
+      }
+    );
 
     const data = await response.json();
-    
+
+    // Handle errors
     if (data.error) {
-      const errorMsg = data.error.message || data.error;
+      const errorMsg = data.error.message || JSON.stringify(data.error);
       
-      // Handle rate limiting with retry
-      if (errorMsg.includes('Rate limit') || errorMsg.includes('rate limit')) {
-        consecutiveRateLimits++;
-        
-        // Extract wait time from error message if available
-        const waitMatch = errorMsg.match(/try again in (\d+\.?\d*)s/i);
-        const waitSeconds = waitMatch ? parseFloat(waitMatch[1]) : 5;
-        
+      // Retry on rate limit
+      if (errorMsg.includes('quota') || errorMsg.includes('rate') || response.status === 429) {
         if (retryCount < 2) {
-          console.log(`⏳ Rate limited, waiting ${waitSeconds + 2}s then retry (${retryCount + 1}/2)...`);
-          await new Promise(r => setTimeout(r, (waitSeconds + 2) * 1000));
-          return rewriteWithGroq(article, retryCount + 1);
+          console.log(`⏳ Rate limited, waiting 10s then retry (${retryCount + 1}/2)...`);
+          await new Promise(r => setTimeout(r, 10000));
+          return rewriteWithGemini(article, retryCount + 1);
         }
-        
-        console.error('❌ Rate limit exceeded after retries, skipping article');
+        console.error('❌ Rate limit exceeded after retries');
         return null;
       }
       
-      console.error('❌ Groq error:', errorMsg);
+      console.error('❌ Gemini error:', errorMsg);
       return null;
     }
 
-    // Reset rate limit counter on success
-    consecutiveRateLimits = 0;
-
-    const content = data.choices?.[0]?.message?.content;
+    // Extract content from Gemini response
+    const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!content) {
-      console.log('❌ Empty response from Groq');
+      console.log('❌ Empty response from Gemini');
       return null;
     }
 
-    // Parse JSON from response (clean up any markdown code blocks)
+    // Parse JSON from response
     let cleanedContent = content
       .replace(/```json\n?/gi, '')
       .replace(/```\n?/g, '')
-      .replace(/^[^{]*/, '') // Remove any text before the first {
-      .replace(/[^}]*$/, '') // Remove any text after the last }
       .trim();
-    
-    // Try to find JSON object in the response
+
+    // Find JSON object
     const jsonMatch = cleanedContent.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      console.log('❌ No JSON object found in response');
-      console.log('   Response preview:', content.slice(0, 200));
+      console.log('❌ No JSON found in response');
+      console.log('   Preview:', content.slice(0, 200));
       return null;
     }
 
     let jsonStr = jsonMatch[0];
-    
+
     // Fix common JSON issues
     jsonStr = jsonStr
-      // Remove control characters except in escaped form
       .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, ' ')
-      // Fix unescaped newlines in string values
-      .replace(/:\s*"([^"]*?)(?<!\\)\n([^"]*?)"/g, ': "$1\\n$2"')
-      // Fix trailing commas
       .replace(/,(\s*[}\]])/g, '$1');
 
     try {
-      return JSON.parse(jsonStr);
-    } catch (parseError) {
-      // More aggressive fixes
-      let fixedJson = jsonStr
-        // Replace all actual newlines with escaped ones
-        .split('\n').map((line: string) => line.trim()).join(' ')
-        // Try to fix quotes issues
-        .replace(/"\s+"/g, '" "')
-        .replace(/\\"/g, "'"); // Replace escaped quotes with single quotes as fallback
+      const parsed = JSON.parse(jsonStr);
       
-      // Re-extract just the JSON structure
-      const reMatch = fixedJson.match(/\{\s*"title"\s*:\s*"[^"]*"\s*,\s*"excerpt"\s*:\s*"[^"]*"\s*,\s*"content"\s*:\s*"[^"]*"\s*\}/);
-      if (reMatch) {
-        try {
-          return JSON.parse(reMatch[0]);
-        } catch {
-          // Continue to next fallback
+      // Validate we got substantial content
+      const wordCount = parsed.content?.split(/\s+/).length || 0;
+      if (wordCount < 200) {
+        console.log(`⚠️  Article too short (${wordCount} words), retrying...`);
+        if (retryCount < 1) {
+          return rewriteWithGemini(article, retryCount + 1);
         }
       }
       
-      console.log('❌ JSON parse failed, response preview:', content.slice(0, 150));
+      console.log(`   ✨ Generated ${wordCount} words`);
+      return parsed;
+    } catch (parseError) {
+      console.log('❌ JSON parse failed');
+      console.log('   Preview:', jsonStr.slice(0, 200));
       return null;
     }
   } catch (error) {
@@ -775,15 +734,15 @@ ${safeContent}
 
 // ============ MAIN ============
 async function main() {
-  // Distribution settings - Quality over quantity!
-  // 8 articles × 30sec = ~4min per run, ZERO rate limits guaranteed
-  const MAX_TOTAL_ARTICLES = 8;  // Fewer but 100% AI-written, no fallbacks
+  // Distribution settings - Gemini has generous limits!
+  // 20 articles with 500-800 words each = real journalism
+  const MAX_TOTAL_ARTICLES = 20;
   const ALL_CATEGORIES = ['tech', 'ai', 'gaming', 'business', 'entertainment', 'sports', 'science', 'health', 'world', 'viral'];
-  const ARTICLES_PER_CATEGORY = Math.floor(MAX_TOTAL_ARTICLES / ALL_CATEGORIES.length); // ~1-2 per category
+  const ARTICLES_PER_CATEGORY = Math.floor(MAX_TOTAL_ARTICLES / ALL_CATEGORIES.length); // 2 per category
   
-  console.log('🔥 TrustMeBro News Fetcher v3.1 - Zero Fallback Edition\n');
-  console.log(`📊 Config: ${MAX_TOTAL_ARTICLES} articles × 30s delay = guaranteed AI quality\n`);
-  console.log('✨ Focus: Genuinely helpful, in-depth articles that actually inform readers\n');
+  console.log('🔥 TrustMeBro News Fetcher v4.0 - Gemini Edition\n');
+  console.log(`📊 Config: ${MAX_TOTAL_ARTICLES} articles × 500-800 words each\n`);
+  console.log('✨ Powered by Google Gemini 1.5 Flash - no more rate limits!\n');
   
   // Ensure posts directory exists
   if (!fs.existsSync(POSTS_DIR)) {
@@ -863,7 +822,7 @@ async function main() {
         console.log(`   📝 Processing: ${article.title.slice(0, 50)}...`);
         totalProcessed++;
         
-        let rewritten = await rewriteWithGroq(article);
+        let rewritten = await rewriteWithGemini(article);
         let usedFallback = false;
         if (!rewritten) {
           rewritten = fallbackRewrite(article);
