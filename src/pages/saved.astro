@@ -1,0 +1,144 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const categoryEmojis: Record<string, string> = {
+  tech: '💻', business: '💰', ai: '🤖', world: '🌍', viral: '🔥',
+  entertainment: '🎬', gaming: '🎮', science: '🔬', health: '🏥', sports: '⚽'
+};
+---
+
+<Layout title="Saved Articles" description="Your saved articles on TrustMeBro">
+  <Header />
+  
+  <main class="min-h-screen pt-8 pb-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Header -->
+      <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-black mb-4">
+          <span class="gradient-text">Saved</span> Articles
+        </h1>
+        <p class="text-gray-400 text-lg">your personal reading list 🔖</p>
+      </div>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="text-center py-16 glass rounded-2xl hidden">
+        <div class="text-6xl mb-4">📚</div>
+        <h2 class="text-2xl font-bold mb-2">No saved articles yet</h2>
+        <p class="text-gray-400 mb-6">Click the 🔖 button on any article to save it here</p>
+        <a href="/" class="inline-block px-6 py-3 rounded-xl gradient-bg font-bold text-black hover:scale-105 transition-all">
+          Browse Articles →
+        </a>
+      </div>
+
+      <!-- Saved Articles List -->
+      <div id="saved-list" class="space-y-4">
+        <!-- Will be populated by JS -->
+      </div>
+
+      <!-- Clear All Button -->
+      <div id="clear-section" class="mt-8 text-center hidden">
+        <button id="clear-all" class="px-6 py-3 rounded-xl glass text-red-400 hover:bg-red-500/20 transition-all">
+          🗑️ Clear All Saved
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script define:vars={{ categoryEmojis }}>
+  const BOOKMARKS_KEY = 'trustmebro_bookmarks';
+  const savedList = document.getElementById('saved-list');
+  const emptyState = document.getElementById('empty-state');
+  const clearSection = document.getElementById('clear-section');
+  const clearAllBtn = document.getElementById('clear-all');
+
+  interface Bookmark {
+    slug: string;
+    title: string;
+    image: string;
+    category: string;
+    savedAt: string;
+  }
+
+  function getBookmarks(): Bookmark[] {
+    try {
+      return JSON.parse(localStorage.getItem(BOOKMARKS_KEY) || '[]');
+    } catch {
+      return [];
+    }
+  }
+
+  function saveBookmarks(bookmarks: Bookmark[]) {
+    localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(bookmarks));
+  }
+
+  function formatDate(dateStr: string): string {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  function renderBookmarks() {
+    const bookmarks = getBookmarks();
+    
+    if (bookmarks.length === 0) {
+      emptyState?.classList.remove('hidden');
+      savedList!.innerHTML = '';
+      clearSection?.classList.add('hidden');
+      return;
+    }
+
+    emptyState?.classList.add('hidden');
+    clearSection?.classList.remove('hidden');
+
+    savedList!.innerHTML = bookmarks.map((bookmark, index) => `
+      <div class="flex gap-4 p-4 rounded-xl glass group" data-index="${index}">
+        <a href="/posts/${bookmark.slug}" class="flex-shrink-0">
+          ${bookmark.image 
+            ? `<img src="${bookmark.image}" alt="" class="w-24 h-20 object-cover rounded-lg" />`
+            : `<div class="w-24 h-20 rounded-lg gradient-bg flex items-center justify-center text-2xl">${categoryEmojis[bookmark.category] || '📰'}</div>`
+          }
+        </a>
+        <div class="flex-1 min-w-0">
+          <span class="text-xs font-semibold text-cyan-400 uppercase tracking-wide">
+            ${categoryEmojis[bookmark.category] || '📰'} ${bookmark.category}
+          </span>
+          <a href="/posts/${bookmark.slug}" class="block">
+            <h3 class="font-bold text-lg group-hover:text-cyan-400 transition-colors line-clamp-2 mt-1">
+              ${bookmark.title}
+            </h3>
+          </a>
+          <p class="text-sm text-gray-500 mt-1">Saved ${formatDate(bookmark.savedAt)}</p>
+        </div>
+        <button class="remove-btn flex-shrink-0 w-10 h-10 rounded-full glass flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500/20 hover:text-red-400" data-index="${index}" title="Remove">
+          ✕
+        </button>
+      </div>
+    `).join('');
+
+    // Add remove button listeners
+    document.querySelectorAll('.remove-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const index = parseInt((e.currentTarget as HTMLElement).dataset.index || '0');
+        const bookmarks = getBookmarks();
+        bookmarks.splice(index, 1);
+        saveBookmarks(bookmarks);
+        renderBookmarks();
+      });
+    });
+  }
+
+  // Clear all
+  clearAllBtn?.addEventListener('click', () => {
+    if (confirm('Remove all saved articles?')) {
+      localStorage.removeItem(BOOKMARKS_KEY);
+      renderBookmarks();
+    }
+  });
+
+  // Initial render
+  renderBookmarks();
+</script>

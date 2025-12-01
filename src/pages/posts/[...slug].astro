@@ -29,6 +29,11 @@ const formatDate = (date: Date) => {
   });
 };
 
+// Calculate reading time (average 200 words per minute)
+const content = post.body || '';
+const wordCount = content.split(/\s+/).filter(word => word.length > 0).length;
+const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+
 // Get related posts
 const allPosts = await getCollection('posts');
 const relatedPosts = allPosts
@@ -58,18 +63,35 @@ const relatedPosts = allPosts
           </div>
           <span>•</span>
           <span>{formatDate(post.data.date)}</span>
+          <span>•</span>
+          <span>📖 {readingTime} min read</span>
         </div>
         
         <!-- Share Buttons -->
-        <div class="flex gap-3 mb-8">
-          <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.data.title)}&url=${Astro.url}`} target="_blank" class="pill hover:bg-[#1da1f2]">
-            𝕏 Share
+        <div class="flex flex-wrap gap-2 mb-8">
+          <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.data.title)}&url=${Astro.url}`} target="_blank" class="pill hover:bg-[#1da1f2]" title="Share on X">
+            𝕏
           </a>
-          <button id="copy-link" class="pill">
-            🔗 Copy Link
+          <a href={`https://wa.me/?text=${encodeURIComponent(post.data.title + ' ' + Astro.url)}`} target="_blank" class="pill hover:bg-[#25D366]" title="Share on WhatsApp">
+            💬
+          </a>
+          <a href={`https://t.me/share/url?url=${encodeURIComponent(String(Astro.url))}&text=${encodeURIComponent(post.data.title)}`} target="_blank" class="pill hover:bg-[#0088cc]" title="Share on Telegram">
+            ✈️
+          </a>
+          <a href={`https://www.reddit.com/submit?url=${encodeURIComponent(String(Astro.url))}&title=${encodeURIComponent(post.data.title)}`} target="_blank" class="pill hover:bg-[#FF4500]" title="Share on Reddit">
+            🔴
+          </a>
+          <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(String(Astro.url))}`} target="_blank" class="pill hover:bg-[#0A66C2]" title="Share on LinkedIn">
+            💼
+          </a>
+          <button id="copy-link" class="pill" title="Copy link">
+            🔗
           </button>
-          <button id="native-share" class="pill">
-            📤 Share
+          <button id="bookmark-btn" class="pill" data-slug={post.slug} data-title={post.data.title} data-image={post.data.image} data-category={post.data.category} title="Save for later">
+            🔖
+          </button>
+          <button id="native-share" class="pill" title="More options">
+            📤
           </button>
         </div>
       </header>
@@ -179,8 +201,8 @@ const relatedPosts = allPosts
     await navigator.clipboard.writeText(window.location.href);
     const btn = document.getElementById('copy-link');
     if (btn) {
-      btn.textContent = '✅ Copied!';
-      setTimeout(() => btn.textContent = '🔗 Copy Link', 2000);
+      btn.textContent = '✅';
+      setTimeout(() => btn.textContent = '🔗', 2000);
     }
   });
   
@@ -193,6 +215,77 @@ const relatedPosts = allPosts
       });
     }
   });
+  
+  // ============ BOOKMARK FUNCTIONALITY ============
+  const bookmarkBtn = document.getElementById('bookmark-btn') as HTMLButtonElement;
+  const BOOKMARKS_KEY = 'trustmebro_bookmarks';
+  
+  interface Bookmark {
+    slug: string;
+    title: string;
+    image: string;
+    category: string;
+    savedAt: string;
+  }
+  
+  function getBookmarks(): Bookmark[] {
+    try {
+      return JSON.parse(localStorage.getItem(BOOKMARKS_KEY) || '[]');
+    } catch {
+      return [];
+    }
+  }
+  
+  function saveBookmarks(bookmarks: Bookmark[]) {
+    localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(bookmarks));
+  }
+  
+  function isBookmarked(slug: string): boolean {
+    return getBookmarks().some(b => b.slug === slug);
+  }
+  
+  function updateBookmarkButton() {
+    const slug = bookmarkBtn?.dataset.slug || '';
+    if (isBookmarked(slug)) {
+      bookmarkBtn.textContent = '✅';
+      bookmarkBtn.title = 'Saved!';
+    } else {
+      bookmarkBtn.textContent = '🔖';
+      bookmarkBtn.title = 'Save for later';
+    }
+  }
+  
+  bookmarkBtn?.addEventListener('click', () => {
+    const slug = bookmarkBtn.dataset.slug || '';
+    const title = bookmarkBtn.dataset.title || '';
+    const image = bookmarkBtn.dataset.image || '';
+    const category = bookmarkBtn.dataset.category || '';
+    
+    let bookmarks = getBookmarks();
+    
+    if (isBookmarked(slug)) {
+      // Remove bookmark
+      bookmarks = bookmarks.filter(b => b.slug !== slug);
+      saveBookmarks(bookmarks);
+      bookmarkBtn.textContent = '🔖';
+      bookmarkBtn.title = 'Save for later';
+    } else {
+      // Add bookmark
+      bookmarks.unshift({
+        slug,
+        title,
+        image,
+        category,
+        savedAt: new Date().toISOString()
+      });
+      saveBookmarks(bookmarks);
+      bookmarkBtn.textContent = '✅';
+      bookmarkBtn.title = 'Saved!';
+    }
+  });
+  
+  // Initialize bookmark button state
+  updateBookmarkButton();
   
   // ============ ASK WIDGET ============
   const askInput = document.getElementById('ask-input') as HTMLInputElement;

@@ -50,7 +50,10 @@ const categories = [
           {cat.emoji} {cat.name}
         </a>
       ))}
-      <a href="/search" class="ml-2 w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-cyan-500 hover:text-white transition-all">
+      <a href="/saved" class="ml-2 w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-purple-500 hover:text-white transition-all" title="Saved Articles">
+        🔖
+      </a>
+      <a href="/search" class="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-cyan-500 hover:text-white transition-all" title="Search">
         🔍
       </a>
     </nav>
@@ -68,6 +71,7 @@ const categories = [
   <nav class="flex flex-col gap-2">
     <a href="/" class="px-4 py-3 rounded-xl glass text-lg font-medium">🏠 Home</a>
     <a href="/search" class="px-4 py-3 rounded-xl glass text-lg font-medium">🔍 Search</a>
+    <a href="/saved" class="px-4 py-3 rounded-xl glass text-lg font-medium">🔖 Saved</a>
     {categories.map(cat => (
       <a href={`/category/${cat.slug}`} class="px-4 py-3 rounded-xl glass text-lg font-medium">
         {cat.emoji} {cat.name}

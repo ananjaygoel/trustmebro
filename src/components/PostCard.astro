@@ -66,7 +66,14 @@ const timeAgo = (date: Date) => {
   
   <!-- Action Buttons -->
   <div class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-    <button class="w-9 h-9 rounded-full bg-black/70 backdrop-blur-sm flex items-center justify-center hover:bg-purple-500 transition-all" title="Bookmark">
+    <button 
+      class="bookmark-btn w-9 h-9 rounded-full bg-black/70 backdrop-blur-sm flex items-center justify-center hover:bg-purple-500 transition-all" 
+      data-slug={slug}
+      data-title={title}
+      data-image={image || ''}
+      data-category={category}
+      title="Bookmark"
+    >
       🔖
     </button>
     <button class="share-btn w-9 h-9 rounded-full bg-black/70 backdrop-blur-sm flex items-center justify-center hover:bg-purple-500 transition-all" data-url={`/posts/${slug}`} data-title={title} title="Share">
@@ -76,6 +83,70 @@ const timeAgo = (date: Date) => {
 </article>
 
 <script>
+  const BOOKMARKS_KEY = 'trustmebro_bookmarks';
+  
+  interface Bookmark {
+    slug: string;
+    title: string;
+    image: string;
+    category: string;
+    savedAt: string;
+  }
+  
+  function getBookmarks(): Bookmark[] {
+    try {
+      return JSON.parse(localStorage.getItem(BOOKMARKS_KEY) || '[]');
+    } catch {
+      return [];
+    }
+  }
+  
+  function saveBookmarks(bookmarks: Bookmark[]) {
+    localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(bookmarks));
+  }
+  
+  function isBookmarked(slug: string): boolean {
+    return getBookmarks().some(b => b.slug === slug);
+  }
+  
+  // Initialize bookmark buttons
+  document.querySelectorAll('.bookmark-btn').forEach(btn => {
+    const slug = (btn as HTMLElement).dataset.slug || '';
+    if (isBookmarked(slug)) {
+      (btn as HTMLElement).textContent = '✅';
+    }
+    
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const el = btn as HTMLElement;
+      const slug = el.dataset.slug || '';
+      const title = el.dataset.title || '';
+      const image = el.dataset.image || '';
+      const category = el.dataset.category || '';
+      
+      let bookmarks = getBookmarks();
+      
+      if (isBookmarked(slug)) {
+        bookmarks = bookmarks.filter(b => b.slug !== slug);
+        saveBookmarks(bookmarks);
+        el.textContent = '🔖';
+      } else {
+        bookmarks.unshift({
+          slug,
+          title,
+          image,
+          category,
+          savedAt: new Date().toISOString()
+        });
+        saveBookmarks(bookmarks);
+        el.textContent = '✅';
+      }
+    });
+  });
+
+  // Share buttons
   document.querySelectorAll('.share-btn').forEach(btn => {
     btn.addEventListener('click', async (e) => {
       e.preventDefault();
