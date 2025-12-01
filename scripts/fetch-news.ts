@@ -58,9 +58,10 @@ const NEWS_API_KEY = process.env.NEWS_API_KEY || '';
 const GROQ_API_KEY = process.env.GROQ_API_KEY || '';
 const POSTS_DIR = './src/content/posts';
 
-// Articles per category - Groq has 14,400 req/day FREE!
-const ARTICLES_PER_CATEGORY = 5;
-const PAGE_SIZE = 15;
+// Articles per category - optimized for zero rate limits
+// 12 articles × 15sec delay = ~3min per run, no fallbacks needed
+const ARTICLES_PER_CATEGORY = 2;
+const PAGE_SIZE = 10;
 
 // Categories to fetch news for
 const CATEGORIES = ['technology', 'business', 'entertainment', 'sports', 'science', 'health', 'general'];
@@ -365,7 +366,7 @@ async function fetchRSS(feedUrl: string): Promise<NewsArticle[]> {
 
 // Rate limiting state
 let lastRequestTime = 0;
-const MIN_REQUEST_INTERVAL = 5000; // 5 seconds between requests (safe for 6K TPM)
+const MIN_REQUEST_INTERVAL = 15000; // 15 seconds between requests (guarantees no rate limits)
 let consecutiveRateLimits = 0;
 
 async function rewriteWithGroq(article: NewsArticle, retryCount = 0): Promise<RewrittenArticle | null> {
@@ -394,38 +395,53 @@ async function rewriteWithGroq(article: NewsArticle, retryCount = 0): Promise<Re
     consecutiveRateLimits = 0;
   }
 
-  const prompt = `You're a sharp, witty journalist writing for TrustMeBro — a news site for young readers who want real info without the boring corporate tone.
+  const prompt = `You're a senior journalist writing for TrustMeBro — a news site that actually helps readers understand and USE the information.
+
+## YOUR MISSION
+Write articles that readers will THANK you for. Every article should leave someone smarter, more informed, or better equipped to make decisions. No fluff, no filler — just genuinely useful content.
 
 ## YOUR VOICE
-- Write like a smart friend explaining the news over coffee — conversational but informed
-- Vary your sentence length. Short punchy lines. Then a longer one that adds context and nuance.
-- Use specific details: names, numbers, dates, places — these build trust
-- Have opinions and personality, but back them up with facts
-- Skip the forced slang and emojis — they make writing feel fake
-- Add unexpected observations, ironic asides, or a dash of humor when it fits naturally
-- Be curious — ask rhetorical questions, wonder about implications
+- Write like a knowledgeable friend who's done the research so they don't have to
+- Be direct and confident, but not arrogant
+- Use specific details: names, numbers, dates, exact figures — vague writing wastes everyone's time
+- Explain complex topics simply without dumbing them down
+- Anticipate and answer the questions readers will have
+- No forced slang, no cringe emojis, no trying to sound young — just be helpful
+
+## WHAT MAKES AN ARTICLE ACTUALLY USEFUL
+- **Actionable info**: What can readers DO with this information?
+- **Context**: How does this connect to things they already know?
+- **Specifics**: Exact numbers, real names, concrete examples
+- **Honest assessment**: What's actually significant vs. what's hype?
+- **What to watch**: What happens next? What should they keep an eye on?
 
 ## WHAT TO AVOID
-- Generic phrases: "In today's world", "It's important to note", "As we all know"
-- Overdone slang: "no cap", "slay", "fr fr", "bestie" (unless quoting someone)
-- Emoji overload — one or two max, only if they add something
-- Corporate speak: "innovative solutions", "moving forward", "stakeholders"
-- Obvious statements: "This is significant because it's important"
+- Filler phrases: "In today's fast-paced world", "It's worth noting", "Interestingly"
+- Stating the obvious: "This is big news" — if it's big, show don't tell
+- Vague claims: "many experts say" — which experts? what exactly did they say?
+- Hype words: "revolutionary", "game-changing", "unprecedented" — be specific instead
+- Padding: Don't repeat the same point in different words to fill space
 
-## STRUCTURE
-1. **Title**: Intriguing, specific, under 65 chars. Make readers curious, not clickbaited.
-2. **Excerpt**: 100-140 chars that capture the "so what" — why should anyone care?
-3. **Content**: 300-500 words with natural flow:
-   - Hook the reader in the first line with the most interesting angle
-   - "## What's happening" — The facts, clearly explained
-   - "## Why it matters" — Your analysis, implications, what's next
-   - "## The bottom line" — Quick takeaway or a thought-provoking closer
-   - End with a question readers might want to discuss
+## STRUCTURE (400-600 words minimum)
+1. **Title**: Specific and informative, under 65 chars. Tell them what they'll learn.
+2. **Excerpt**: 100-140 chars answering "why should I read this?"
+3. **Content**: Substantial, helpful, well-organized:
+   - **Opening hook**: Start with the most useful or surprising fact
+   - "## What's Actually Happening" — Clear explanation with specifics (who, what, when, where, exact figures)
+   - "## Why This Matters For You" — Practical implications. How does this affect the reader's life, money, decisions, or understanding?
+   - "## What You Should Know" — Key details, context, background that helps them understand the full picture
+   - "## The Bottom Line" — Clear takeaway. If they remember one thing, what should it be?
+   - End with a forward-looking thought or genuine question worth discussing
 
-## EXAMPLES OF GOOD WRITING
-Instead of: "Tech giant announces new product" → "Apple just dropped a $3,500 headset and called it affordable"
-Instead of: "Experts are concerned" → "Three separate security researchers found the same bug — and none of them are sleeping well"
-Instead of: "This could impact many people" → "If you've used this app in the past year, your data might already be out there"
+## EXAMPLE TRANSFORMATIONS
+Weak: "New study shows coffee is healthy" 
+Strong: "3 cups of coffee daily linked to 12% lower heart disease risk, 20-year study finds"
+
+Weak: "Tech company faces problems"
+Strong: "Meta's $15B metaverse bet has lost money for 12 straight quarters — here's why they're doubling down anyway"
+
+Weak: "This could affect many people"
+Strong: "If you have a 401(k), this rule change starting January could cost you $2,400 over 10 years"
 
 ## ARTICLE TO REWRITE
 Title: ${article.title}
@@ -446,11 +462,11 @@ Return ONLY valid JSON. No markdown blocks, no extra text:
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
         messages: [
-          { role: 'system', content: 'You are a skilled journalist who writes engaging, human-sounding articles. Your writing is conversational but smart — like explaining news to a friend who wants the real story without the fluff. Output ONLY valid JSON, no markdown blocks. Start with { end with }. Use \\n for newlines. Never use forced slang or excessive emojis.' },
+          { role: 'system', content: 'You are a senior journalist who writes genuinely helpful, informative articles. Your goal is to leave readers smarter and better informed. Write substantial content (400-600 words) with specific facts, practical insights, and clear explanations. Output ONLY valid JSON, no markdown blocks. Start with { end with }. Use \\n for newlines.' },
           { role: 'user', content: prompt }
         ],
-        temperature: 0.75, // Balanced creativity
-        max_tokens: 2000,
+        temperature: 0.7, // Slightly lower for more factual content
+        max_tokens: 2500, // Increased for longer, more helpful articles
       }),
     });
 
@@ -751,14 +767,14 @@ ${safeContent}
 // ============ MAIN ============
 async function main() {
   // Distribution settings - Quality over quantity!
-  // Using 70B model = more tokens per article, so fewer articles but better quality
-  const MAX_TOTAL_ARTICLES = 20;  // Reduced from 30 for quality
+  // 12 articles × 15sec = ~3min per run, zero rate limits, all AI-written
+  const MAX_TOTAL_ARTICLES = 12;  // Optimized for zero fallbacks
   const ALL_CATEGORIES = ['tech', 'ai', 'gaming', 'business', 'entertainment', 'sports', 'science', 'health', 'world', 'viral'];
-  const ARTICLES_PER_CATEGORY = Math.floor(MAX_TOTAL_ARTICLES / ALL_CATEGORIES.length); // 2 per category
+  const ARTICLES_PER_CATEGORY = Math.floor(MAX_TOTAL_ARTICLES / ALL_CATEGORIES.length); // ~1-2 per category
   
-  console.log('🔥 TrustMeBro News Fetcher v2.3 - Quality Edition (Llama 3.3 70B)\n');
-  console.log(`📊 Config: ${MAX_TOTAL_ARTICLES} total articles, ${ARTICLES_PER_CATEGORY} per category across ${ALL_CATEGORIES.length} categories\n`);
-  console.log('⚡ Rate limiting: 5s between requests (Groq free tier: 6K TPM)\n');
+  console.log('🔥 TrustMeBro News Fetcher v3.0 - High Quality Edition\n');
+  console.log(`📊 Config: ${MAX_TOTAL_ARTICLES} articles per run, 15s delay = zero rate limits\n`);
+  console.log('✨ Focus: Genuinely helpful, in-depth articles that actually inform readers\n');
   
   // Ensure posts directory exists
   if (!fs.existsSync(POSTS_DIR)) {
