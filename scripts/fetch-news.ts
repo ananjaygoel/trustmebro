@@ -435,8 +435,9 @@ Return ONLY this JSON (no markdown blocks, no extra text):
 {"title": "Your Title Here", "excerpt": "Your 100-140 char excerpt here", "content": "Your full markdown article here with \\n for line breaks"}`;
 
   try {
+    // Using gemini-1.5-flash-latest for best compatibility
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -457,14 +458,20 @@ Return ONLY this JSON (no markdown blocks, no extra text):
       }
     );
 
+    // Log HTTP status for debugging
+    if (!response.ok) {
+      console.log(`❌ HTTP ${response.status}: ${response.statusText}`);
+    }
+
     const data = await response.json();
 
     // Handle errors
     if (data.error) {
       const errorMsg = data.error.message || JSON.stringify(data.error);
+      console.log(`❌ API Error: ${errorMsg}`);
       
-      // Retry on rate limit
-      if (errorMsg.includes('quota') || errorMsg.includes('rate') || response.status === 429) {
+      // Retry on rate limit or quota
+      if (errorMsg.includes('quota') || errorMsg.includes('rate') || errorMsg.includes('429') || response.status === 429) {
         if (retryCount < 2) {
           console.log(`⏳ Rate limited, waiting 10s then retry (${retryCount + 1}/2)...`);
           await new Promise(r => setTimeout(r, 10000));
@@ -474,7 +481,6 @@ Return ONLY this JSON (no markdown blocks, no extra text):
         return null;
       }
       
-      console.error('❌ Gemini error:', errorMsg);
       return null;
     }
 
