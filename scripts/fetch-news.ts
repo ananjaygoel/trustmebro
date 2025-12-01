@@ -379,11 +379,17 @@ async function fetchNews(category: string): Promise<NewsArticle[]> {
 // ============ FETCH NEWS FROM RSS FEEDS ============
 async function fetchRSS(feedUrl: string): Promise<NewsArticle[]> {
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout for RSS
+    
     const response = await fetch(feedUrl, {
       headers: {
         'User-Agent': 'TrustMeBro News Bot/2.0'
-      }
+      },
+      signal: controller.signal
     });
+    clearTimeout(timeoutId);
+    
     const xml = await response.text();
     
     // Simple XML parsing for RSS items
@@ -538,11 +544,15 @@ Closing paragraph with a question?"
 }`;
 
   try {
-    // Using gemini-2.5-flash (latest model)
+    // Using gemini-2.5-flash (latest model) with 30s timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+    
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: 'POST',
+        signal: controller.signal,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
@@ -560,6 +570,8 @@ Closing paragraph with a question?"
         }),
       }
     );
+    
+    clearTimeout(timeoutId);
 
     // Log HTTP status for debugging
     if (!response.ok) {
@@ -639,8 +651,12 @@ Closing paragraph with a question?"
       console.log('   Preview:', jsonStr.slice(0, 200));
       return null;
     }
-  } catch (error) {
-    console.error('❌ Rewrite failed:', error);
+  } catch (error: any) {
+    if (error.name === 'AbortError') {
+      console.log('❌ Request timed out (30s)');
+    } else {
+      console.error('❌ Rewrite failed:', error.message || error);
+    }
     return null;
   }
 }
@@ -856,18 +872,18 @@ ${safeContent}
 
 // ============ MAIN ============
 async function main() {
-  // Distribution settings - Gemini has generous limits!
-  // 150 articles attempted × 5s = ~12.5 min runtime
-  // At 50-60% success rate = 75-90 quality articles per run
-  // 4 runs/day = 300-360 articles/day, ALL AI-written (no fallbacks)
-  const MAX_TOTAL_ARTICLES = 150;
+  // Distribution settings - optimized for GitHub Actions minutes
+  // 50 articles × 5s = ~4-5 min runtime (much faster!)
+  // At 50-60% success rate = 25-30 quality articles per run
+  // 4 runs/day = 100-120 articles/day
+  const MAX_TOTAL_ARTICLES = 50;
   const ALL_CATEGORIES = ['tech', 'ai', 'gaming', 'business', 'entertainment', 'sports', 'science', 'health', 'world', 'viral'];
-  const ARTICLES_PER_CATEGORY = Math.floor(MAX_TOTAL_ARTICLES / ALL_CATEGORIES.length); // 15 per category
+  const ARTICLES_PER_CATEGORY = Math.floor(MAX_TOTAL_ARTICLES / ALL_CATEGORIES.length); // 5 per category
   
-  console.log('🔥 TrustMeBro News Fetcher v5.0 - High Volume Edition\n');
+  console.log('🔥 TrustMeBro News Fetcher v5.1 - Optimized Edition\n');
   console.log(`📊 Config: Attempting ${MAX_TOTAL_ARTICLES} articles, publishing AI-written only\n`);
   console.log('✨ No fallbacks - quality over quantity!\n');
-  console.log(`⏱️  Est. runtime: ~12-15 minutes (5s delay between API calls)\n`);
+  console.log(`⏱️  Est. runtime: ~5-7 minutes (5s delay between API calls)\n`);
   
   // Ensure posts directory exists
   if (!fs.existsSync(POSTS_DIR)) {
