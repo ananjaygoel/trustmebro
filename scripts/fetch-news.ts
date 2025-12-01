@@ -17,19 +17,31 @@ function sanitizeForMDX(text: string, keepNewlines = false): string {
     .replace(/<!--[\s\S]*?-->/g, '')
     // Remove script/style tags and content
     .replace(/<(script|style)[^>]*>[\s\S]*?<\/\1>/gi, '')
-    // Remove dangerous HTML tags
-    .replace(/<(table|tr|td|th|div|span|img|iframe|form|input|button|a|p)[^>]*>/gi, ' ')
-    .replace(/<\/(table|tr|td|th|div|span|iframe|form|input|button|a|p)>/gi, ' ')
+    // Remove ALL HTML tags completely (Reddit feeds have broken HTML like <a ##)
+    .replace(/<[^>]*>/g, ' ')
+    // Remove any remaining < or > that could break MDX
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
     // Decode HTML entities
     .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
+    .replace(/&lt;/g, '')  // Just remove < entirely for safety
+    .replace(/&gt;/g, '')  // Just remove > entirely for safety
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
     .replace(/&nbsp;/g, ' ')
     // Remove any remaining HTML entities
     .replace(/&#\d+;/g, '')
-    .replace(/&[a-z]+;/gi, ' ');
+    .replace(/&[a-z]+;/gi, ' ')
+    // Remove Reddit-specific noise
+    .replace(/submitted by \/u\/\w+/gi, '')
+    .replace(/\[link\]/gi, '')
+    .replace(/\[comments\]/gi, '')
+    // Clean up curly braces that might break MDX expressions
+    .replace(/\{/g, '(')
+    .replace(/\}/g, ')')
+    // Remove any stray # that could break MDX when combined with other chars
+    .replace(/<\s*#/g, ' ')
+    .replace(/#\s*>/g, ' ');
   
   if (keepNewlines) {
     // Clean up excessive whitespace but keep paragraph structure
