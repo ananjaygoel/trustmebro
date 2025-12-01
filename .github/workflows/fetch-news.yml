@@ -2,8 +2,8 @@ name: Fetch News
 
 on:
   schedule:
-    # Run every 2 hours
-    - cron: '0 */2 * * *'
+    # Run every 6 hours (4x per day) - high volume mode
+    - cron: '0 */6 * * *'
   workflow_dispatch:
 
 permissions:

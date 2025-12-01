@@ -373,9 +373,9 @@ async function fetchRSS(feedUrl: string): Promise<NewsArticle[]> {
 // Uses Llama 3.1 8B via Groq API - blazing fast LPU inference
 // IMPORTANT: Free tier has 6,000 tokens per MINUTE limit!
 
-// Rate limiting state (minimal for Gemini - much more generous limits)
+// Rate limiting state - 5s = 12 req/min (safe under 15 limit)
 let lastRequestTime = 0;
-const MIN_REQUEST_INTERVAL = 2000; // 2 seconds is plenty for Gemini
+const MIN_REQUEST_INTERVAL = 5000; // 5 seconds between requests
 
 async function rewriteWithGemini(article: NewsArticle, retryCount = 0): Promise<RewrittenArticle | null> {
   if (!GEMINI_API_KEY) {
@@ -765,14 +765,17 @@ ${safeContent}
 // ============ MAIN ============
 async function main() {
   // Distribution settings - Gemini has generous limits!
-  // 20 articles with 500-800 words each = real journalism
-  const MAX_TOTAL_ARTICLES = 20;
+  // 150 articles attempted × 5s = ~12.5 min runtime
+  // At 50-60% success rate = 75-90 quality articles per run
+  // 4 runs/day = 300-360 articles/day, ALL AI-written (no fallbacks)
+  const MAX_TOTAL_ARTICLES = 150;
   const ALL_CATEGORIES = ['tech', 'ai', 'gaming', 'business', 'entertainment', 'sports', 'science', 'health', 'world', 'viral'];
-  const ARTICLES_PER_CATEGORY = Math.floor(MAX_TOTAL_ARTICLES / ALL_CATEGORIES.length); // 2 per category
+  const ARTICLES_PER_CATEGORY = Math.floor(MAX_TOTAL_ARTICLES / ALL_CATEGORIES.length); // 15 per category
   
-  console.log('🔥 TrustMeBro News Fetcher v4.0 - Gemini Edition\n');
-  console.log(`📊 Config: ${MAX_TOTAL_ARTICLES} articles × 500-800 words each\n`);
-  console.log('✨ Powered by Google Gemini 1.5 Flash - no more rate limits!\n');
+  console.log('🔥 TrustMeBro News Fetcher v5.0 - High Volume Edition\n');
+  console.log(`📊 Config: Attempting ${MAX_TOTAL_ARTICLES} articles, publishing AI-written only\n`);
+  console.log('✨ No fallbacks - quality over quantity!\n');
+  console.log(`⏱️  Est. runtime: ~12-15 minutes (5s delay between API calls)\n`);
   
   // Ensure posts directory exists
   if (!fs.existsSync(POSTS_DIR)) {
@@ -853,18 +856,13 @@ async function main() {
         totalProcessed++;
         
         let rewritten = await rewriteWithGemini(article);
-        let usedFallback = false;
         if (!rewritten) {
-          rewritten = fallbackRewrite(article);
-          if (!rewritten) {
-            // Source content too thin, skip this article entirely
-            continue;
-          }
-          usedFallback = true;
-          fallbackRewrites++;
-        } else {
-          aiRewrites++;
+          // NO FALLBACKS - only publish AI-written articles
+          console.log(`   ⏭️ Skipping (AI failed)`);
+          fallbackRewrites++; // Track as "skipped"
+          continue;
         }
+        aiRewrites++;
         
         // Apply humanize post-processing to remove AI-sounding phrases
         rewritten = humanizeContent(rewritten);
@@ -879,7 +877,7 @@ async function main() {
           totalSaved++;
           categoryCounts[category]++;
           gotOneFromThisFeed = true;
-          console.log(`   ✅ Saved! [${category}: ${categoryCounts[category]}/${ARTICLES_PER_CATEGORY}] (Total: ${totalSaved}/${MAX_TOTAL_ARTICLES})${usedFallback ? ' [FALLBACK]' : ''}`);
+          console.log(`   ✅ Saved! [${category}: ${categoryCounts[category]}/${ARTICLES_PER_CATEGORY}] (Total: ${totalSaved}/${MAX_TOTAL_ARTICLES})`);
         }
       }
     }
