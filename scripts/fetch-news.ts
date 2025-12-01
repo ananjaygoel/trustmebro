@@ -382,42 +382,45 @@ async function rewriteWithGroq(article: NewsArticle, retryCount = 0): Promise<Re
     consecutiveRateLimits = 0;
   }
 
-  const prompt = `You are the BEST Gen Z news writer for "TrustMeBro" - a viral, sarcastic news site that makes boring news actually fun to read.
+  const prompt = `You're a sharp, witty journalist writing for TrustMeBro — a news site for young readers who want real info without the boring corporate tone.
 
-## YOUR MISSION
-Transform this news into content that would go VIRAL on TikTok/Twitter. Make it funny, relatable, and shareable while keeping facts accurate.
+## YOUR VOICE
+- Write like a smart friend explaining the news over coffee — conversational but informed
+- Vary your sentence length. Short punchy lines. Then a longer one that adds context and nuance.
+- Use specific details: names, numbers, dates, places — these build trust
+- Have opinions and personality, but back them up with facts
+- Skip the forced slang and emojis — they make writing feel fake
+- Add unexpected observations, ironic asides, or a dash of humor when it fits naturally
+- Be curious — ask rhetorical questions, wonder about implications
 
-## VOICE & TONE (THIS IS CRITICAL)
-- Write like you're texting your group chat about this news
-- Be genuinely funny - use irony, exaggeration, and unexpected observations
-- Reference current memes, internet culture, and relatable experiences
-- Use Gen Z slang NATURALLY (no cap, fr fr, lowkey, slay, ate, understood the assignment, main character energy, it's giving, rent free, delulu, sus, valid, based, L/W, touch grass, chronically online)
-- Emojis should feel natural, not forced (💀 for something wild, 😭 for dramatic, ✨ for something good)
-- Hot takes and spicy commentary welcome
-- Roast the situation (lovingly) when appropriate
+## WHAT TO AVOID
+- Generic phrases: "In today's world", "It's important to note", "As we all know"
+- Overdone slang: "no cap", "slay", "fr fr", "bestie" (unless quoting someone)
+- Emoji overload — one or two max, only if they add something
+- Corporate speak: "innovative solutions", "moving forward", "stakeholders"
+- Obvious statements: "This is significant because it's important"
 
 ## STRUCTURE
-1. **Title**: Punchy, click-worthy, includes 1 emoji at end, under 60 chars. Make people NEED to click.
-2. **Excerpt**: The hook - 120-150 chars that makes people want to read more. Include a Gen Z phrase.
-3. **Content**: 400-600 words with:
-   - Opening that hooks immediately (no boring intros)
-   - "## The Tea ☕" - What happened, but make it entertaining
-   - "## Why This Matters (Or Doesn't) 👀" - Your take, commentary, implications
-   - "## The Vibe Check 💅" - Final thoughts, predictions, or a funny conclusion
-   - Sprinkle in jokes, asides, and commentary throughout
+1. **Title**: Intriguing, specific, under 65 chars. Make readers curious, not clickbaited.
+2. **Excerpt**: 100-140 chars that capture the "so what" — why should anyone care?
+3. **Content**: 300-500 words with natural flow:
+   - Hook the reader in the first line with the most interesting angle
+   - "## What's happening" — The facts, clearly explained
+   - "## Why it matters" — Your analysis, implications, what's next
+   - "## The bottom line" — Quick takeaway or a thought-provoking closer
+   - End with a question readers might want to discuss
 
-## EXAMPLES OF GOOD GENZ WRITING
-- Instead of "The company announced" → "They really said 'hold my coffee' and"
-- Instead of "This is significant" → "This is lowkey a whole thing and I'm not okay"
-- Instead of "Experts say" → "The people who actually know things are saying"
-- Add parenthetical asides like "(yes, really)" or "(I can't make this up)"
+## EXAMPLES OF GOOD WRITING
+Instead of: "Tech giant announces new product" → "Apple just dropped a $3,500 headset and called it affordable"
+Instead of: "Experts are concerned" → "Three separate security researchers found the same bug — and none of them are sleeping well"
+Instead of: "This could impact many people" → "If you've used this app in the past year, your data might already be out there"
 
 ## ARTICLE TO REWRITE
 Title: ${article.title}
 Content: ${article.description} ${article.content || ''}
 
 ## OUTPUT FORMAT
-Return ONLY this JSON structure. No markdown blocks, no extra text:
+Return ONLY valid JSON. No markdown blocks, no extra text:
 {"title": "your title here", "excerpt": "your excerpt here", "content": "your markdown content here with \\n for newlines"}`
 
   try {
@@ -431,10 +434,10 @@ Return ONLY this JSON structure. No markdown blocks, no extra text:
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
         messages: [
-          { role: 'system', content: 'You are a witty, chronically-online Gen Z writer who makes news entertaining. Output ONLY valid JSON - no markdown blocks, no explanations. Start with { end with }. Use \\n for newlines in content. Be genuinely funny and relatable.' },
+          { role: 'system', content: 'You are a skilled journalist who writes engaging, human-sounding articles. Your writing is conversational but smart — like explaining news to a friend who wants the real story without the fluff. Output ONLY valid JSON, no markdown blocks. Start with { end with }. Use \\n for newlines. Never use forced slang or excessive emojis.' },
           { role: 'user', content: prompt }
         ],
-        temperature: 0.8, // Higher for more creative/funny output
+        temperature: 0.75, // Balanced creativity
         max_tokens: 2000,
       }),
     });
@@ -532,56 +535,111 @@ Return ONLY this JSON structure. No markdown blocks, no extra text:
   }
 }
 
-// ============ FALLBACK GENZ REWRITE ============
-// When AI fails, still add some GenZ flavor so we don't publish boring content
-function fallbackGenZRewrite(article: NewsArticle): RewrittenArticle {
-  const genZPrefixes = [
-    "No cap, ", "Bestie, ", "Okay so like, ", "Not gonna lie, ", 
-    "Fr fr, ", "Lowkey, ", "Highkey, ", "POV: ", "It's giving "
+// ============ HUMANIZE POST-PROCESSING ============
+// Remove AI-sounding phrases and add natural variety
+function humanizeContent(article: RewrittenArticle): RewrittenArticle {
+  // Phrases that scream "AI wrote this"
+  const aiPhrases: [RegExp, string][] = [
+    [/\bIn today's (world|age|era|landscape)\b/gi, 'Right now'],
+    [/\bIt's important to note that\b/gi, ''],
+    [/\bAs we all know\b/gi, ''],
+    [/\bIn a nutshell\b/gi, 'Basically'],
+    [/\bAt the end of the day\b/gi, 'Ultimately'],
+    [/\bmoving forward\b/gi, 'next'],
+    [/\bThis begs the question\b/gi, 'This raises the question'],
+    [/\bIt goes without saying\b/gi, ''],
+    [/\bNeedless to say\b/gi, ''],
+    [/\bLet's dive in\b/gi, ''],
+    [/\bWithout further ado\b/gi, ''],
+    [/\bBuckle up\b/gi, ''],
+    [/\bHold onto your hats?\b/gi, ''],
+    [/\bGame-changing\b/gi, 'significant'],
+    [/\bRevolutionary\b/gi, 'major'],
+    [/\bGroundbreaking\b/gi, 'notable'],
+    [/\bexciting times\b/gi, 'interesting developments'],
+    [/\bstakeholders\b/gi, 'people involved'],
+    [/\binnovative solutions?\b/gi, 'new approaches'],
+    [/\bsynergy\b/gi, 'collaboration'],
+    [/\bleverage\b/gi, 'use'],
+    [/\brobust\b/gi, 'strong'],
+    [/\bseamless\b/gi, 'smooth'],
+    [/\bholistic\b/gi, 'complete'],
+    // GenZ overload cleanup
+    [/\bno cap,?\s*/gi, ''],
+    [/\bfr fr,?\s*/gi, ''],
+    [/\bbestie,?\s*/gi, ''],
+    [/\blowkey\s+/gi, ''],
+    [/\bhighkey\s+/gi, ''],
+    [/\bslayed\b/gi, 'nailed it'],
+    [/\bslaying\b/gi, 'doing great'],
+    [/\bslay\b/gi, 'impressive'],
+    [/\bit's giving\b/gi, 'it feels like'],
+    [/\brent free\b/gi, 'stuck in my head'],
+    [/\bdelulu\b/gi, 'unrealistic'],
+    [/💅/g, ''],
+    [/✨{2,}/g, '✨'],
+    [/🔥{2,}/g, '🔥'],
+    [/😭{2,}/g, ''],
+    // Clean up excessive punctuation
+    [/!{2,}/g, '!'],
+    [/\?{2,}/g, '?'],
+    [/\.{4,}/g, '...'],
   ];
-  const genZSuffixes = [
-    " and honestly? We're here for it. 💅",
-    " - no cap, this is wild. 🔥",
-    " and it's lowkey iconic. ✨",
-    " - the vibes are immaculate. 💫",
-    " and we're not okay. 😭",
-    " - slay or be slayed, bestie. 👑",
-    " and that's on periodt. 💯"
-  ];
-  const emojis = ["🔥", "💀", "✨", "💅", "👀", "😭", "🫠", "💫", "👑", "🤯"];
-  
-  const randomPrefix = genZPrefixes[Math.floor(Math.random() * genZPrefixes.length)];
-  const randomSuffix = genZSuffixes[Math.floor(Math.random() * genZSuffixes.length)];
-  const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-  
+
+  let { title, excerpt, content } = article;
+
+  // Apply replacements
+  for (const [pattern, replacement] of aiPhrases) {
+    title = title.replace(pattern, replacement);
+    excerpt = excerpt.replace(pattern, replacement);
+    content = content.replace(pattern, replacement);
+  }
+
+  // Clean up double spaces from removed phrases
+  title = title.replace(/\s{2,}/g, ' ').trim();
+  excerpt = excerpt.replace(/\s{2,}/g, ' ').trim();
+  content = content.replace(/\s{2,}/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+
+  // Ensure title isn't too long after cleanup
+  if (title.length > 70) {
+    title = title.slice(0, 67) + '...';
+  }
+
+  return { title, excerpt, content };
+}
+
+// ============ FALLBACK REWRITE ============
+// When AI fails, create a clean, readable summary
+function fallbackRewrite(article: NewsArticle): RewrittenArticle {
   // Sanitize inputs to remove HTML that breaks MDX
   const cleanTitle = sanitizeForMDX(article.title);
   const cleanDescription = sanitizeForMDX(article.description);
   const cleanContent = sanitizeForMDX(article.content || article.description);
   
-  // Add emoji to title
-  const title = `${cleanTitle.slice(0, 55)} ${randomEmoji}`;
+  // Keep the original title (it's usually good enough)
+  const title = cleanTitle.slice(0, 65);
   
-  // GenZ-ify the excerpt
-  const excerpt = `${randomPrefix}${cleanDescription.slice(0, 120)}...`;
+  // Create a clean excerpt
+  const excerpt = cleanDescription.length > 140 
+    ? cleanDescription.slice(0, 137) + '...'
+    : cleanDescription;
   
-  // Build content with GenZ flavor
-  const content = `## The Tea ☕
+  // Build readable content
+  const content = `## What's happening
 
-${randomPrefix}${cleanDescription}${randomSuffix}
+${cleanDescription}
 
-## What's Actually Happening 👀
+## The details
 
 ${cleanContent}
 
-## The Vibe Check 💅
+## What to watch
 
-This whole situation is honestly giving main character energy. Whether you're here for it or not, it's definitely something to keep an eye on. Stay tuned bestie, we'll keep you updated! ✨
+This story is still developing. We'll update as we learn more.
 
----
-*your fave news source that actually gets it* 💕`;
+*Got questions about this? Drop them below.*`;
 
-  console.log('   🆘 Used fallback GenZ rewrite');
+  console.log('   📝 Used fallback rewrite (clean summary)');
   return { title, excerpt, content };
 }
 
@@ -749,12 +807,15 @@ async function main() {
         let rewritten = await rewriteWithGroq(article);
         let usedFallback = false;
         if (!rewritten) {
-          rewritten = fallbackGenZRewrite(article);
+          rewritten = fallbackRewrite(article);
           usedFallback = true;
           fallbackRewrites++;
         } else {
           aiRewrites++;
         }
+        
+        // Apply humanize post-processing to remove AI-sounding phrases
+        rewritten = humanizeContent(rewritten);
         
         const saved = savePost(
           rewritten,

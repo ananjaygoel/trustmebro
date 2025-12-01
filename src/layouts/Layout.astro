@@ -163,6 +163,59 @@ const ADSENSE_CLIENT_ID = import.meta.env.PUBLIC_ADSENSE_ID || ""; // e.g., ca-p
       });
     </script>
     
-    <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "784aa4d8313849a9b16d504b4beb9613"}'></script><!-- End Cloudflare Web Analytics -->
+    <!-- Cookie Consent Banner -->
+    <div id="cookie-banner" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 1rem 1.5rem; z-index: 9999; border-top: 1px solid rgba(0, 245, 212, 0.3); box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);">
+      <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem;">
+        <p style="margin: 0; color: #e2e8f0; font-size: 0.9rem; flex: 1;">
+          🍪 yo bestie, we use cookies to make this site slap harder. by staying, you're saying "bet" to our 
+          <a href="/privacy" style="color: #00f5d4; text-decoration: underline;">cookie policy</a>. no cap.
+        </p>
+        <div style="display: flex; gap: 0.5rem;">
+          <button id="reject-cookies" style="padding: 0.5rem 1rem; background: transparent; border: 1px solid #64748b; color: #94a3b8; border-radius: 8px; cursor: pointer; font-size: 0.85rem;">nah, i'm good</button>
+          <button id="accept-cookies" style="padding: 0.5rem 1.5rem; background: linear-gradient(135deg, #00f5d4, #7b61ff); border: none; color: #0a0a0a; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem;">bet, accept all 🔥</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Google Analytics (loads only after consent) -->
+    <script>
+      // Check if user already consented
+      const consent = localStorage.getItem('cookie-consent');
+      const banner = document.getElementById('cookie-banner');
+      
+      function loadGoogleAnalytics() {
+        // Load GA script
+        const script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX';
+        script.async = true;
+        document.head.appendChild(script);
+        
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
+      }
+      
+      if (consent === 'accepted') {
+        loadGoogleAnalytics();
+      } else if (consent !== 'rejected') {
+        // Show banner if no choice made yet
+        banner.style.display = 'block';
+      }
+      
+      document.getElementById('accept-cookies')?.addEventListener('click', () => {
+        localStorage.setItem('cookie-consent', 'accepted');
+        banner.style.display = 'none';
+        loadGoogleAnalytics();
+      });
+      
+      document.getElementById('reject-cookies')?.addEventListener('click', () => {
+        localStorage.setItem('cookie-consent', 'rejected');
+        banner.style.display = 'none';
+      });
+    </script>
+    
+    <!-- Cloudflare Web Analytics (privacy-friendly, no consent needed) -->
+    <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "784aa4d8313849a9b16d504b4beb9613"}'></script>
   </body>
 </html>

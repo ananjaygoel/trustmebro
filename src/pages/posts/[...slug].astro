@@ -97,6 +97,40 @@ const relatedPosts = allPosts
         </p>
       )}
       
+      <!-- Ask a Question Widget -->
+      <div class="mt-12 p-6 glass rounded-2xl" id="ask-widget">
+        <h3 class="text-lg font-bold mb-3">Got a question about this? 🤔</h3>
+        <p class="text-sm text-gray-400 mb-4">Ask anything about this article and get an instant answer.</p>
+        
+        <div class="flex gap-3">
+          <input 
+            type="text" 
+            id="ask-input"
+            placeholder="What does this mean for...?"
+            class="flex-1 px-4 py-3 rounded-xl bg-[#0f1724] border border-white/10 focus:outline-none focus:border-purple-500 transition-all text-sm"
+            maxlength="500"
+          />
+          <button 
+            id="ask-btn"
+            class="px-6 py-3 rounded-xl gradient-bg font-bold text-black hover:scale-[1.02] transition-all text-sm whitespace-nowrap"
+          >
+            Ask ✨
+          </button>
+        </div>
+        
+        <div id="ask-response" class="mt-4 hidden">
+          <div id="ask-loading" class="text-sm text-gray-400 hidden">
+            Thinking... 💭
+          </div>
+          <div id="ask-answer" class="p-4 bg-[#0f1724] rounded-xl text-sm hidden">
+            <p class="text-gray-300" id="ask-answer-text"></p>
+          </div>
+          <div id="ask-error" class="text-sm text-red-400 hidden"></div>
+        </div>
+        
+        <p class="text-xs text-gray-500 mt-3">Answers are AI-generated based on the article content.</p>
+      </div>
+      
       <!-- Reactions -->
       <div class="mt-12 p-6 glass rounded-2xl">
         <p class="text-sm text-gray-400 mb-4">vibe check:</p>
@@ -158,6 +192,81 @@ const relatedPosts = allPosts
         url: window.location.href
       });
     }
+  });
+  
+  // ============ ASK WIDGET ============
+  const askInput = document.getElementById('ask-input') as HTMLInputElement;
+  const askBtn = document.getElementById('ask-btn');
+  const askResponse = document.getElementById('ask-response');
+  const askLoading = document.getElementById('ask-loading');
+  const askAnswer = document.getElementById('ask-answer');
+  const askAnswerText = document.getElementById('ask-answer-text');
+  const askError = document.getElementById('ask-error');
+  
+  // Get article content from the page
+  const articleContent = document.querySelector('.prose')?.textContent || '';
+  const articleTitle = document.querySelector('h1')?.textContent || '';
+  const articleSlug = window.location.pathname.split('/').pop() || '';
+  
+  async function askQuestion() {
+    const question = askInput?.value.trim();
+    if (!question || question.length < 5) {
+      showError('Please ask a longer question (at least 5 characters)');
+      return;
+    }
+    
+    // Show loading state
+    askBtn!.textContent = '...';
+    askBtn!.setAttribute('disabled', 'true');
+    askResponse?.classList.remove('hidden');
+    askLoading?.classList.remove('hidden');
+    askAnswer?.classList.add('hidden');
+    askError?.classList.add('hidden');
+    
+    try {
+      const res = await fetch('/.netlify/functions/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          question,
+          articleTitle,
+          articleContent: articleContent.slice(0, 4000), // Limit content size
+          articleSlug
+        })
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok || data.error) {
+        showError(data.error || 'Something went wrong. Please try again!');
+        return;
+      }
+      
+      // Show answer
+      askLoading?.classList.add('hidden');
+      askAnswer?.classList.remove('hidden');
+      if (askAnswerText) {
+        askAnswerText.textContent = data.answer;
+      }
+      
+    } catch (err) {
+      showError('Couldn\'t connect. Please try again!');
+    } finally {
+      askBtn!.textContent = 'Ask ✨';
+      askBtn!.removeAttribute('disabled');
+    }
+  }
+  
+  function showError(msg: string) {
+    askLoading?.classList.add('hidden');
+    askAnswer?.classList.add('hidden');
+    askError?.classList.remove('hidden');
+    if (askError) askError.textContent = msg;
+  }
+  
+  askBtn?.addEventListener('click', askQuestion);
+  askInput?.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') askQuestion();
   });
   
   // Global Reactions using Netlify Functions
