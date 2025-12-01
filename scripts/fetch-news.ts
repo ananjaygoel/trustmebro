@@ -622,11 +622,21 @@ function humanizeContent(article: RewrittenArticle): RewrittenArticle {
 
 // ============ FALLBACK REWRITE ============
 // When AI fails, create a clean, readable summary
-function fallbackRewrite(article: NewsArticle): RewrittenArticle {
+function fallbackRewrite(article: NewsArticle): RewrittenArticle | null {
   // Sanitize inputs to remove HTML that breaks MDX
   const cleanTitle = sanitizeForMDX(article.title);
   const cleanDescription = sanitizeForMDX(article.description);
   const cleanContent = sanitizeForMDX(article.content || article.description);
+  
+  // Check if we have enough content to work with
+  const combinedContent = `${cleanTitle} ${cleanDescription} ${cleanContent}`;
+  const wordCount = combinedContent.split(/\s+/).filter(w => w.length > 2).length;
+  
+  // Skip if source content is too thin (less than 20 meaningful words)
+  if (wordCount < 20) {
+    console.log(`   ⏭️ Skipping - insufficient source content (${wordCount} words)`);
+    return null;
+  }
   
   // Keep the original title (it's usually good enough)
   const title = cleanTitle.slice(0, 65);
@@ -636,22 +646,34 @@ function fallbackRewrite(article: NewsArticle): RewrittenArticle {
     ? cleanDescription.slice(0, 137) + '...'
     : cleanDescription;
   
-  // Build readable content
-  const content = `## What's happening
+  // Build more substantial content by expanding on what we have
+  const hasRealContent = cleanContent.length > cleanDescription.length + 50;
+  
+  const content = `## The Story
 
 ${cleanDescription}
 
-## The details
+${hasRealContent ? `## What We Know
 
 ${cleanContent}
 
-## What to watch
+## The Bigger Picture
 
-This story is still developing. We'll update as we learn more.
+This story touches on themes that have been making waves lately. While we're still waiting for more details to emerge, what we know so far suggests this could have wider implications.` : `## Breaking It Down
 
-*Got questions about this? Drop them below.*`;
+${cleanDescription}
 
-  console.log('   📝 Used fallback rewrite (clean summary)');
+The details are still coming in, but here's what matters: this story is part of a bigger trend we've been tracking. Whether it's a flash in the pan or the start of something bigger remains to be seen.
+
+## Why It Matters
+
+Stories like this often fly under the radar, but they can signal shifts in how things work. We'll keep an eye on developments.`}
+
+## What's Next
+
+Stay tuned for updates as this story develops. Drop your thoughts below — we'd love to hear what you think.`;
+
+  console.log('   📝 Used fallback rewrite (expanded summary)');
   return { title, excerpt, content };
 }
 
@@ -820,6 +842,10 @@ async function main() {
         let usedFallback = false;
         if (!rewritten) {
           rewritten = fallbackRewrite(article);
+          if (!rewritten) {
+            // Source content too thin, skip this article entirely
+            continue;
+          }
           usedFallback = true;
           fallbackRewrites++;
         } else {
