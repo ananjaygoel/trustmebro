@@ -392,47 +392,63 @@ async function rewriteWithGemini(article: NewsArticle, retryCount = 0): Promise<
   }
   lastRequestTime = Date.now();
 
-  const prompt = `You are a senior journalist writing a comprehensive, genuinely helpful article for TrustMeBro news site.
-
-IMPORTANT: Write a COMPLETE article of 500-800 words. Do not cut short. Include all sections fully.
+  const prompt = `You are a senior journalist writing for TrustMeBro news site.
 
 ## SOURCE MATERIAL
 Title: ${article.title}
 Content: ${article.description} ${article.content || ''}
 
-## YOUR TASK
-Transform this into a well-researched, helpful article that readers will genuinely appreciate.
+## CRITICAL FORMATTING RULES
+- SHORT paragraphs only (2-3 sentences MAX per paragraph)
+- Add a BLANK LINE between every paragraph
+- Use bullet points for lists of 3+ items
+- Break up long sections with subheadings
+- Make it SCANNABLE — readers skim first, then read
 
 ## WRITING STYLE
-- Conversational but informative — like a smart friend explaining the news
-- Use specific facts: names, numbers, dates, exact figures
-- No filler phrases like "In today's world" or "It's worth noting"
-- No forced slang or emojis
-- Every sentence should add value
+- Conversational, like explaining to a smart friend
+- Specific facts: names, numbers, dates
+- No filler phrases ("In today's world", "It's worth noting")
+- No walls of text — white space is your friend
 
-## REQUIRED STRUCTURE
+## STRUCTURE (400-600 words total)
 
-**Title**: Specific, informative, under 65 characters
+**Title**: Catchy but informative, under 60 characters
 
-**Excerpt**: 100-140 characters explaining why this matters
+**Excerpt**: 100-140 characters, the hook
 
-**Content** (500-800 words with these sections):
+**Content** — Format EXACTLY like this with blank lines:
 
 ## What's Happening
-[3-4 paragraphs: Explain the news clearly. Who, what, when, where. Include specific details, quotes if available, and context.]
+
+First paragraph here. Keep it to 2-3 sentences only.
+
+Second paragraph with more details. Again, short and punchy.
+
+Third paragraph if needed. No more than 3 sentences.
 
 ## Why This Matters
-[2-3 paragraphs: What are the real-world implications? How does this affect readers? Be specific about impacts.]
 
-## The Bigger Picture  
-[2-3 paragraphs: Historical context, related trends, what experts are saying. Connect to broader themes.]
+Explain the real impact in 2-3 short paragraphs.
 
-## What To Watch
-[1-2 paragraphs: What happens next? What should readers keep an eye on? End with a thought-provoking question.]
+Each paragraph separated by blank lines.
+
+Use bullet points if listing multiple impacts:
+- First impact
+- Second impact  
+- Third impact
+
+## The Bottom Line
+
+One or two short paragraphs wrapping it up.
+
+End with a question or forward-looking thought.
 
 ## OUTPUT FORMAT
-Return ONLY this JSON (no markdown blocks, no extra text):
-{"title": "Your Title Here", "excerpt": "Your 100-140 char excerpt here", "content": "Your full markdown article here with \\n for line breaks"}`;
+Return ONLY valid JSON:
+{"title": "Title Here", "excerpt": "Excerpt here", "content": "## What's Happening\\n\\nFirst paragraph.\\n\\nSecond paragraph.\\n\\n## Why This Matters\\n\\nExplanation here.\\n\\n## The Bottom Line\\n\\nWrap up here."}
+
+IMPORTANT: Use \\n\\n (double newline) between EVERY paragraph for proper spacing!`;
 
   try {
     // Using gemini-2.5-flash (latest model)
@@ -636,32 +652,40 @@ function fallbackRewrite(article: NewsArticle): RewrittenArticle | null {
     ? cleanDescription.slice(0, 137) + '...'
     : cleanDescription;
   
-  // Build more substantial content by expanding on what we have
+  // Build readable content with proper spacing
   const hasRealContent = cleanContent.length > cleanDescription.length + 50;
   
-  const content = `## The Story
+  // Split content into sentences for better formatting
+  const sentences = cleanContent.split(/(?<=[.!?])\s+/).filter(s => s.length > 10);
+  const formattedContent = sentences.length > 2 
+    ? sentences.slice(0, 3).join(' ') + '\n\n' + sentences.slice(3, 6).join(' ')
+    : cleanContent;
+  
+  const content = `## What's Happening
 
 ${cleanDescription}
 
-${hasRealContent ? `## What We Know
+${hasRealContent ? `## The Details
 
-${cleanContent}
-
-## The Bigger Picture
-
-This story touches on themes that have been making waves lately. While we're still waiting for more details to emerge, what we know so far suggests this could have wider implications.` : `## Breaking It Down
-
-${cleanDescription}
-
-The details are still coming in, but here's what matters: this story is part of a bigger trend we've been tracking. Whether it's a flash in the pan or the start of something bigger remains to be seen.
+${formattedContent}
 
 ## Why It Matters
 
-Stories like this often fly under the radar, but they can signal shifts in how things work. We'll keep an eye on developments.`}
+This story is worth watching. The implications could affect how we think about this topic going forward.
+
+We'll continue to track developments and update you as we learn more.` : `## What We Know So Far
+
+${cleanDescription}
+
+More details are still emerging on this story.
+
+## The Bottom Line
+
+This is a developing situation. We'll keep you posted as more information becomes available.`}
 
 ## What's Next
 
-Stay tuned for updates as this story develops. Drop your thoughts below — we'd love to hear what you think.`;
+Stay tuned for updates. Got thoughts? Drop them below.`;
 
   console.log('   📝 Used fallback rewrite (expanded summary)');
   return { title, excerpt, content };
