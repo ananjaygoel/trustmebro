@@ -62,6 +62,80 @@ function sanitizeForMDX(text: string, keepNewlines = false): string {
   return result;
 }
 
+// ============ CONTENT FORMATTING ============
+// Ensure proper paragraph breaks and formatting in AI-generated content
+function formatContent(content: string): string {
+  if (!content) return '';
+  
+  let result = content;
+  
+  // Replace escaped newlines with actual newlines
+  result = result.replace(/\\n/g, '\n');
+  
+  // Ensure headers have blank lines before and after
+  result = result.replace(/([^\n])(##\s)/g, '$1\n\n$2');
+  result = result.replace(/(##[^\n]+)([^\n])/g, '$1\n\n$2');
+  
+  // Split into lines and process
+  const lines = result.split('\n');
+  const processedLines: string[] = [];
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    
+    // Skip empty lines
+    if (!line) {
+      // Only add one empty line (avoid multiple)
+      if (processedLines.length > 0 && processedLines[processedLines.length - 1] !== '') {
+        processedLines.push('');
+      }
+      continue;
+    }
+    
+    // Headers get blank line before
+    if (line.startsWith('##')) {
+      if (processedLines.length > 0 && processedLines[processedLines.length - 1] !== '') {
+        processedLines.push('');
+      }
+      processedLines.push(line);
+      processedLines.push(''); // blank line after header
+      continue;
+    }
+    
+    // Bullet points
+    if (line.startsWith('-') || line.startsWith('*')) {
+      processedLines.push(line);
+      continue;
+    }
+    
+    // Regular paragraph - check if it's very long and should be split
+    if (line.length > 500) {
+      // Try to split at sentence boundaries
+      const sentences = line.match(/[^.!?]+[.!?]+/g) || [line];
+      let currentPara = '';
+      for (const sentence of sentences) {
+        if (currentPara.length + sentence.length > 300 && currentPara.length > 100) {
+          processedLines.push(currentPara.trim());
+          processedLines.push(''); // blank line between paragraphs
+          currentPara = sentence;
+        } else {
+          currentPara += sentence;
+        }
+      }
+      if (currentPara.trim()) {
+        processedLines.push(currentPara.trim());
+      }
+    } else {
+      processedLines.push(line);
+    }
+  }
+  
+  // Join and clean up multiple blank lines
+  result = processedLines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  
+  return result;
+}
+
 // ============ CONFIGURATION ============
 const NEWS_API_KEY = process.env.NEWS_API_KEY || '';
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
@@ -400,7 +474,7 @@ Content: ${article.description} ${article.content || ''}
 
 ## CRITICAL FORMATTING RULES
 - SHORT paragraphs only (2-3 sentences MAX per paragraph)
-- Add a BLANK LINE between every paragraph
+- EVERY paragraph MUST be separated by a blank line
 - Use bullet points for lists of 3+ items
 - Break up long sections with subheadings
 - Make it SCANNABLE — readers skim first, then read
@@ -411,13 +485,13 @@ Content: ${article.description} ${article.content || ''}
 - No filler phrases ("In today's world", "It's worth noting")
 - No walls of text — white space is your friend
 
-## STRUCTURE (400-600 words total)
+## STRUCTURE (500-700 words total)
 
 **Title**: Catchy but informative, under 60 characters
 
 **Excerpt**: 100-140 characters, the hook
 
-**Content** — Format EXACTLY like this with blank lines:
+**Content** must look EXACTLY like this with REAL line breaks:
 
 ## What's Happening
 
@@ -425,13 +499,9 @@ First paragraph here. Keep it to 2-3 sentences only.
 
 Second paragraph with more details. Again, short and punchy.
 
-Third paragraph if needed. No more than 3 sentences.
-
 ## Why This Matters
 
 Explain the real impact in 2-3 short paragraphs.
-
-Each paragraph separated by blank lines.
 
 Use bullet points if listing multiple impacts:
 - First impact
@@ -440,15 +510,34 @@ Use bullet points if listing multiple impacts:
 
 ## The Bottom Line
 
-One or two short paragraphs wrapping it up.
-
-End with a question or forward-looking thought.
+One paragraph wrapping it up. End with a question.
 
 ## OUTPUT FORMAT
-Return ONLY valid JSON:
-{"title": "Title Here", "excerpt": "Excerpt here", "content": "## What's Happening\\n\\nFirst paragraph.\\n\\nSecond paragraph.\\n\\n## Why This Matters\\n\\nExplanation here.\\n\\n## The Bottom Line\\n\\nWrap up here."}
+Return ONLY this JSON structure. The content field MUST contain actual newline characters (not the literal text backslash-n, but real line breaks):
 
-IMPORTANT: Use \\n\\n (double newline) between EVERY paragraph for proper spacing!`;
+{
+  "title": "Your Title Here",
+  "excerpt": "Your excerpt here",
+  "content": "## What's Happening
+
+First paragraph goes here with 2-3 sentences.
+
+Second paragraph here with more details.
+
+## Why This Matters
+
+Impact paragraph one.
+
+Impact paragraph two.
+
+- Bullet point one
+- Bullet point two
+- Bullet point three
+
+## The Bottom Line
+
+Closing paragraph with a question?"
+}`;
 
   try {
     // Using gemini-2.5-flash (latest model)
@@ -530,6 +619,11 @@ IMPORTANT: Use \\n\\n (double newline) between EVERY paragraph for proper spacin
 
     try {
       const parsed = JSON.parse(jsonStr);
+      
+      // Fix formatting - ensure proper paragraph breaks
+      if (parsed.content) {
+        parsed.content = formatContent(parsed.content);
+      }
       
       // Validate we got substantial content
       const wordCount = parsed.content?.split(/\s+/).length || 0;
