@@ -72,9 +72,8 @@ function formatContent(content: string): string {
   // Replace escaped newlines with actual newlines
   result = result.replace(/\\n/g, '\n');
   
-  // Ensure headers have blank lines before and after
-  result = result.replace(/([^\n])(##\s)/g, '$1\n\n$2');
-  result = result.replace(/(##[^\n]+)([^\n])/g, '$1\n\n$2');
+  // Ensure headers have blank lines after them
+  result = result.replace(/(^##\s+[^\n]+)/gm, '$1\n');
   
   // Split into lines and process
   const lines = result.split('\n');
@@ -83,43 +82,42 @@ function formatContent(content: string): string {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
     
-    // Skip empty lines
+    // Skip empty lines but keep one
     if (!line) {
-      // Only add one empty line (avoid multiple)
       if (processedLines.length > 0 && processedLines[processedLines.length - 1] !== '') {
         processedLines.push('');
       }
       continue;
     }
     
-    // Headers get blank line before
+    // Headers get blank line before and after
     if (line.startsWith('##')) {
       if (processedLines.length > 0 && processedLines[processedLines.length - 1] !== '') {
         processedLines.push('');
       }
       processedLines.push(line);
-      processedLines.push(''); // blank line after header
+      processedLines.push('');
       continue;
     }
     
-    // Bullet points
-    if (line.startsWith('-') || line.startsWith('*')) {
+    // Bullet points - keep as is
+    if (line.startsWith('-') || line.startsWith('*') || line.startsWith('|')) {
       processedLines.push(line);
       continue;
     }
     
-    // Regular paragraph - check if it's very long and should be split
-    if (line.length > 500) {
-      // Try to split at sentence boundaries
+    // Regular paragraph - split if longer than 250 chars
+    if (line.length > 250) {
       const sentences = line.match(/[^.!?]+[.!?]+/g) || [line];
       let currentPara = '';
+      
       for (const sentence of sentences) {
-        if (currentPara.length + sentence.length > 300 && currentPara.length > 100) {
+        currentPara += sentence;
+        // Split after 2-3 sentences (~200 chars)
+        if (currentPara.length > 200) {
           processedLines.push(currentPara.trim());
-          processedLines.push(''); // blank line between paragraphs
-          currentPara = sentence;
-        } else {
-          currentPara += sentence;
+          processedLines.push('');
+          currentPara = '';
         }
       }
       if (currentPara.trim()) {
