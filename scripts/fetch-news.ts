@@ -924,10 +924,18 @@ async function main() {
   console.log(`📊 Target: ${ARTICLES_PER_CATEGORY} articles per category (${ALL_CATEGORIES.length} categories)`);
   console.log(`📡 RSS Feeds per category: ${Object.entries(feedsByCategory).map(([cat, feeds]) => `${cat}:${feeds.length}`).join(', ')}\n`);
 
+  // Track consecutive failures to detect API issues
+  let consecutiveFailures = 0;
+  const MAX_CONSECUTIVE_FAILURES = 10;
+
   // ============ FETCH WITH TRUE VARIETY ============
   // For each category, we try different feeds until we get enough articles
   for (const category of ALL_CATEGORIES) {
     if (totalSaved >= MAX_TOTAL_ARTICLES) break;
+    if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
+      console.log(`\n❌ Too many consecutive failures (${MAX_CONSECUTIVE_FAILURES}), stopping early to save resources`);
+      break;
+    }
     
     const feeds = feedsByCategory[category];
     if (!feeds || feeds.length === 0) continue;
@@ -936,8 +944,12 @@ async function main() {
     
     // Try feeds one by one until we have enough articles for this category
     let feedsTried = 0;
-    while (categoryCounts[category] < ARTICLES_PER_CATEGORY && feedsTried < feeds.length) {
+    let categoryFailures = 0;
+    const MAX_CATEGORY_FAILURES = 5; // Stop trying a category after 5 failures
+    
+    while (categoryCounts[category] < ARTICLES_PER_CATEGORY && feedsTried < feeds.length && categoryFailures < MAX_CATEGORY_FAILURES) {
       if (totalSaved >= MAX_TOTAL_ARTICLES) break;
+      if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) break;
       
       const feed = feeds[feedsTried];
       feedsTried++;
@@ -956,6 +968,7 @@ async function main() {
         if (gotOneFromThisFeed) break; // Only 1 per feed for variety
         if (categoryCounts[category] >= ARTICLES_PER_CATEGORY) break;
         if (totalSaved >= MAX_TOTAL_ARTICLES) break;
+        if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) break;
         
         const potentialSlug = slugify(article.title);
         if (postExists(potentialSlug)) continue;
@@ -968,8 +981,14 @@ async function main() {
           // NO FALLBACKS - only publish AI-written articles
           console.log(`   ⏭️ Skipping (AI failed)`);
           fallbackRewrites++; // Track as "skipped"
+          consecutiveFailures++;
+          categoryFailures++;
           continue;
         }
+        
+        // Success! Reset failure counters
+        consecutiveFailures = 0;
+        categoryFailures = 0;
         aiRewrites++;
         
         // Apply humanize post-processing to remove AI-sounding phrases
