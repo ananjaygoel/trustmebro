@@ -138,6 +138,11 @@ function formatContent(content: string): string {
 const NEWS_API_KEY = process.env.NEWS_API_KEY || '';
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 const POSTS_DIR = './src/content/posts';
+const API_TRACKER_FILE = './src/content/.api-tracker.json';
+
+// Daily API limits to prevent quota drain
+const DAILY_API_LIMIT = 100; // Max Gemini calls per day (conservative)
+const HOURLY_API_LIMIT = 30;  // Max calls per hour
 
 // Articles per category - optimized for zero rate limits
 // 12 articles × 15sec delay = ~3min per run, no fallbacks needed
@@ -330,6 +335,83 @@ const RSS_FEEDS = [
   { url: 'https://www.upworthy.com/feed', category: 'viral', source: 'Upworthy' },
 ];
 
+// ============ API CALL TRACKER ============
+interface ApiTracker {
+  date: string;        // YYYY-MM-DD
+  hour: number;        // 0-23
+  dailyCalls: number;
+  hourlyCalls: number;
+  lastReset: string;   // ISO timestamp
+}
+
+function loadApiTracker(): ApiTracker {
+  const now = new Date();
+  const today = now.toISOString().split('T')[0];
+  const currentHour = now.getUTCHours();
+  
+  const defaultTracker: ApiTracker = {
+    date: today,
+    hour: currentHour,
+    dailyCalls: 0,
+    hourlyCalls: 0,
+    lastReset: now.toISOString()
+  };
+  
+  try {
+    if (fs.existsSync(API_TRACKER_FILE)) {
+      const data = JSON.parse(fs.readFileSync(API_TRACKER_FILE, 'utf-8'));
+      
+      // Reset daily counter if new day
+      if (data.date !== today) {
+        console.log(`📊 New day detected, resetting daily API counter (was ${data.dailyCalls})`);
+        data.date = today;
+        data.dailyCalls = 0;
+        data.lastReset = now.toISOString();
+      }
+      
+      // Reset hourly counter if new hour
+      if (data.hour !== currentHour) {
+        console.log(`⏰ New hour detected, resetting hourly API counter (was ${data.hourlyCalls})`);
+        data.hour = currentHour;
+        data.hourlyCalls = 0;
+      }
+      
+      return data;
+    }
+  } catch (error) {
+    console.log('⚠️ Could not load API tracker, starting fresh');
+  }
+  
+  return defaultTracker;
+}
+
+function saveApiTracker(tracker: ApiTracker): void {
+  try {
+    fs.writeFileSync(API_TRACKER_FILE, JSON.stringify(tracker, null, 2));
+  } catch (error) {
+    console.error('❌ Failed to save API tracker:', error);
+  }
+}
+
+function canMakeApiCall(tracker: ApiTracker): { allowed: boolean; reason?: string } {
+  if (tracker.dailyCalls >= DAILY_API_LIMIT) {
+    return { allowed: false, reason: `Daily limit reached (${tracker.dailyCalls}/${DAILY_API_LIMIT})` };
+  }
+  if (tracker.hourlyCalls >= HOURLY_API_LIMIT) {
+    return { allowed: false, reason: `Hourly limit reached (${tracker.hourlyCalls}/${HOURLY_API_LIMIT})` };
+  }
+  return { allowed: true };
+}
+
+function incrementApiCalls(tracker: ApiTracker): void {
+  tracker.dailyCalls++;
+  tracker.hourlyCalls++;
+  saveApiTracker(tracker);
+}
+
+// Global tracker instance
+let apiTracker: ApiTracker;
+
 interface NewsArticle {
   title: string;
   description: string;
@@ -448,14 +530,23 @@ async function fetchRSS(feedUrl: string): Promise<NewsArticle[]> {
 }
 
 // ============ REWRITE WITH GEMINI ============
-// Rate limiting state - 5s = 12 req/min (safe under limits)
+// Rate limiting state - more conservative to prevent quota drain
 let lastRequestTime = 0;
-const MIN_REQUEST_INTERVAL = 5000; // 5 seconds between requests
+const MIN_REQUEST_INTERVAL = 6000; // 6 seconds between requests (10 req/min)
 let quotaExhausted = false; // STOP all requests when quota is hit
+const MAX_RETRIES = 1; // Only 1 retry max (down from 2)
 
 async function rewriteWithGemini(article: NewsArticle, retryCount = 0): Promise<RewrittenArticle | null> {
   // If quota was exhausted, don't even try
   if (quotaExhausted) {
+    return null;
+  }
+  
+  // Check persistent API limits BEFORE making any call
+  const limitCheck = canMakeApiCall(apiTracker);
+  if (!limitCheck.allowed) {
+    console.log(`🛑 ${limitCheck.reason} - stopping to preserve quota`);
+    quotaExhausted = true;
     return null;
   }
   
@@ -464,14 +555,24 @@ async function rewriteWithGemini(article: NewsArticle, retryCount = 0): Promise<
     return null;
   }
 
-  // Small delay between requests
+  // Exponential backoff: 6s, 18s, 54s for retries
+  const backoffMultiplier = Math.pow(3, retryCount);
+  const baseDelay = MIN_REQUEST_INTERVAL * backoffMultiplier;
+  
+  // Enforce delay between requests
   const now = Date.now();
   const timeSinceLastRequest = now - lastRequestTime;
-  const waitTime = Math.max(0, MIN_REQUEST_INTERVAL - timeSinceLastRequest);
+  const waitTime = Math.max(0, baseDelay - timeSinceLastRequest);
   if (waitTime > 0) {
+    if (retryCount > 0) {
+      console.log(`   ⏳ Exponential backoff: waiting ${Math.round(waitTime/1000)}s before retry...`);
+    }
     await new Promise(r => setTimeout(r, waitTime));
   }
   lastRequestTime = Date.now();
+  
+  // Increment API call counter BEFORE making the request
+  incrementApiCalls(apiTracker);
 
   const prompt = `You are a senior journalist writing for TrustMeBro news site.
 
@@ -588,15 +689,24 @@ Closing paragraph with a question?"
       const errorMsg = data.error.message || JSON.stringify(data.error);
       console.log(`❌ API Error: ${errorMsg}`);
       
-      // Retry on rate limit or quota
+      // Handle quota/rate limit errors - be very conservative
       if (errorMsg.includes('quota') || errorMsg.includes('rate') || errorMsg.includes('429') || response.status === 429) {
-        if (retryCount < 2) {
-          console.log(`⏳ Rate limited, waiting 10s then retry (${retryCount + 1}/2)...`);
-          await new Promise(r => setTimeout(r, 10000));
+        // On quota errors, stop IMMEDIATELY - no retries
+        if (errorMsg.includes('quota') || errorMsg.toLowerCase().includes('resource exhausted')) {
+          console.error('🛑 QUOTA EXHAUSTED - stopping all API calls immediately');
+          quotaExhausted = true;
+          return null;
+        }
+        
+        // For rate limits only, try ONE retry with longer backoff
+        if (retryCount < MAX_RETRIES) {
+          const backoffTime = 30000 * (retryCount + 1); // 30s, 60s
+          console.log(`⏳ Rate limited, waiting ${backoffTime/1000}s then retry (${retryCount + 1}/${MAX_RETRIES})...`);
+          await new Promise(r => setTimeout(r, backoffTime));
           return rewriteWithGemini(article, retryCount + 1);
         }
-        console.error('🛑 QUOTA EXHAUSTED - stopping all API calls');
-        quotaExhausted = true; // This stops ALL future requests
+        console.error('🛑 Rate limit persists after retry - stopping to preserve quota');
+        quotaExhausted = true;
         return null;
       }
       
@@ -639,16 +749,20 @@ Closing paragraph with a question?"
         parsed.content = formatContent(parsed.content);
       }
       
-      // Validate we got substantial content
+      // Validate we got substantial content - but DON'T retry for short articles
+      // Retrying wastes API quota; better to accept shorter articles
       const wordCount = parsed.content?.split(/\s+/).length || 0;
-      if (wordCount < 200) {
-        console.log(`⚠️  Article too short (${wordCount} words), retrying...`);
-        if (retryCount < 1) {
-          return rewriteWithGemini(article, retryCount + 1);
-        }
+      if (wordCount < 100) {
+        // Only skip if VERY short (likely failed generation)
+        console.log(`⚠️  Article too short (${wordCount} words), skipping`);
+        return null;
       }
       
-      console.log(`   ✨ Generated ${wordCount} words`);
+      if (wordCount < 200) {
+        console.log(`   ⚠️ Shorter article (${wordCount} words) but accepting it`);
+      } else {
+        console.log(`   ✨ Generated ${wordCount} words`);
+      }
       return parsed;
     } catch (parseError) {
       console.log('❌ JSON parse failed');
@@ -876,18 +990,21 @@ ${safeContent}
 
 // ============ MAIN ============
 async function main() {
-  // Distribution settings - optimized for GitHub Actions minutes
-  // 50 articles × 5s = ~4-5 min runtime (much faster!)
-  // At 50-60% success rate = 25-30 quality articles per run
-  // 4 runs/day = 100-120 articles/day
-  const MAX_TOTAL_ARTICLES = 50;
+  // Distribution settings - optimized for quota preservation
+  // 30 articles × 6s = ~3-4 min runtime
+  // Conservative to avoid quota drain
+  const MAX_TOTAL_ARTICLES = 30; // Reduced from 50
   const ALL_CATEGORIES = ['tech', 'ai', 'gaming', 'business', 'entertainment', 'sports', 'science', 'health', 'world', 'viral'];
-  const ARTICLES_PER_CATEGORY = Math.floor(MAX_TOTAL_ARTICLES / ALL_CATEGORIES.length); // 5 per category
+  const ARTICLES_PER_CATEGORY = Math.floor(MAX_TOTAL_ARTICLES / ALL_CATEGORIES.length); // 3 per category
   
-  console.log('🔥 TrustMeBro News Fetcher v5.1 - Optimized Edition\n');
+  // Initialize API tracker
+  apiTracker = loadApiTracker();
+  
+  console.log('🔥 TrustMeBro News Fetcher v5.2 - Quota-Safe Edition\n');
   console.log(`📊 Config: Attempting ${MAX_TOTAL_ARTICLES} articles, publishing AI-written only\n`);
-  console.log('✨ No fallbacks - quality over quantity!\n');
-  console.log(`⏱️  Est. runtime: ~5-7 minutes (5s delay between API calls)\n`);
+  console.log(`💰 API Budget: ${apiTracker.dailyCalls}/${DAILY_API_LIMIT} daily, ${apiTracker.hourlyCalls}/${HOURLY_API_LIMIT} hourly\n`);
+  console.log('✨ Conservative retries to preserve API quota!\n');
+  console.log(`⏱️  Est. runtime: ~4-5 minutes (6s delay between API calls)\n`);
   
   // Ensure posts directory exists
   if (!fs.existsSync(POSTS_DIR)) {
@@ -1045,6 +1162,18 @@ async function main() {
   if (fallbackRewrites === 0 && totalSaved > 0) {
     console.log(`\n   ✨ Perfect run! All articles got full AI rewrites.`);
   }
+  
+  // Final API usage summary
+  console.log(`\n   💰 API Usage This Run:`);
+  console.log(`      Daily:  ${apiTracker.dailyCalls}/${DAILY_API_LIMIT} calls used`);
+  console.log(`      Hourly: ${apiTracker.hourlyCalls}/${HOURLY_API_LIMIT} calls used`);
+  
+  if (quotaExhausted) {
+    console.log(`\n   ⚠️  Run stopped early due to API limits`);
+  }
+  
+  // Save final tracker state
+  saveApiTracker(apiTracker);
 }
 
 main().catch(console.error);
