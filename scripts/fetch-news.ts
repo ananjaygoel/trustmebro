@@ -447,15 +447,18 @@ async function fetchRSS(feedUrl: string): Promise<NewsArticle[]> {
   }
 }
 
-// ============ REWRITE WITH GROQ (FREE - 14,400 req/day!) ============
-// Uses Llama 3.1 8B via Groq API - blazing fast LPU inference
-// IMPORTANT: Free tier has 6,000 tokens per MINUTE limit!
-
-// Rate limiting state - 5s = 12 req/min (safe under 15 limit)
+// ============ REWRITE WITH GEMINI ============
+// Rate limiting state - 5s = 12 req/min (safe under limits)
 let lastRequestTime = 0;
 const MIN_REQUEST_INTERVAL = 5000; // 5 seconds between requests
+let quotaExhausted = false; // STOP all requests when quota is hit
 
 async function rewriteWithGemini(article: NewsArticle, retryCount = 0): Promise<RewrittenArticle | null> {
+  // If quota was exhausted, don't even try
+  if (quotaExhausted) {
+    return null;
+  }
+  
   if (!GEMINI_API_KEY) {
     console.log('⚠️  No GEMINI_API_KEY found, skipping article');
     return null;
@@ -592,7 +595,8 @@ Closing paragraph with a question?"
           await new Promise(r => setTimeout(r, 10000));
           return rewriteWithGemini(article, retryCount + 1);
         }
-        console.error('❌ Rate limit exceeded after retries');
+        console.error('🛑 QUOTA EXHAUSTED - stopping all API calls');
+        quotaExhausted = true; // This stops ALL future requests
         return null;
       }
       
@@ -932,6 +936,10 @@ async function main() {
   // For each category, we try different feeds until we get enough articles
   for (const category of ALL_CATEGORIES) {
     if (totalSaved >= MAX_TOTAL_ARTICLES) break;
+    if (quotaExhausted) {
+      console.log(`\n🛑 Quota exhausted, stopping immediately`);
+      break;
+    }
     if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
       console.log(`\n❌ Too many consecutive failures (${MAX_CONSECUTIVE_FAILURES}), stopping early to save resources`);
       break;
@@ -950,6 +958,7 @@ async function main() {
     while (categoryCounts[category] < ARTICLES_PER_CATEGORY && feedsTried < feeds.length && categoryFailures < MAX_CATEGORY_FAILURES) {
       if (totalSaved >= MAX_TOTAL_ARTICLES) break;
       if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) break;
+      if (quotaExhausted) break; // STOP if quota is exhausted
       
       const feed = feeds[feedsTried];
       feedsTried++;
