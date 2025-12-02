@@ -12,6 +12,7 @@ permissions:
 jobs:
   fetch-and-deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     
     steps:
       - name: Checkout
@@ -27,6 +28,7 @@ jobs:
         run: npm ci
         
       - name: Fetch and rewrite news
+        timeout-minutes: 10
         env:
           NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
