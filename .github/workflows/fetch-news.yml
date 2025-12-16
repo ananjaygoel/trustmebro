@@ -64,9 +64,18 @@ jobs:
           TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
           TWITTER_ACCESS_SECRET: ${{ secrets.TWITTER_ACCESS_SECRET }}
         run: npm run post-social
+
+      - name: Post to Reddit
+        env:
+          REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+          REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+          REDDIT_USERNAME: ${{ secrets.REDDIT_USERNAME }}
+          REDDIT_PASSWORD: ${{ secrets.REDDIT_PASSWORD }}
+        run: npm run post-reddit
       
-      - name: Commit social post log
+      - name: Commit social post logs
         run: |
           git add src/content/.social-posted.json || true
-          git diff --staged --quiet || git commit -m "📱 Update social post log"
+          git add src/content/.reddit-posted.json || true
+          git diff --staged --quiet || git commit -m "📱 Update social post logs"
           git push || true

@@ -15,7 +15,7 @@ const POSTS_DIR = './src/content/posts';
 const POSTED_LOG = './src/content/.social-posted.json';
 const SITE_URL = 'https://trustmebro.pro';
 const MAX_TWEETS_PER_RUN = 0; // Twitter disabled - API too restrictive under Musk
-const MAX_BLUESKY_PER_RUN = 5; // Bluesky is unlimited and FREE!
+const MAX_BLUESKY_PER_RUN = 50; // Bluesky allows 1,666/hour - post ALL new articles!
 
 // ============ CREDENTIALS ============
 const BLUESKY_HANDLE = process.env.BLUESKY_HANDLE || '';
