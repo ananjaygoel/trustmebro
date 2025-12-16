@@ -31,7 +31,7 @@ jobs:
         timeout-minutes: 10
         env:
           NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: npm run fetch-news
         
       - name: Commit new posts and API tracker

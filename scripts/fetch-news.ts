@@ -136,13 +136,13 @@ function formatContent(content: string): string {
 
 // ============ CONFIGURATION ============
 const NEWS_API_KEY = process.env.NEWS_API_KEY || '';
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
+const GROQ_API_KEY = process.env.GROQ_API_KEY || '';
 const POSTS_DIR = './src/content/posts';
 const API_TRACKER_FILE = './src/content/.api-tracker.json';
 
-// Daily API limits to prevent quota drain
-const DAILY_API_LIMIT = 100; // Max Gemini calls per day (conservative)
-const HOURLY_API_LIMIT = 30;  // Max calls per hour
+// Daily API limits - Groq is generous (14,400/day) but we stay conservative
+const DAILY_API_LIMIT = 500; // Max Groq calls per day
+const HOURLY_API_LIMIT = 100;  // Max calls per hour (Groq allows 30/min)
 
 // Articles per category - optimized for zero rate limits
 // 12 articles × 15sec delay = ~3min per run, no fallbacks needed
@@ -532,11 +532,11 @@ async function fetchRSS(feedUrl: string): Promise<NewsArticle[]> {
 // ============ REWRITE WITH GEMINI ============
 // Rate limiting state - more conservative to prevent quota drain
 let lastRequestTime = 0;
-const MIN_REQUEST_INTERVAL = 6000; // 6 seconds between requests (10 req/min)
+const MIN_REQUEST_INTERVAL = 2500; // 2.5 seconds between requests (Groq: 30 req/min)
 let quotaExhausted = false; // STOP all requests when quota is hit
-const MAX_RETRIES = 1; // Only 1 retry max (down from 2)
+const MAX_RETRIES = 2; // Groq is more reliable, allow 2 retries
 
-async function rewriteWithGemini(article: NewsArticle, retryCount = 0): Promise<RewrittenArticle | null> {
+async function rewriteWithGroq(article: NewsArticle, retryCount = 0): Promise<RewrittenArticle | null> {
   // If quota was exhausted, don't even try
   if (quotaExhausted) {
     return null;
@@ -550,8 +550,8 @@ async function rewriteWithGemini(article: NewsArticle, retryCount = 0): Promise<
     return null;
   }
   
-  if (!GEMINI_API_KEY) {
-    console.log('⚠️  No GEMINI_API_KEY found, skipping article');
+  if (!GROQ_API_KEY) {
+    console.log('⚠️  No GROQ_API_KEY found, skipping article');
     return null;
   }
 
@@ -648,29 +648,30 @@ Closing paragraph with a question?"
 }`;
 
   try {
-    // Using gemini-2.5-flash (latest model) with 30s timeout
+    // Using Groq with Llama 3.1 70B - 30s timeout
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000);
     
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+      'https://api.groq.com/openai/v1/chat/completions',
       {
         method: 'POST',
         signal: controller.signal,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${GROQ_API_KEY}`
+        },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 4096, // Generous limit for long articles
-            topP: 0.95,
-          },
-          safetySettings: [
-            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+          model: 'llama-3.1-70b-versatile',
+          messages: [
+            {
+              role: 'user',
+              content: prompt
+            }
           ],
+          temperature: 0.7,
+          max_tokens: 4096,
+          top_p: 0.95,
         }),
       }
     );
@@ -689,23 +690,16 @@ Closing paragraph with a question?"
       const errorMsg = data.error.message || JSON.stringify(data.error);
       console.log(`❌ API Error: ${errorMsg}`);
       
-      // Handle quota/rate limit errors - be very conservative
-      if (errorMsg.includes('quota') || errorMsg.includes('rate') || errorMsg.includes('429') || response.status === 429) {
-        // On quota errors, stop IMMEDIATELY - no retries
-        if (errorMsg.includes('quota') || errorMsg.toLowerCase().includes('resource exhausted')) {
-          console.error('🛑 QUOTA EXHAUSTED - stopping all API calls immediately');
-          quotaExhausted = true;
-          return null;
-        }
-        
-        // For rate limits only, try ONE retry with longer backoff
+      // Handle quota/rate limit errors
+      if (errorMsg.includes('rate_limit') || errorMsg.includes('429') || response.status === 429) {
+        // For rate limits, try retry with backoff
         if (retryCount < MAX_RETRIES) {
-          const backoffTime = 30000 * (retryCount + 1); // 30s, 60s
+          const backoffTime = 10000 * (retryCount + 1); // 10s, 20s
           console.log(`⏳ Rate limited, waiting ${backoffTime/1000}s then retry (${retryCount + 1}/${MAX_RETRIES})...`);
           await new Promise(r => setTimeout(r, backoffTime));
-          return rewriteWithGemini(article, retryCount + 1);
+          return rewriteWithGroq(article, retryCount + 1);
         }
-        console.error('🛑 Rate limit persists after retry - stopping to preserve quota');
+        console.error('🛑 Rate limit persists after retries - pausing');
         quotaExhausted = true;
         return null;
       }
@@ -713,10 +707,10 @@ Closing paragraph with a question?"
       return null;
     }
 
-    // Extract content from Gemini response
-    const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    // Extract content from Groq response (OpenAI-compatible format)
+    const content = data.choices?.[0]?.message?.content;
     if (!content) {
-      console.log('❌ Empty response from Gemini');
+      console.log('❌ Empty response from Groq');
       return null;
     }
 
@@ -1102,7 +1096,7 @@ async function main() {
         console.log(`   📝 Processing: ${article.title.slice(0, 50)}...`);
         totalProcessed++;
         
-        let rewritten = await rewriteWithGemini(article);
+        let rewritten = await rewriteWithGroq(article);
         if (!rewritten) {
           // NO FALLBACKS - only publish AI-written articles
           console.log(`   ⏭️ Skipping (AI failed)`);
