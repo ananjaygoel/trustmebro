@@ -760,7 +760,8 @@ Closing paragraph with a question?"
       return parsed;
     } catch (parseError) {
       console.log('❌ JSON parse failed');
-      console.log('   Preview:', jsonStr.slice(0, 200));
+      console.log('   Raw length:', content.length);
+      console.log('   First 300 chars:', content.slice(0, 300));
       return null;
     }
   } catch (error: any) {
