@@ -10,7 +10,7 @@ export async function GET(context: APIContext) {
     title: 'TrustMeBro - News That Hits Different',
     description: 'GenZ news that actually slaps. No cap, just facts (probably). 🔥',
     site: context.site || 'https://trustmebro.pro',
-    items: sortedPosts.slice(0, 50).map((post) => ({
+    items: sortedPosts.slice(0, 1000).map((post) => ({
       title: post.data.title,
       pubDate: post.data.date,
       description: post.data.excerpt,
