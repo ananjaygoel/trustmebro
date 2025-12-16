@@ -114,6 +114,19 @@ const ADSENSE_CLIENT_ID = import.meta.env.PUBLIC_ADSENSE_ID || ""; // e.g., ca-p
         crossorigin="anonymous"
       ></script>
     )}
+
+    <!-- Google News Reader Revenue Manager -->
+    <script async type="application/javascript" src="https://news.google.com/swg/js/v1/swg-basic.js"></script>
+    <script>
+      (self.SWG_BASIC = self.SWG_BASIC || []).push(basicSubscriptions => {
+        basicSubscriptions.init({
+          type: "NewsArticle",
+          isPartOfType: ["Product"],
+          isPartOfProductId: "CAowucjDDA:openaccess",
+          clientOptions: { theme: "light", lang: "en" },
+        });
+      });
+    </script>
     
     <!-- JSON-LD Structured Data for SEO -->
     <script type="application/ld+json" set:html={JSON.stringify({
