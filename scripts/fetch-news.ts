@@ -136,9 +136,97 @@ function formatContent(content: string): string {
 
 // ============ CONFIGURATION ============
 const NEWS_API_KEY = process.env.NEWS_API_KEY || '';
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 const POSTS_DIR = './src/content/posts';
 const API_TRACKER_FILE = './src/content/.api-tracker.json';
+
+// ============ MULTI-API KEY ROTATION ============
+// Supports both direct Gemini API and aipipe.org proxy
+interface GeminiEndpoint {
+  key: string;
+  baseUrl: string;
+  model: string;
+  name: string;
+  exhausted: boolean;
+}
+
+// Initialize API endpoints from environment variables
+function initializeGeminiEndpoints(): GeminiEndpoint[] {
+  const endpoints: GeminiEndpoint[] = [];
+  
+  // Primary Gemini API (direct)
+  if (process.env.GEMINI_API_KEY) {
+    endpoints.push({
+      key: process.env.GEMINI_API_KEY,
+      baseUrl: 'https://generativelanguage.googleapis.com/v1beta/models',
+      model: 'gemini-2.5-flash',
+      name: 'Gemini Direct',
+      exhausted: false,
+    });
+  }
+  
+  // AIPipe endpoints (from .edu accounts)
+  // Format: AIPIPE_KEY_1, AIPIPE_KEY_2, etc.
+  for (let i = 1; i <= 5; i++) {
+    const key = process.env[`AIPIPE_KEY_${i}`];
+    if (key) {
+      endpoints.push({
+        key: key,
+        baseUrl: 'https://api.aipipe.org/v1beta/models',
+        model: 'gemini-2.0-flash', // aipipe may use different model
+        name: `AIPipe #${i}`,
+        exhausted: false,
+      });
+    }
+  }
+  
+  // Additional direct Gemini keys
+  for (let i = 2; i <= 5; i++) {
+    const key = process.env[`GEMINI_API_KEY_${i}`];
+    if (key) {
+      endpoints.push({
+        key: key,
+        baseUrl: 'https://generativelanguage.googleapis.com/v1beta/models',
+        model: 'gemini-2.5-flash',
+        name: `Gemini #${i}`,
+        exhausted: false,
+      });
+    }
+  }
+  
+  return endpoints;
+}
+
+const geminiEndpoints = initializeGeminiEndpoints();
+let currentEndpointIndex = 0;
+
+function getNextAvailableEndpoint(): GeminiEndpoint | null {
+  const startIndex = currentEndpointIndex;
+  
+  do {
+    const endpoint = geminiEndpoints[currentEndpointIndex];
+    if (endpoint && !endpoint.exhausted) {
+      return endpoint;
+    }
+    currentEndpointIndex = (currentEndpointIndex + 1) % geminiEndpoints.length;
+  } while (currentEndpointIndex !== startIndex);
+  
+  // All endpoints exhausted
+  return null;
+}
+
+function markEndpointExhausted(endpoint: GeminiEndpoint) {
+  endpoint.exhausted = true;
+  console.log(`🔄 ${endpoint.name} quota exhausted, trying next...`);
+  currentEndpointIndex = (currentEndpointIndex + 1) % geminiEndpoints.length;
+}
+
+function logAvailableEndpoints() {
+  console.log(`\n🔑 Gemini API Endpoints configured: ${geminiEndpoints.length}`);
+  geminiEndpoints.forEach((ep, i) => {
+    console.log(`   ${i + 1}. ${ep.name} (${ep.model})`);
+  });
+  console.log('');
+}
 
 // Daily API limits to prevent quota drain
 const DAILY_API_LIMIT = 100; // Max Gemini calls per day (conservative)
@@ -537,7 +625,7 @@ let quotaExhausted = false; // STOP all requests when quota is hit
 const MAX_RETRIES = 1; // Only 1 retry max (down from 2)
 
 async function rewriteWithGemini(article: NewsArticle, retryCount = 0): Promise<RewrittenArticle | null> {
-  // If quota was exhausted, don't even try
+  // If all endpoints exhausted, don't even try
   if (quotaExhausted) {
     return null;
   }
@@ -550,8 +638,11 @@ async function rewriteWithGemini(article: NewsArticle, retryCount = 0): Promise<
     return null;
   }
   
-  if (!GEMINI_API_KEY) {
-    console.log('⚠️  No GEMINI_API_KEY found, skipping article');
+  // Get next available endpoint
+  const endpoint = getNextAvailableEndpoint();
+  if (!endpoint) {
+    console.log('🛑 All API endpoints exhausted, stopping');
+    quotaExhausted = true;
     return null;
   }
 
@@ -648,12 +739,14 @@ Closing paragraph with a question?"
 }`;
 
   try {
-    // Using gemini-2.5-flash (latest model) with 30s timeout
+    // Using dynamic endpoint with 30s timeout
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000);
     
+    console.log(`   📡 Using ${endpoint.name} (${endpoint.model})`);
+    
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+      `${endpoint.baseUrl}/${endpoint.model}:generateContent?key=${endpoint.key}`,
       {
         method: 'POST',
         signal: controller.signal,
@@ -687,25 +780,22 @@ Closing paragraph with a question?"
     // Handle errors
     if (data.error) {
       const errorMsg = data.error.message || JSON.stringify(data.error);
-      console.log(`❌ API Error: ${errorMsg}`);
+      console.log(`❌ API Error (${endpoint.name}): ${errorMsg}`);
       
-      // Handle quota/rate limit errors - be very conservative
+      // Handle quota/rate limit errors - try next endpoint if available
       if (errorMsg.includes('quota') || errorMsg.includes('rate') || errorMsg.includes('429') || response.status === 429) {
-        // On quota errors, stop IMMEDIATELY - no retries
-        if (errorMsg.includes('quota') || errorMsg.toLowerCase().includes('resource exhausted')) {
-          console.error('🛑 QUOTA EXHAUSTED - stopping all API calls immediately');
-          quotaExhausted = true;
-          return null;
+        // Mark this endpoint as exhausted
+        markEndpointExhausted(endpoint);
+        
+        // Try next endpoint if available
+        const nextEndpoint = getNextAvailableEndpoint();
+        if (nextEndpoint) {
+          console.log(`🔄 Switching to ${nextEndpoint.name}...`);
+          return rewriteWithGemini(article, 0); // Reset retry count for new endpoint
         }
         
-        // For rate limits only, try ONE retry with longer backoff
-        if (retryCount < MAX_RETRIES) {
-          const backoffTime = 30000 * (retryCount + 1); // 30s, 60s
-          console.log(`⏳ Rate limited, waiting ${backoffTime/1000}s then retry (${retryCount + 1}/${MAX_RETRIES})...`);
-          await new Promise(r => setTimeout(r, backoffTime));
-          return rewriteWithGemini(article, retryCount + 1);
-        }
-        console.error('🛑 Rate limit persists after retry - stopping to preserve quota');
+        // All endpoints exhausted
+        console.error('🛑 ALL API ENDPOINTS EXHAUSTED - stopping');
         quotaExhausted = true;
         return null;
       }
@@ -1000,10 +1090,18 @@ async function main() {
   // Initialize API tracker
   apiTracker = loadApiTracker();
   
-  console.log('🔥 TrustMeBro News Fetcher v5.2 - Quota-Safe Edition\n');
+  console.log('🔥 TrustMeBro News Fetcher v5.3 - Multi-API Edition\n');
   console.log(`📊 Config: Attempting ${MAX_TOTAL_ARTICLES} articles, publishing AI-written only\n`);
   console.log(`💰 API Budget: ${apiTracker.dailyCalls}/${DAILY_API_LIMIT} daily, ${apiTracker.hourlyCalls}/${HOURLY_API_LIMIT} hourly\n`);
-  console.log('✨ Conservative retries to preserve API quota!\n');
+  
+  // Log available API endpoints
+  logAvailableEndpoints();
+  
+  if (geminiEndpoints.length === 0) {
+    console.error('❌ No API keys configured! Set GEMINI_API_KEY or AIPIPE_KEY_1 in environment.');
+    process.exit(1);
+  }
+  
   console.log(`⏱️  Est. runtime: ~4-5 minutes (6s delay between API calls)\n`);
   
   // Ensure posts directory exists
