@@ -1080,12 +1080,11 @@ ${safeContent}
 
 // ============ MAIN ============
 async function main() {
-  // Distribution settings - optimized for quota preservation
-  // 30 articles × 6s = ~3-4 min runtime
-  // Conservative to avoid quota drain
-  const MAX_TOTAL_ARTICLES = 30; // Reduced from 50
+  // Distribution settings - balanced for quality over quantity
+  // 12 articles × 4 runs/day = ~48 articles daily
+  const MAX_TOTAL_ARTICLES = 12;
   const ALL_CATEGORIES = ['tech', 'ai', 'gaming', 'business', 'entertainment', 'sports', 'science', 'health', 'world', 'viral'];
-  const ARTICLES_PER_CATEGORY = Math.floor(MAX_TOTAL_ARTICLES / ALL_CATEGORIES.length); // 3 per category
+  const ARTICLES_PER_CATEGORY = Math.floor(MAX_TOTAL_ARTICLES / ALL_CATEGORIES.length); // 1-2 per category
   
   // Initialize API tracker
   apiTracker = loadApiTracker();
