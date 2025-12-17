@@ -3,6 +3,7 @@ Allow: /
 
 # Sitemaps
 Sitemap: https://trustmebro.pro/sitemap-index.xml
+Sitemap: https://trustmebro.pro/news-sitemap.xml
 
 # Google News Bot
 User-agent: Googlebot-News
