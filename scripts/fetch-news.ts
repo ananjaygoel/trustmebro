@@ -1216,6 +1216,7 @@ async function main() {
           title: article.title,
           description: article.description || '',
           content: article.content || '',
+          category: category,
         });
         
         // Native rewriter always succeeds

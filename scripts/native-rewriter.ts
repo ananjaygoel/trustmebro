@@ -143,6 +143,60 @@ const CLOSING_QUESTIONS = [
   "We want to hear your thoughts on this.",
 ];
 
+// Category-specific context expanders for thin content
+const CATEGORY_CONTEXT: Record<string, string[]> = {
+  tech: [
+    "This is part of the broader shift happening across the tech industry right now.",
+    "Tech companies have been making moves like this as competition heats up.",
+    "This could have major implications for how we use technology going forward.",
+  ],
+  ai: [
+    "The AI space continues to evolve at a wild pace, with developments like this becoming more common.",
+    "As AI capabilities expand, we're seeing more announcements like this reshape the industry.",
+    "This adds to the ongoing AI race that's captivating the tech world.",
+  ],
+  gaming: [
+    "The gaming community has been watching developments like this closely.",
+    "This is the kind of news that gets gamers talking across social media.",
+    "Gaming fans have strong opinions about moves like this, and for good reason.",
+  ],
+  business: [
+    "This reflects broader trends we're seeing in the business world right now.",
+    "Market watchers are paying close attention to developments like this.",
+    "The business implications here could be significant in the coming months.",
+  ],
+  entertainment: [
+    "Entertainment industry insiders have been buzzing about this.",
+    "This is exactly the kind of news that gets fans excited or concerned.",
+    "The entertainment world moves fast, and this is a prime example.",
+  ],
+  sports: [
+    "Sports fans across the globe are reacting to this news.",
+    "This could change the dynamics of the sport going forward.",
+    "The sports world never stops delivering these kinds of storylines.",
+  ],
+  science: [
+    "Scientists and researchers are watching this development closely.",
+    "This could have implications for future research in this area.",
+    "The scientific community tends to find developments like this significant.",
+  ],
+  health: [
+    "Health experts are weighing in on what this means for people.",
+    "This is the kind of health news that affects everyday decisions.",
+    "Medical professionals are taking note of this development.",
+  ],
+  world: [
+    "This is part of the larger geopolitical picture unfolding right now.",
+    "International observers are watching how this situation develops.",
+    "Global events like this tend to have ripple effects worldwide.",
+  ],
+  viral: [
+    "The internet is doing what it does best - making this blow up everywhere.",
+    "Social media has been going wild over this, as expected.",
+    "This is exactly the kind of content that captures the internet's attention.",
+  ],
+};
+
 // ============ TITLE GENERATION ============
 function generateTitle(originalTitle: string): string {
   let title = originalTitle;
@@ -186,7 +240,7 @@ function generateExcerpt(sourceContent: string, title: string): string {
 }
 
 // ============ CONTENT REWRITING ============
-function rewriteContent(originalContent: string, title: string): string {
+function rewriteContent(originalContent: string, title: string, category: string = 'tech'): string {
   // Clean up the content first - remove noise
   let cleanContent = originalContent
     .replace(/\n+/g, ' ')
@@ -199,10 +253,23 @@ function rewriteContent(originalContent: string, title: string): string {
   const sentences = cleanContent
     .match(/[^.!?]+[.!?]+/g) || [];
   
-  // Filter out very short or noisy sentences
+  // Filter out very short, noisy, or duplicate sentences
+  const seenSentences = new Set<string>();
   const goodSentences = sentences
     .map(s => s.trim())
-    .filter(s => s.length > 30 && !s.match(/^\d+$/) && !s.match(/^vs\.?$/i));
+    .filter(s => {
+      // Skip short, noisy, or duplicate sentences
+      if (s.length < 30 || s.match(/^\d+$/) || s.match(/^vs\.?$/i)) return false;
+      // Normalize for duplicate detection
+      const normalized = s.toLowerCase().replace(/\s+/g, ' ').slice(0, 50);
+      if (seenSentences.has(normalized)) return false;
+      seenSentences.add(normalized);
+      return true;
+    });
+  
+  // Get category-specific context for expanding thin content
+  const categoryContexts = CATEGORY_CONTEXT[category] || CATEGORY_CONTEXT['tech'];
+  const getRandomContext = () => categoryContexts[Math.floor(Math.random() * categoryContexts.length)];
   
   const sections: string[] = [];
   
@@ -238,8 +305,13 @@ function rewriteContent(originalContent: string, title: string): string {
   if (goodSentences.length > 2) {
     const mattersPara = goodSentences.slice(2, 4).map(s => applyWordSwaps(s)).join(' ');
     sections.push(mattersPara + "\n");
+    // Add category context if content is thin
+    if (goodSentences.length < 5) {
+      sections.push(getRandomContext() + "\n");
+    }
   } else {
-    sections.push(`This development could have ripple effects across the industry. It's worth keeping an eye on how this plays out.\n`);
+    // Use category-specific context for thin content
+    sections.push(`${getRandomContext()} ${getRandomContext()}\n`);
   }
   
   // Add bullet points for remaining key facts
@@ -317,6 +389,7 @@ export interface RewriteInput {
   title: string;
   description: string;
   content?: string;
+  category?: string;
 }
 
 export interface RewriteOutput {
@@ -327,10 +400,11 @@ export interface RewriteOutput {
 
 export function nativeRewrite(article: RewriteInput): RewriteOutput {
   const sourceContent = `${article.description} ${article.content || ''}`.trim();
+  const category = article.category || 'tech';
   
   const title = generateTitle(article.title);
-  const content = rewriteContent(sourceContent, title);
-  const excerpt = generateExcerpt(sourceContent, title); // Use source, not formatted content
+  const content = rewriteContent(sourceContent, title, category);
+  const excerpt = generateExcerpt(sourceContent, title);
   
   return {
     title,
