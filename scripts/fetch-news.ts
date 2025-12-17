@@ -198,9 +198,13 @@ function initializeGeminiEndpoints(): GeminiEndpoint[] {
 
 const geminiEndpoints = initializeGeminiEndpoints();
 let currentEndpointIndex = 0;
+let lastUsedEndpointName = ''; // Track to avoid retry loops
 
 function getNextAvailableEndpoint(): GeminiEndpoint | null {
+  if (geminiEndpoints.length === 0) return null;
+  
   const startIndex = currentEndpointIndex;
+  let attempts = 0;
   
   do {
     const endpoint = geminiEndpoints[currentEndpointIndex];
@@ -208,16 +212,22 @@ function getNextAvailableEndpoint(): GeminiEndpoint | null {
       return endpoint;
     }
     currentEndpointIndex = (currentEndpointIndex + 1) % geminiEndpoints.length;
-  } while (currentEndpointIndex !== startIndex);
+    attempts++;
+  } while (attempts < geminiEndpoints.length);
   
   // All endpoints exhausted
   return null;
 }
 
+function rotateToNextEndpoint(): GeminiEndpoint | null {
+  // Move to next endpoint (for load balancing on errors)
+  currentEndpointIndex = (currentEndpointIndex + 1) % geminiEndpoints.length;
+  return getNextAvailableEndpoint();
+}
+
 function markEndpointExhausted(endpoint: GeminiEndpoint) {
   endpoint.exhausted = true;
-  console.log(`🔄 ${endpoint.name} quota exhausted, trying next...`);
-  currentEndpointIndex = (currentEndpointIndex + 1) % geminiEndpoints.length;
+  console.log(`🔄 ${endpoint.name} quota exhausted, marking as unavailable`);
 }
 
 function logAvailableEndpoints() {
@@ -777,29 +787,34 @@ Closing paragraph with a question?"
 
     const data = await response.json();
 
-    // Handle errors
-    if (data.error) {
-      const errorMsg = data.error.message || JSON.stringify(data.error);
+    // Handle errors - rotate to next endpoint on ANY error
+    if (data.error || response.status >= 500) {
+      const errorMsg = data.error?.message || data.error || `HTTP ${response.status}`;
       console.log(`❌ API Error (${endpoint.name}): ${errorMsg}`);
       
-      // Handle quota/rate limit errors - try next endpoint if available
-      if (errorMsg.includes('quota') || errorMsg.includes('rate') || errorMsg.includes('429') || response.status === 429) {
-        // Mark this endpoint as exhausted
+      // Check if this is a temporary/overload error vs permanent quota exhaustion
+      const isOverloaded = response.status === 503 || errorMsg.includes('overloaded');
+      const isQuotaError = errorMsg.includes('quota') || errorMsg.includes('rate') || response.status === 429;
+      
+      if (isQuotaError) {
+        // Permanent exhaustion - mark endpoint as done
         markEndpointExhausted(endpoint);
-        
-        // Try next endpoint if available
-        const nextEndpoint = getNextAvailableEndpoint();
-        if (nextEndpoint) {
-          console.log(`🔄 Switching to ${nextEndpoint.name}...`);
-          return rewriteWithGemini(article, 0); // Reset retry count for new endpoint
-        }
-        
-        // All endpoints exhausted
-        console.error('🛑 ALL API ENDPOINTS EXHAUSTED - stopping');
-        quotaExhausted = true;
-        return null;
       }
       
+      // Always rotate to next endpoint on error (overloaded or quota)
+      const nextEndpoint = rotateToNextEndpoint();
+      
+      // Only retry if we have a DIFFERENT endpoint available
+      if (nextEndpoint && nextEndpoint.name !== endpoint.name && retryCount < 5) {
+        console.log(`🔄 Switching to ${nextEndpoint.name}...`);
+        return rewriteWithGemini(article, retryCount + 1);
+      }
+      
+      // All endpoints tried or all exhausted
+      if (!nextEndpoint) {
+        console.error('🛑 ALL API ENDPOINTS EXHAUSTED - stopping');
+        quotaExhausted = true;
+      }
       return null;
     }
 
