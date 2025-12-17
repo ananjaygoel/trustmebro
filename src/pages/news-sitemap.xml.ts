@@ -13,7 +13,8 @@ export async function GET(context: APIContext) {
     .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
   
   const siteName = 'TrustMeBro';
-  const siteUrl = context.site || 'https://trustmebro.pro';
+  // Remove trailing slash if present to avoid double slashes
+  const siteUrl = (context.site?.toString() || 'https://trustmebro.pro').replace(/\/$/, '');
   
   const items = recentPosts.map(post => {
     const pubDate = post.data.publishedAt 
