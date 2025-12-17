@@ -26,9 +26,9 @@ const {
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://trustmebro.pro");
 const fullImageURL = image.startsWith('http') ? image : new URL(image, Astro.site || "https://trustmebro.pro").toString();
 
-// These will be replaced with your actual IDs
-const GA_MEASUREMENT_ID = import.meta.env.PUBLIC_GA_ID || ""; // e.g., G-XXXXXXXXXX
-const ADSENSE_CLIENT_ID = import.meta.env.PUBLIC_ADSENSE_ID || ""; // e.g., ca-pub-XXXXXXXXXX
+// Analytics & Ads IDs
+const GA_MEASUREMENT_ID = import.meta.env.PUBLIC_GA_ID || "";
+const ADSENSE_CLIENT_ID = "ca-pub-7689171652945488";
 ---
 
 <!doctype html>
