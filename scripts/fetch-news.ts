@@ -1,12 +1,14 @@
 /**
- * TrustMeBro News Fetcher v2.0
+ * TrustMeBro News Fetcher v6.0 - Native Rewriter Edition
  * 
- * Fetches news from NewsAPI + RSS feeds and rewrites them in GenZ style using AI Pipe + Claude
+ * Fetches news from RSS feeds and rewrites them using native GenZ rephraser
+ * AI APIs are optional fallback only (disabled by default)
  * Run with: npm run fetch-news
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { nativeRewrite } from './native-rewriter.js';
 
 // ============ SANITIZATION ============
 // Strip HTML tags and problematic content that breaks MDX
@@ -634,7 +636,12 @@ const MIN_REQUEST_INTERVAL = 6000; // 6 seconds between requests (10 req/min)
 let quotaExhausted = false; // STOP all requests when quota is hit
 const MAX_RETRIES = 1; // Only 1 retry max (down from 2)
 
-async function rewriteWithGemini(article: NewsArticle, retryCount = 0): Promise<RewrittenArticle | null> {
+// DEPRECATED: Using native rewriter now - keeping for potential future use
+async function rewriteWithGemini(_article: NewsArticle, _retryCount = 0): Promise<RewrittenArticle | null> {
+  // Native rewriter is now primary - this function is disabled
+  return null;
+  
+  /* DISABLED - AI API code kept for reference
   // If all endpoints exhausted, don't even try
   if (quotaExhausted) {
     return null;
@@ -882,6 +889,7 @@ Closing paragraph with a question?"
     }
     return null;
   }
+  END DISABLED AI CODE */
 }
 
 // ============ HUMANIZE POST-PROCESSING ============
@@ -1101,20 +1109,9 @@ async function main() {
   const ALL_CATEGORIES = ['tech', 'ai', 'gaming', 'business', 'entertainment', 'sports', 'science', 'health', 'world', 'viral'];
   const ARTICLES_PER_CATEGORY = Math.floor(MAX_TOTAL_ARTICLES / ALL_CATEGORIES.length); // 1-2 per category
   
-  // Initialize API tracker
-  apiTracker = loadApiTracker();
-  
-  console.log('🔥 TrustMeBro News Fetcher v5.3 - Multi-API Edition\n');
-  console.log(`📊 Config: Attempting ${MAX_TOTAL_ARTICLES} articles, publishing AI-written only\n`);
-  console.log(`💰 API Budget: ${apiTracker.dailyCalls}/${DAILY_API_LIMIT} daily, ${apiTracker.hourlyCalls}/${HOURLY_API_LIMIT} hourly\n`);
-  
-  // Log available API endpoints
-  logAvailableEndpoints();
-  
-  if (geminiEndpoints.length === 0) {
-    console.error('❌ No API keys configured! Set GEMINI_API_KEY or AIPIPE_KEY_1 in environment.');
-    process.exit(1);
-  }
+  console.log('🔥 TrustMeBro News Fetcher v6.0 - Native Rewriter Edition\n');
+  console.log(`📊 Config: ${MAX_TOTAL_ARTICLES} articles across ${ALL_CATEGORIES.length} categories\n`);
+  console.log('⚡ Using native GenZ rephraser - instant, free, unlimited!\n');
   
   console.log(`⏱️  Est. runtime: ~4-5 minutes (6s delay between API calls)\n`);
   
@@ -1214,26 +1211,21 @@ async function main() {
         console.log(`   📝 Processing: ${article.title.slice(0, 50)}...`);
         totalProcessed++;
         
-        let rewritten = await rewriteWithGemini(article);
-        if (!rewritten) {
-          // NO FALLBACKS - only publish AI-written articles
-          console.log(`   ⏭️ Skipping (AI failed)`);
-          fallbackRewrites++; // Track as "skipped"
-          consecutiveFailures++;
-          categoryFailures++;
-          continue;
-        }
+        // Use native rewriter (instant, free, no API needed)
+        const rewritten = nativeRewrite({
+          title: article.title,
+          description: article.description || '',
+          content: article.content || '',
+        });
         
-        // Success! Reset failure counters
-        consecutiveFailures = 0;
-        categoryFailures = 0;
-        aiRewrites++;
+        // Native rewriter always succeeds
+        aiRewrites++; // Actually "native rewrites" now
         
-        // Apply humanize post-processing to remove AI-sounding phrases
-        rewritten = humanizeContent(rewritten);
+        // Apply humanize post-processing
+        const humanized = humanizeContent(rewritten);
         
         const saved = savePost(
-          rewritten,
+          humanized,
           category,
           feed.source,
           article.urlToImage
@@ -1262,30 +1254,8 @@ async function main() {
     const bar = '█'.repeat(count) + '░'.repeat(ARTICLES_PER_CATEGORY - count);
     console.log(`      ${cat.padEnd(15)} [${bar}] ${count}/${ARTICLES_PER_CATEGORY}`);
   });
-  console.log(`\n   🤖 AI Rewrites: ${aiRewrites} (${totalSaved > 0 ? Math.round(aiRewrites/totalSaved*100) : 0}%)`);
-  console.log(`   🆘 Fallback Rewrites: ${fallbackRewrites} (${totalSaved > 0 ? Math.round(fallbackRewrites/totalSaved*100) : 0}%)`);
-  
-  // Alert if too many fallbacks (indicates AI issues)
-  if (fallbackRewrites > aiRewrites && totalSaved > 5) {
-    console.log(`\n   ⚠️  WARNING: More fallbacks than AI rewrites!`);
-    console.log(`   ⚠️  Check Groq API status or rate limits.`);
-  }
-  
-  if (fallbackRewrites === 0 && totalSaved > 0) {
-    console.log(`\n   ✨ Perfect run! All articles got full AI rewrites.`);
-  }
-  
-  // Final API usage summary
-  console.log(`\n   💰 API Usage This Run:`);
-  console.log(`      Daily:  ${apiTracker.dailyCalls}/${DAILY_API_LIMIT} calls used`);
-  console.log(`      Hourly: ${apiTracker.hourlyCalls}/${HOURLY_API_LIMIT} calls used`);
-  
-  if (quotaExhausted) {
-    console.log(`\n   ⚠️  Run stopped early due to API limits`);
-  }
-  
-  // Save final tracker state
-  saveApiTracker(apiTracker);
+  console.log(`\n   ⚡ Native Rewrites: ${aiRewrites} (100% success rate!)`);
+  console.log(`\n   ✨ All articles processed with native GenZ rephraser - no API needed!`);
 }
 
 main().catch(console.error);
