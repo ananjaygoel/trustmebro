@@ -174,6 +174,9 @@ const CATEGORY_CONTEXT: Record<string, string[]> = {
     "Sports fans across the globe are reacting to this news.",
     "This could change the dynamics of the sport going forward.",
     "The sports world never stops delivering these kinds of storylines.",
+    "Players and coaches will be watching how this unfolds closely.",
+    "This is the kind of move that can define a season.",
+    "Sports analysts are already debating what this means for the competition.",
   ],
   science: [
     "Scientists and researchers are watching this development closely.",
@@ -189,11 +192,17 @@ const CATEGORY_CONTEXT: Record<string, string[]> = {
     "This is part of the larger geopolitical picture unfolding right now.",
     "International observers are watching how this situation develops.",
     "Global events like this tend to have ripple effects worldwide.",
+    "Diplomats and experts are analyzing what this means for international relations.",
+    "This development could reshape regional dynamics in significant ways.",
+    "World leaders are expected to respond to this situation soon.",
   ],
   viral: [
     "The internet is doing what it does best - making this blow up everywhere.",
     "Social media has been going wild over this, as expected.",
     "This is exactly the kind of content that captures the internet's attention.",
+    "People online are sharing their takes and it's getting heated.",
+    "This story is spreading fast across all platforms.",
+    "The viral nature of this story shows how quickly things can blow up these days.",
   ],
 };
 
@@ -216,8 +225,17 @@ function generateTitle(originalTitle: string): string {
 
 // ============ EXCERPT GENERATION ============
 function generateExcerpt(sourceContent: string, title: string): string {
+  // Clean HTML first
+  const cleanSource = sourceContent
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&[a-z]+;/gi, ' ')
+    .replace(/href="[^"]*"/gi, '')
+    .replace(/https?:\/\/[^\s]+/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  
   // Get first real sentence from source (not from formatted content)
-  const sentences = sourceContent.match(/[^.!?]+[.!?]+/g) || [];
+  const sentences = cleanSource.match(/[^.!?]+[.!?]+/g) || [];
   let firstSentence = applyWordSwaps(sentences[0]?.trim() || '');
   
   if (firstSentence.length > 140) {
@@ -241,13 +259,26 @@ function generateExcerpt(sourceContent: string, title: string): string {
 
 // ============ CONTENT REWRITING ============
 function rewriteContent(originalContent: string, title: string, category: string = 'tech'): string {
-  // Clean up the content first - remove noise
+  // Clean up the content first - remove noise and HTML
   let cleanContent = originalContent
+    // Strip HTML tags and attributes
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&[a-z]+;/gi, ' ')
+    .replace(/href="[^"]*"/gi, '')
+    .replace(/src="[^"]*"/gi, '')
+    // Remove broken URLs and image references
+    .replace(/https?:\/\/[^\s]+/g, '')
+    .replace(/\.[a-z]{3,4}\?[^\s]*/gi, '')
     .replace(/\n+/g, ' ')
     .replace(/\s+/g, ' ')
     .replace(/\d+\s*per\s*1M/gi, '') // Remove pricing noise
     .replace(/\$\d+\.\s*\d+/g, (m) => m.replace(/\s+/g, '')) // Fix broken prices like "$0. 50"
     .trim();
+  
+  // If content is too broken (mostly junk), use title as base
+  if (cleanContent.length < 50 || cleanContent.split(' ').length < 10) {
+    cleanContent = `${title}. This news is making waves across social media and news outlets.`;
+  }
   
   // Split by sentence for better control
   const sentences = cleanContent
@@ -310,8 +341,16 @@ function rewriteContent(originalContent: string, title: string, category: string
       sections.push(getRandomContext() + "\n");
     }
   } else {
-    // Use category-specific context for thin content
-    sections.push(`${getRandomContext()} ${getRandomContext()}\n`);
+    // Use TWO DIFFERENT category-specific contexts for thin content
+    const context1 = getRandomContext();
+    let context2 = getRandomContext();
+    // Make sure we don't repeat the same context
+    let attempts = 0;
+    while (context2 === context1 && attempts < 3) {
+      context2 = getRandomContext();
+      attempts++;
+    }
+    sections.push(`${context1} ${context2}\n`);
   }
   
   // Add bullet points for remaining key facts
