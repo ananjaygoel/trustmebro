@@ -25,3 +25,9 @@
   for = "/sitemap*.xml"
   [headers.values]
     Content-Type = "application/xml"
+
+# Redirect /sitemap.xml to /sitemap-index.xml for Google Search Console
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "/sitemap-index.xml"
+  status = 301
