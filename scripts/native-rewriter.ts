@@ -300,11 +300,19 @@ function rewriteContent(originalContent: string, title: string, category: string
   
   // Get category-specific context for expanding thin content
   const categoryContexts = CATEGORY_CONTEXT[category] || CATEGORY_CONTEXT['tech'];
-  const getRandomContext = () => categoryContexts[Math.floor(Math.random() * categoryContexts.length)];
+  const usedContexts = new Set<string>();
+  const getRandomContext = () => {
+    // Avoid repeating the same context
+    const available = categoryContexts.filter(c => !usedContexts.has(c));
+    const pool = available.length > 0 ? available : categoryContexts;
+    const ctx = pool[Math.floor(Math.random() * pool.length)];
+    usedContexts.add(ctx);
+    return ctx;
+  };
   
   const sections: string[] = [];
   
-  // What's Happening section
+  // ========= What's Happening Section =========
   sections.push("## What's Happening\n");
   
   const opener = OPENER_PHRASES[Math.floor(Math.random() * OPENER_PHRASES.length)];
@@ -315,68 +323,98 @@ function rewriteContent(originalContent: string, title: string, category: string
     sections.push("The details are still emerging, but here's what we know so far.\n");
   } else if (goodSentences.length === 1) {
     sections.push(`${opener} ${applyWordSwaps(goodSentences[0])}\n`);
-    sections.push("More details are expected to emerge soon.\n");
-  } else {
+    sections.push("\nMore details are expected to emerge soon.\n");
+  } else if (goodSentences.length < 5) {
+    // Short content - use all sentences with better spacing
     const firstPara = applyWordSwaps(goodSentences[0]);
     sections.push(`${opener} ${firstPara}\n`);
     
     if (goodSentences.length > 1) {
       let secondPara = applyWordSwaps(goodSentences[1]);
-      if (Math.random() > 0.5) {
-        const reaction = REACTION_INSERTS[Math.floor(Math.random() * REACTION_INSERTS.length)];
-        secondPara = `${secondPara} ${reaction}`;
-      }
-      sections.push(secondPara + "\n");
+      const reaction = REACTION_INSERTS[Math.floor(Math.random() * REACTION_INSERTS.length)];
+      sections.push(`\n${secondPara} ${reaction}\n`);
     }
-  }
-  
-  // Why This Matters section
-  sections.push("\n## Why This Matters\n");
-  
-  if (goodSentences.length > 2) {
-    const mattersPara = goodSentences.slice(2, 4).map(s => applyWordSwaps(s)).join(' ');
-    sections.push(mattersPara + "\n");
-    // Add category context if content is thin
-    if (goodSentences.length < 5) {
-      sections.push(getRandomContext() + "\n");
+    if (goodSentences.length > 2) {
+      sections.push(`\n${applyWordSwaps(goodSentences[2])}\n`);
     }
   } else {
-    // Use TWO DIFFERENT category-specific contexts for thin content
-    const context1 = getRandomContext();
-    let context2 = getRandomContext();
-    // Make sure we don't repeat the same context
-    let attempts = 0;
-    while (context2 === context1 && attempts < 3) {
-      context2 = getRandomContext();
-      attempts++;
-    }
-    sections.push(`${context1} ${context2}\n`);
-  }
-  
-  // Add bullet points for remaining key facts
-  if (goodSentences.length > 4) {
-    const bullets = goodSentences.slice(4, 7)
-      .map(s => applyWordSwaps(s))
-      .filter(s => s.length > 25 && s.length < 150);
-    if (bullets.length > 0) {
-      sections.push("\nKey takeaways:\n");
-      bullets.forEach(bullet => {
-        sections.push(`- ${bullet}`);
-      });
-      sections.push("");
+    // Full content - use first 3-4 sentences in separate paragraphs
+    const firstPara = applyWordSwaps(goodSentences[0]);
+    sections.push(`${opener} ${firstPara}\n`);
+    
+    // Second paragraph (2-3 sentences)
+    const secondParaSentences = goodSentences.slice(1, 3).map(s => applyWordSwaps(s));
+    const reaction = REACTION_INSERTS[Math.floor(Math.random() * REACTION_INSERTS.length)];
+    sections.push(`\n${secondParaSentences.join(' ')} ${reaction}\n`);
+    
+    // Third paragraph if available
+    if (goodSentences.length > 3) {
+      sections.push(`\n${applyWordSwaps(goodSentences[3])}\n`);
     }
   }
   
-  // The Bottom Line section
+  // ========= The Details Section (NEW - for longer content) =========
+  if (goodSentences.length > 6) {
+    sections.push("\n## The Details\n");
+    
+    // Add 3-4 sentences as a new paragraph block
+    const detailSentences = goodSentences.slice(4, 8).map(s => applyWordSwaps(s));
+    
+    // Split into 2 paragraphs for readability
+    if (detailSentences.length > 2) {
+      sections.push(`${detailSentences.slice(0, 2).join(' ')}\n`);
+      sections.push(`\n${detailSentences.slice(2).join(' ')}\n`);
+    } else {
+      sections.push(`${detailSentences.join(' ')}\n`);
+    }
+  }
+  
+  // ========= Why This Matters Section =========
+  sections.push("\n## Why This Matters\n");
+  
+  const mattersStartIdx = goodSentences.length > 6 ? 8 : 4;
+  const mattersSentences = goodSentences.slice(mattersStartIdx, mattersStartIdx + 3);
+  
+  if (mattersSentences.length > 0) {
+    const mattersPara = mattersSentences.map(s => applyWordSwaps(s)).join(' ');
+    sections.push(`${mattersPara}\n`);
+    // Add category context for additional insight
+    sections.push(`\n${getRandomContext()}\n`);
+  } else {
+    // Use category-specific contexts for thin content
+    sections.push(`${getRandomContext()}\n`);
+    sections.push(`\n${getRandomContext()}\n`);
+  }
+  
+  // ========= Key Takeaways (bullet points) =========
+  const bulletStartIdx = goodSentences.length > 6 ? 11 : 7;
+  const bulletSentences = goodSentences.slice(bulletStartIdx, bulletStartIdx + 4)
+    .map(s => applyWordSwaps(s))
+    .filter(s => s.length > 25 && s.length < 150);
+  
+  if (bulletSentences.length >= 2) {
+    sections.push("\n## Key Takeaways\n");
+    bulletSentences.forEach(bullet => {
+      sections.push(`- ${bullet}`);
+    });
+    sections.push("");
+  }
+  
+  // ========= The Bottom Line Section =========
   sections.push("\n## The Bottom Line\n");
   
   const closingQuestion = CLOSING_QUESTIONS[Math.floor(Math.random() * CLOSING_QUESTIONS.length)];
   
-  if (sentences.length > 10) {
-    const lastSentences = sentences.slice(-2).map(s => applyWordSwaps(s.trim())).join(' ');
-    sections.push(`${lastSentences} ${closingQuestion}`);
+  // Use last sentences from original if we have enough content
+  const lastIdx = goodSentences.length - 1;
+  if (goodSentences.length > 10) {
+    const lastSentence = applyWordSwaps(goodSentences[lastIdx].trim());
+    const secondLast = goodSentences.length > 11 ? applyWordSwaps(goodSentences[lastIdx - 1].trim()) + ' ' : '';
+    sections.push(`${secondLast}${lastSentence}\n`);
+    sections.push(`\n${closingQuestion}\n`);
   } else {
-    sections.push(`This story is still developing, and we'll keep you updated. ${closingQuestion}`);
+    sections.push(`This story is still developing, and we'll keep you updated as more info drops.\n`);
+    sections.push(`\n${closingQuestion}\n`);
   }
   
   return sections.join('\n');
