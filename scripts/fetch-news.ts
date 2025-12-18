@@ -49,10 +49,7 @@ function sanitizeForMDX(text: string, keepNewlines = false): string {
     .replace(/src\s*=\s*["'][^"']*["']/gi, '')
     // Clean up curly braces that might break MDX expressions
     .replace(/\{/g, '(')
-    .replace(/\}/g, ')')
-    // Remove any stray # that could break MDX when combined with other chars
-    .replace(/<\s*#/g, ' ')
-    .replace(/#\s*>/g, ' ');
+    .replace(/\}/g, ')');
   
   if (keepNewlines) {
     // Clean up excessive whitespace but keep paragraph structure
@@ -558,6 +555,109 @@ async function fetchNews(category: string): Promise<NewsArticle[]> {
   }
 }
 
+// ============ SCRAPE FULL ARTICLE CONTENT ============
+// Free article scraping - fetches actual article content from URL
+async function scrapeFullArticle(url: string): Promise<string | null> {
+  if (!url || url.includes('reddit.com')) {
+    return null; // Skip Reddit - their HTML is useless
+  }
+  
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout
+    
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+      },
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+    
+    if (!response.ok) return null;
+    
+    const html = await response.text();
+    
+    // Extract article content using common article selectors
+    // Try multiple approaches to find the main content
+    let content = '';
+    
+    // Method 1: Look for article tags with common classes
+    const articlePatterns = [
+      /<article[^>]*>([\s\S]*?)<\/article>/gi,
+      /<div[^>]*class="[^"]*(?:article-body|article-content|post-content|entry-content|story-body|main-content)[^"]*"[^>]*>([\s\S]*?)<\/div>/gi,
+      /<div[^>]*id="[^"]*(?:article|content|story|main)[^"]*"[^>]*>([\s\S]*?)<\/div>/gi,
+    ];
+    
+    for (const pattern of articlePatterns) {
+      const matches = html.match(pattern);
+      if (matches && matches.length > 0) {
+        content = matches.join(' ');
+        break;
+      }
+    }
+    
+    // Method 2: Extract all <p> tags as fallback
+    if (!content || content.length < 200) {
+      const paragraphs = html.match(/<p[^>]*>([\s\S]*?)<\/p>/gi) || [];
+      // Filter out short paragraphs (likely nav, footer, etc.)
+      const goodParagraphs = paragraphs
+        .map(p => p.replace(/<[^>]*>/g, '').trim())
+        .filter(p => p.length > 50 && !p.includes('cookie') && !p.includes('subscribe') && !p.includes('sign up'));
+      
+      if (goodParagraphs.length > 0) {
+        content = goodParagraphs.join(' ');
+      }
+    }
+    
+    // Clean the extracted content
+    content = content
+      // Remove script/style tags
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+      .replace(/<noscript[^>]*>[\s\S]*?<\/noscript>/gi, '')
+      // Remove all remaining HTML tags
+      .replace(/<[^>]*>/g, ' ')
+      // Decode HTML entities
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&#\d+;/g, '')
+      .replace(/&[a-z]+;/gi, ' ')
+      // Remove common website noise patterns
+      .replace(/Read Article|Read More|Continue Reading/gi, '')
+      .replace(/Share\s*(Email|Facebook|Twitter|LinkedIn|Reddit|Copy)?\s*\d*/gi, '')
+      .replace(/\d+\s*shares?/gi, '')
+      .replace(/\d+\s*comments?/gi, '')
+      .replace(/Published on|Updated on|By [A-Z][a-z]+ [A-Z][a-z]+/gi, '')
+      .replace(/Subscribe|Newsletter|Sign up/gi, '')
+      .replace(/Advertisement|ADVERTISEMENT|Promoted/gi, '')
+      .replace(/Getty Images|Shutterstock|AP Photo/gi, '')
+      .replace(/Cookie|Privacy Policy|Terms of Service/gi, '')
+      // Remove dates like "December 17, 2025" standalone
+      .replace(/(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s*\d{4}/gi, '')
+      // Clean up whitespace
+      .replace(/\s+/g, ' ')
+      .trim();
+    
+    // Only return if we got meaningful content (at least 300 chars)
+    if (content.length > 300) {
+      // Limit to ~2000 chars to avoid massive articles
+      return content.slice(0, 2000);
+    }
+    
+    return null;
+  } catch (error) {
+    // Silent fail - scraping is optional enhancement
+    return null;
+  }
+}
+
 // ============ FETCH NEWS FROM RSS FEEDS ============
 async function fetchRSS(feedUrl: string): Promise<NewsArticle[]> {
   try {
@@ -621,6 +721,17 @@ async function fetchRSS(feedUrl: string): Promise<NewsArticle[]> {
       const dateB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
       return dateB - dateA;
     });
+    
+    // Scrape full content for top articles (parallel, up to 5)
+    console.log(`📄 Scraping full articles from ${feedUrl.slice(0, 50)}...`);
+    const scrapePromises = items.slice(0, 5).map(async (article, idx) => {
+      const fullContent = await scrapeFullArticle(article.url);
+      if (fullContent && fullContent.length > article.content.length) {
+        items[idx].content = fullContent;
+        console.log(`  ✓ Scraped ${article.title.slice(0, 40)}... (${fullContent.length} chars)`);
+      }
+    });
+    await Promise.all(scrapePromises);
     
     return items;
   } catch (error) {
@@ -952,10 +1063,11 @@ function humanizeContent(article: RewrittenArticle): RewrittenArticle {
     content = content.replace(pattern, replacement);
   }
 
-  // Clean up double spaces from removed phrases
+  // Clean up double spaces from removed phrases (but preserve newlines for content!)
   title = title.replace(/\s{2,}/g, ' ').trim();
   excerpt = excerpt.replace(/\s{2,}/g, ' ').trim();
-  content = content.replace(/\s{2,}/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+  // For content: only collapse horizontal whitespace (spaces/tabs), preserve newlines
+  content = content.replace(/[ \t]{2,}/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
 
   // Ensure title isn't too long after cleanup
   if (title.length > 70) {
