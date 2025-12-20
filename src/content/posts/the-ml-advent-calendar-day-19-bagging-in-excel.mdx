@@ -1,0 +1,44 @@
+---
+title: "The ML “Advent Calendar” Day 19: Bagging in Excel"
+excerpt: "Understanding ensemble learning from first principles in Excel The post The ML “Advent Calendar” Day 19: Bagging in Excel appeared first ..."
+category: "ai"
+date: 2025-12-20
+publishedAt: "2025-12-20T12:21:52.937Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "certified yapper 🗣️"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+So basically Understanding ensemble learning from first principles in Excel The post The ML “Advent Calendar” Day 19: Bagging in Excel appeared first on Towards Data Science.
+
+For 18 days, we have explored most of the core ML models, organized into three major families: distance- and density-based models, tree- or rule-based models, and weight-based models. Up to this point, each article focused on a single model, trained on its own. (plot twist fr)
+
+Ensemble learning changes this perspective completely.
+
+## The Details
+
+Instead, it is a way of combining these base models to build something new. As illustrated in the diagram below, an ensemble is a meta-model .
+
+It sits on top of individual models and aggregates their predictions. Trois learning steps in ML Image by author Voting: the simplest ensemble idea The simplest form of ensemble learning is voting .
+
+## Why This Matters
+
+The idea is almost trivial: train several models, take their predictions, and compute the average. If one model is wrong in one direction and another is wrong in the opposite direction, the errors should cancel out. At least, that is the intuition.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## Key Takeaways
+
+- On paper, this sounds reasonable.
+- In practice, things are different.
+- As soon as you try voting on real models, one fact becomes obvious: voting is not magic .
+- Simply averaging predictions does not guarantee better performance.
+
+## The Bottom Line
+
+You obtain a compromise that is often worse than each model taken individually. Voting ML all images by author This illustrates an important point: ensemble learning requires more than averaging .
+
+Are you here for this or nah?
