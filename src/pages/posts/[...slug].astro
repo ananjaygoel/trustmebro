@@ -39,9 +39,22 @@ const allPosts = await getCollection('posts');
 const relatedPosts = allPosts
   .filter(p => p.slug !== post.slug && p.data.category === post.data.category)
   .slice(0, 3);
+
+// Prepare dates for structured data
+const publishedTime = post.data.publishedAt || post.data.date.toISOString();
+const modifiedTime = post.data.publishedAt || post.data.date.toISOString();
 ---
 
-<Layout title={post.data.title} description={post.data.excerpt} image={post.data.image}>
+<Layout 
+  title={post.data.title} 
+  description={post.data.excerpt} 
+  image={post.data.image}
+  article={true}
+  publishedTime={publishedTime}
+  modifiedTime={modifiedTime}
+  author={post.data.author}
+  keywords={[post.data.category, 'news', 'trending']}
+>
   <Header />
   
   <main class="max-w-3xl mx-auto px-4 py-12">
