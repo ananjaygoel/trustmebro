@@ -1,0 +1,44 @@
+---
+title: "Evaluating Perplexity on Language Models"
+excerpt: "This article is divided into two parts; they are: • What Is Perplexity and How to Compute It • Evaluate the Perplexity of a Language Mode..."
+category: "ai"
+date: 2025-12-24
+publishedAt: "2025-12-24T12:25:01.704Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2025/12/lucas-davies-3aubsNmGuLE-unsplash-scaled.jpg"
+author: "main character energy 💫"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+Okay so This article is divided into two parts; they are: • What Is Perplexity and How to Compute It • Evaluate the Perplexity of a Language Model with HellaSwag Dataset Perplexity is a measure of how well a language model predicts a sample of text.
+
+Evaluating Perplexity on Language Models By Adrian Tam on in Training Transformer Models 0 Post A language model is a probability distribution over sequences of tokens. When you train a language model, you want to measure how accurately it predicts human language use. (we're not making this up)
+
+This is a difficult task, and you need a metric to evaluate the model.
+
+## The Details
+
+In this article, you will learn about the perplexity metric. Specifically, you will learn: What is perplexity, and how to compute it How to evaluate the perplexity of a language model with sample data Lets get kicked off.
+
+Evaluating Perplexity on Language Models Photo by Lucas Davis . Overview This article is divided into two parts; they are: What Is Perplexity and How to Compute It Evaluate the Perplexity of a Language Model with HellaSwag Dataset What Is Perplexity and How to Compute It Perplexity is a measure of how well a language model predicts a sample of text.
+
+## Why This Matters
+
+It is defined as the inverse of the geometric mean of the probabilities of the tokens in the sample. Mathematically, perplexity is defined as: $$ PPL(x_(1:L)) = \prod_(i=1)^L p(x_i)^(-1/L) = \exp\big(-\frac(1)(L) \sum_(i=1)^L \log p(x_i)\big) $$ Perplexity is a function of a particular sequence of tokens. In practice, it is more convenient to compute perplexity as the mean of the log probabilities, as shown in the formula above.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## Key Takeaways
+
+- Perplexity is a metric that quantifies how much a language model hesitates about the next token on average.
+- If the language model is absolutely certain, the perplexity is 1.
+- If the language model is completely uncertain, then every token in the vocabulary is equally likely; the perplexity is equal to the vocabulary size.
+- You should not expect perplexity to go beyond this range.
+
+## The Bottom Line
+
+One dataset you can use is HellaSwag. It is a dataset with train, test, and validation splits.
+
+Sound off in the comments.
