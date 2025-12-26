@@ -1,0 +1,44 @@
+---
+title: "Keeping Probabilities Honest: The Jacobian Adjustment"
+excerpt: "An intuitive explanation of transforming random variables correctly."
+category: "ai"
+date: 2025-12-26
+publishedAt: "2025-12-26T06:20:14.326Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "certified yapper 🗣️"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Here's the thing: An intuitive explanation of transforming random variables correctly.
+
+The post Keeping Probabilities Honest: The Jacobian Adjustment appeared first on Towards Data Science. Introduction Imagine youre modeling customer annoyance from wait times. (we're not making this up)
+
+Calls arrive randomly, so wait time X follows an Exponential distribution—most waits are short, a few are painfully long.
+
+## The Details
+
+Now Id argue that annoyance isnt linear: a 10-minute wait feels more than twice as rough as a 5-minute one. So you decide to model annoyance units as \(Y = X²\).
+
+Just take the pdf of X, replace x with \(\sqrt(y)\), and youre done. It looks reasonable—peaked near zero, long tail.
+
+## Why This Matters
+
+But what if you actually computed the CDF? Short numpy snippet to confirm this import numpy as np import matplotlib. Stats import expon # CDF of Exponential(1): F(x) = 1 - exp(-x) for x = 0 def cdf_exp(x): return 1 - np.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- Exp(-x) # Wrong (naive) pdf for Y = X²: just substitute x = sqrt(y) def wrong_pdf(y): return np.
+- Sqrt(y)) # This integrates to 2!
+- # Quick numerical check of integral from scipy.
+- Integrate import quad integral, err = quad(wrong_pdf, 0, np.
+
+## The Bottom Line
+
+In this post, well build the intuition, derive the math step by step, see it appear naturally in histogram equalization, visualize the stretching/shrinking empirically, and prove it with simulations. The Intuition To grasp why the Jacobian adjustment is necessary, lets use a tangible analogy: think of a probability distribution as a fixed amount of sand—exactly 1 pound—spread along a number line, where the height of the sand pile at each point represents the probability density.
+
+Sound off in the comments.
