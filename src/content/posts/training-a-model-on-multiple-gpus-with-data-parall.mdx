@@ -1,0 +1,44 @@
+---
+title: "Training a Model on Multiple GPUs with Data Parallelism"
+excerpt: "This article is divided into two parts; they are: • Data Parallelism • Distributed Data Parallelism If you have multiple GPUs, you can co..."
+category: "ai"
+date: 2025-12-27
+publishedAt: "2025-12-27T18:17:26.311Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2025/12/ilse-orsel-hjmV0xG-KPk-unsplash-scaled.jpg"
+author: "your fave news bestie 💅"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+Let's talk about This article is divided into two parts; they are: • Data Parallelism • Distributed Data Parallelism If you have multiple GPUs, you can combine them to operate as a single GPU with greater memory capacity.
+
+Training a Model on Multiple GPUs with Data Parallelism By Adrian Tam on in Training Transformer Models 0 Post Training a large language model is slow. If you have multiple GPUs, you can accelerate training workload across them to run in parallel. (and honestly, same)
+
+In this article, you will learn about data parallelism techniques.
+
+## The Details
+
+In particular, you will learn about: What is data parallelism The difference between Data Parallel and Distributed Data Parallel in PyTorch How to train a model with data parallelism Lets get kicked off! Overview This article is divided into two parts; they are: Data Parallelism Distributed Data Parallelism Data Parallelism If you have multiple GPUs, you can combine them to operate as a single GPU with greater memory capacity.
+
+This technique is called data parallelism . Essentially, you copy the model to each GPU, but each processes a different subset of the data.
+
+## Why This Matters
+
+Then you aggregate the results for the gradient update. Data parallelism is to the same model with multiple processors to work on different data. In fact, switching to data parallelism may slow down training because of extra communication overhead.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- Data parallelism is useful when a model still fits on a single GPU but cannot be trained with a large batch size because of memory constraints.
+- In this case, you can use gradient accumulation.
+- This is equivalent to running small batches on multiple GPUs and then aggregating the gradients, as in data parallelism.
+- Running a PyTorch model with data parallelism is easy.
+
+## The Bottom Line
+
+Consider the training loop from the previous article , you just need to wrap the model right after you create it: ... Model_config = LlamaConfig() model = LlamaForPretraining(model_config) if torch.
+
+What's your take on this whole situation?
