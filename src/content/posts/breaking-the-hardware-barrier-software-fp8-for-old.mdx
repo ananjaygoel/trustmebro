@@ -1,0 +1,37 @@
+---
+title: "Breaking the Hardware Barrier: software FP8 for Older GPUs"
+excerpt: "Deep learning workloads are increasingly memory-bound, with GPU cores sitting idle while waiting for data transfers."
+category: "ai"
+date: 2025-12-28
+publishedAt: "2025-12-28T18:18:06.325Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "vibes curator ✨"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Let's talk about Deep learning workloads are increasingly memory-bound, with GPU cores sitting idle while waiting for data transfers.
+
+FP8 precision solves this on newer hardware, but what about the millions of RTX 30 and 20 series GPUs already deployed? Feather demonstrates that software-based FP8 emulation through bitwise packing can achieve near-theoretical 4x bandwidth improvements (3. (shocking, we know)
+
+3x measured), making efficient deep learning accessible without expensive hardware upgrades The post Breaking the Hardware Bar Introduction As deep learning models grow larger and datasets expand, practitioners face an increasingly common bottleneck: GPU memory bandwidth.
+
+## The Details
+
+While cutting-edge hardware offers FP8 precision to accelerate training and inference, most data scientists and ML engineers work with older GPUs that lack this capability. This gap in the ecosystem is what motivated me to build Feather , an open-source library that utilises a software-based approach to deliver FP8-like performance improvements on widely available hardware.
+
+I created this tool to make efficient deep learning more accessible to the broader ML community, and I welcome contributions Notation & Abbreviations FPX: X-bit floating point number UX: X-bit unsigned integer GPU: Graphics processing unit SRAM: Static RAM (on-chip GPU Cache) HBM: High bandwidth memory (GPU VRAM) GEMV: General Matrix-Vector multiplication Motivation FP8 processing has proven effective in the Deep Learning community [1] ; but, only specific recent hardware architectures (Ada and Blackwell) support it, limiting its benefits for practitioners and researchers to utilise it. I myself have an ` Nvidia RTX 3050 6GB Laptop GPU `, which unfortunately doesn’t support FP8 operations at the hardware level.
+
+## Why This Matters
+
+Inspired by software-based solutions like (software-accelerated rendering on computers that don’t support native hardware acceleration for gaming), the article proposes an interesting solution that can utilise the power of FP8 datatypes Packing FP8 & FP16 in FP32 containers Inspired and packing techniques, the article presents an algorithm that packs two FP16s or four FP8s into a single FP32. This allows for packing twice or four times the memory, benefiting from a lower memory footprint, while sacrificing only a small amount of precision. One might argue that we’re performing redundant computation, “ Pack - Load - Unpack - Compute .
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## The Bottom Line
+
+One might argue that we’re performing redundant computation, “ Pack - Load - Unpack - Compute .
+
+How do you feel about this development?
