@@ -4,6 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import PostCard from '../components/PostCard.astro';
 import { getCollection } from 'astro:content';
+import { categoryEmojis } from '../lib/constants';
 
 // Get all posts sorted by publishedAt (most recent first)
 const posts = await getCollection('posts');
@@ -16,11 +17,6 @@ const sortedPosts = posts.sort((a, b) => {
 const featuredPost = sortedPosts[0];
 const latestPosts = sortedPosts.slice(1, 7);
 const trendingPosts = sortedPosts.slice(0, 5);
-
-const categoryEmojis: Record<string, string> = {
-  tech: '💻', business: '💰', ai: '🤖', world: '🌍', viral: '🔥',
-  entertainment: '🎬', gaming: '🎮', science: '🔬'
-};
 ---
 
 <Layout title="Home">
@@ -73,9 +69,9 @@ const categoryEmojis: Record<string, string> = {
     <!-- Quick Actions -->
     <section class="py-4 border-y border-white/5 bg-[#0f1724]">
       <div class="max-w-7xl mx-auto px-4 flex gap-3 overflow-x-auto">
-        <button class="pill bg-purple-500 border-purple-500 text-white">�� Latest</button>
-        <button class="pill">🔥 Trending</button>
-        <button class="pill">📈 Most Read</button>
+        <button id="filter-latest" class="pill filter-btn bg-purple-500 border-purple-500 text-white" data-filter="latest">🆕 Latest</button>
+        <button id="filter-trending" class="pill filter-btn" data-filter="trending">🔥 Trending</button>
+        <button id="filter-most-read" class="pill filter-btn" data-filter="most-read">📈 Most Read</button>
         <button id="random-btn" class="pill">🎲 Random</button>
         <button id="share-site-btn" class="pill">📤 Share</button>
       </div>
@@ -87,21 +83,29 @@ const categoryEmojis: Record<string, string> = {
         <!-- Posts Grid -->
         <div class="lg:col-span-2">
           <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-extrabold gradient-text">📰 Latest News</h2>
+            <h2 id="posts-heading" class="text-xl font-extrabold gradient-text">📰 Latest News</h2>
             <a href="/archive" class="text-sm text-cyan-400 hover:underline">See All →</a>
           </div>
-          
-          <div class="grid md:grid-cols-2 gap-6">
-            {latestPosts.map(post => (
-              <PostCard 
-                title={post.data.title}
-                slug={post.slug}
-                excerpt={post.data.excerpt}
-                category={post.data.category}
-                categoryEmoji={categoryEmojis[post.data.category] || '📰'}
-                date={post.data.date}
-                image={post.data.image}
-              />
+
+          <div id="posts-grid" class="grid md:grid-cols-2 gap-6">
+            {latestPosts.map((post, index) => (
+              <div
+                class="post-card-wrapper"
+                data-date={post.data.publishedAt ? new Date(post.data.publishedAt).getTime() : post.data.date.getTime()}
+                data-category={post.data.category}
+                data-index={index}
+                data-slug={post.slug}
+              >
+                <PostCard
+                  title={post.data.title}
+                  slug={post.slug}
+                  excerpt={post.data.excerpt}
+                  category={post.data.category}
+                  categoryEmoji={categoryEmojis[post.data.category] || '📰'}
+                  date={post.data.date}
+                  image={post.data.image}
+                />
+              </div>
             ))}
           </div>
           
@@ -163,6 +167,109 @@ const categoryEmojis: Record<string, string> = {
 </Layout>
 
 <script>
+  // Filter buttons functionality
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  const postsGrid = document.getElementById('posts-grid');
+  const postsHeading = document.getElementById('posts-heading');
+  const postCards = Array.from(document.querySelectorAll('.post-card-wrapper'));
+
+  // Store original order
+  const originalOrder = postCards.map(card => ({
+    element: card,
+    date: parseInt((card as HTMLElement).dataset.date || '0'),
+    category: (card as HTMLElement).dataset.category || '',
+    index: parseInt((card as HTMLElement).dataset.index || '0'),
+    slug: (card as HTMLElement).dataset.slug || ''
+  }));
+
+  // Filter configurations
+  const filterConfig: Record<string, { heading: string; sort: (cards: typeof originalOrder) => typeof originalOrder }> = {
+    'latest': {
+      heading: '📰 Latest News',
+      sort: (cards) => [...cards].sort((a, b) => b.date - a.date)
+    },
+    'trending': {
+      heading: '🔥 Trending Now',
+      sort: (cards) => {
+        // Show posts from last 48 hours, shuffled for variety
+        const now = Date.now();
+        const fortyEightHours = 48 * 60 * 60 * 1000;
+        const recentCards = cards.filter(c => (now - c.date) < fortyEightHours);
+        // If not enough recent posts, include all
+        const toShuffle = recentCards.length >= 3 ? recentCards : [...cards];
+        // Fisher-Yates shuffle
+        for (let i = toShuffle.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [toShuffle[i], toShuffle[j]] = [toShuffle[j], toShuffle[i]];
+        }
+        return toShuffle;
+      }
+    },
+    'most-read': {
+      heading: '📈 Most Read',
+      sort: (cards) => {
+        // Prioritize popular categories and featured posts
+        const popularCategories = ['tech', 'ai', 'viral', 'business'];
+        return [...cards].sort((a, b) => {
+          const aPopular = popularCategories.indexOf(a.category);
+          const bPopular = popularCategories.indexOf(b.category);
+          const aScore = aPopular >= 0 ? popularCategories.length - aPopular : -1;
+          const bScore = bPopular >= 0 ? popularCategories.length - bPopular : -1;
+          if (aScore !== bScore) return bScore - aScore;
+          return b.date - a.date; // Fallback to date
+        });
+      }
+    }
+  };
+
+  function applyFilter(filterType: string) {
+    const config = filterConfig[filterType];
+    if (!config || !postsGrid || !postsHeading) return;
+
+    // Update heading
+    postsHeading.textContent = config.heading;
+
+    // Update button styles
+    filterButtons.forEach(btn => {
+      const btnFilter = (btn as HTMLElement).dataset.filter;
+      if (btnFilter === filterType) {
+        btn.classList.add('bg-purple-500', 'border-purple-500', 'text-white');
+      } else {
+        btn.classList.remove('bg-purple-500', 'border-purple-500', 'text-white');
+      }
+    });
+
+    // Sort and reorder posts
+    const sorted = config.sort(originalOrder);
+
+    // Add fade-out animation
+    postsGrid.classList.add('opacity-50');
+
+    setTimeout(() => {
+      // Clear grid
+      postCards.forEach(card => card.remove());
+
+      // Re-append in new order
+      sorted.forEach(item => {
+        postsGrid.appendChild(item.element);
+      });
+
+      // Fade back in
+      postsGrid.classList.remove('opacity-50');
+    }, 150);
+  }
+
+  // Attach click handlers to filter buttons
+  filterButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const filterType = (btn as HTMLElement).dataset.filter;
+      if (filterType) {
+        applyFilter(filterType);
+      }
+    });
+  });
+
+  // Random button
   document.getElementById('random-btn')?.addEventListener('click', () => {
     const links = document.querySelectorAll('a[href^="/posts/"]');
     if (links.length) {
@@ -170,13 +277,20 @@ const categoryEmojis: Record<string, string> = {
       window.location.href = randomLink.href;
     }
   });
-  
+
+  // Share button
   document.getElementById('share-site-btn')?.addEventListener('click', async () => {
     if (navigator.share) {
-      await navigator.share({ title: 'TrustMeBro', text: 'Check out this fire news portal! ��', url: window.location.origin });
+      await navigator.share({ title: 'TrustMeBro', text: 'Check out this fire news portal!', url: window.location.origin });
     } else {
       await navigator.clipboard.writeText(window.location.origin);
       alert('Link copied! 📋');
     }
   });
 </script>
+
+<style>
+  #posts-grid {
+    transition: opacity 0.15s ease-in-out;
+  }
+</style>

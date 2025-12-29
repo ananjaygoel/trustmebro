@@ -1,0 +1,272 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import PostCard from '../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+
+// Pagination config
+const POSTS_PER_PAGE = 15;
+
+// Get URL params
+const url = new URL(Astro.request.url);
+const currentPage = Math.max(1, parseInt(url.searchParams.get('page') || '1'));
+const selectedCategory = url.searchParams.get('category') || 'all';
+
+// Category definitions
+const categories = [
+  { slug: 'all', name: 'All', emoji: '📰' },
+  { slug: 'tech', name: 'Tech', emoji: '💻' },
+  { slug: 'ai', name: 'AI', emoji: '🤖' },
+  { slug: 'gaming', name: 'Gaming', emoji: '🎮' },
+  { slug: 'business', name: 'Business', emoji: '💰' },
+  { slug: 'entertainment', name: 'Entertainment', emoji: '🎬' },
+  { slug: 'sports', name: 'Sports', emoji: '⚽' },
+  { slug: 'science', name: 'Science', emoji: '🔬' },
+  { slug: 'health', name: 'Health', emoji: '🏥' },
+  { slug: 'world', name: 'World', emoji: '🌍' },
+  { slug: 'viral', name: 'Viral', emoji: '🔥' },
+];
+
+const categoryEmojis: Record<string, string> = Object.fromEntries(
+  categories.map(c => [c.slug, c.emoji])
+);
+
+// Get all posts sorted by date
+const allPosts = await getCollection('posts');
+const sortedPosts = allPosts.sort((a, b) => {
+  const aTime = a.data.publishedAt ? new Date(a.data.publishedAt).getTime() : a.data.date.getTime();
+  const bTime = b.data.publishedAt ? new Date(b.data.publishedAt).getTime() : b.data.date.getTime();
+  return bTime - aTime;
+});
+
+// Filter by category if selected
+const filteredPosts = selectedCategory === 'all'
+  ? sortedPosts
+  : sortedPosts.filter(post => post.data.category.toLowerCase() === selectedCategory.toLowerCase());
+
+// Pagination calculations
+const totalPosts = filteredPosts.length;
+const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
+const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+const endIndex = startIndex + POSTS_PER_PAGE;
+const paginatedPosts = filteredPosts.slice(startIndex, endIndex);
+
+// Generate page numbers for pagination UI
+const getPageNumbers = () => {
+  const pages: (number | string)[] = [];
+  const maxVisible = 5;
+
+  if (totalPages <= maxVisible + 2) {
+    for (let i = 1; i <= totalPages; i++) pages.push(i);
+  } else {
+    pages.push(1);
+
+    if (currentPage > 3) pages.push('...');
+
+    const start = Math.max(2, currentPage - 1);
+    const end = Math.min(totalPages - 1, currentPage + 1);
+
+    for (let i = start; i <= end; i++) pages.push(i);
+
+    if (currentPage < totalPages - 2) pages.push('...');
+
+    pages.push(totalPages);
+  }
+
+  return pages;
+};
+
+const buildUrl = (page: number, category: string) => {
+  const params = new URLSearchParams();
+  if (page > 1) params.set('page', page.toString());
+  if (category !== 'all') params.set('category', category);
+  const queryString = params.toString();
+  return queryString ? `/archive?${queryString}` : '/archive';
+};
+
+// Get category counts
+const categoryCounts = categories.reduce((acc, cat) => {
+  if (cat.slug === 'all') {
+    acc[cat.slug] = sortedPosts.length;
+  } else {
+    acc[cat.slug] = sortedPosts.filter(p => p.data.category.toLowerCase() === cat.slug).length;
+  }
+  return acc;
+}, {} as Record<string, number>);
+
+const selectedCategoryInfo = categories.find(c => c.slug === selectedCategory) || categories[0];
+---
+
+<Layout
+  title={`Archive${selectedCategory !== 'all' ? ` - ${selectedCategoryInfo.name}` : ''}`}
+  description="Browse all articles from TrustMeBro - GenZ news that hits different. Filter by category and find the stories that matter to you."
+  keywords={["news archive", "all articles", "browse news", "genz news", "trending stories"]}
+>
+  <Header />
+
+  <main class="min-h-screen pt-8 pb-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Page Header -->
+      <div class="mb-8 text-center">
+        <h1 class="text-4xl md:text-5xl font-black mb-3">
+          <span class="gradient-text">Archive</span>
+        </h1>
+        <p class="text-gray-400 text-lg">
+          {totalPosts} {totalPosts === 1 ? 'story' : 'stories'}
+          {selectedCategory !== 'all' && ` in ${selectedCategoryInfo.name}`}
+        </p>
+      </div>
+
+      <!-- Category Filter -->
+      <div class="mb-8">
+        <div class="glass rounded-2xl p-4">
+          <div class="flex flex-wrap gap-2 justify-center">
+            {categories.map(cat => (
+              <a
+                href={buildUrl(1, cat.slug)}
+                class:list={[
+                  'pill text-sm transition-all',
+                  selectedCategory === cat.slug
+                    ? 'bg-gradient-to-r from-cyan-500 to-purple-500 border-transparent text-white font-bold'
+                    : 'hover:border-cyan-400/50'
+                ]}
+              >
+                {cat.emoji} {cat.name}
+                <span class="ml-1 opacity-60">({categoryCounts[cat.slug]})</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- Posts Grid -->
+      {paginatedPosts.length > 0 ? (
+        <>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {paginatedPosts.map((post, index) => (
+              <PostCard
+                title={post.data.title}
+                slug={post.slug}
+                excerpt={post.data.excerpt}
+                category={post.data.category}
+                categoryEmoji={categoryEmojis[post.data.category.toLowerCase()] || '📰'}
+                date={post.data.date}
+                image={post.data.image}
+                featured={currentPage === 1 && index === 0 && selectedCategory === 'all'}
+              />
+            ))}
+          </div>
+
+          <!-- Pagination -->
+          {totalPages > 1 && (
+            <nav class="flex justify-center items-center gap-2 flex-wrap" aria-label="Pagination">
+              <!-- Previous Button -->
+              {currentPage > 1 ? (
+                <a
+                  href={buildUrl(currentPage - 1, selectedCategory)}
+                  class="px-4 py-2 rounded-xl glass hover:border-cyan-400 transition-all flex items-center gap-2"
+                  aria-label="Previous page"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                  </svg>
+                  Prev
+                </a>
+              ) : (
+                <span class="px-4 py-2 rounded-xl glass opacity-40 cursor-not-allowed flex items-center gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                  </svg>
+                  Prev
+                </span>
+              )}
+
+              <!-- Page Numbers -->
+              <div class="flex gap-1 items-center">
+                {getPageNumbers().map(page => (
+                  typeof page === 'number' ? (
+                    page === currentPage ? (
+                      <span class="w-10 h-10 rounded-xl gradient-bg text-black font-bold flex items-center justify-center">
+                        {page}
+                      </span>
+                    ) : (
+                      <a
+                        href={buildUrl(page, selectedCategory)}
+                        class="w-10 h-10 rounded-xl glass hover:border-cyan-400 transition-all flex items-center justify-center font-medium"
+                      >
+                        {page}
+                      </a>
+                    )
+                  ) : (
+                    <span class="w-10 h-10 flex items-center justify-center text-gray-500">...</span>
+                  )
+                ))}
+              </div>
+
+              <!-- Next Button -->
+              {currentPage < totalPages ? (
+                <a
+                  href={buildUrl(currentPage + 1, selectedCategory)}
+                  class="px-4 py-2 rounded-xl glass hover:border-cyan-400 transition-all flex items-center gap-2"
+                  aria-label="Next page"
+                >
+                  Next
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                  </svg>
+                </a>
+              ) : (
+                <span class="px-4 py-2 rounded-xl glass opacity-40 cursor-not-allowed flex items-center gap-2">
+                  Next
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                  </svg>
+                </span>
+              )}
+            </nav>
+          )}
+
+          <!-- Page Info -->
+          <div class="text-center mt-6 text-sm text-gray-500">
+            Showing {startIndex + 1}-{Math.min(endIndex, totalPosts)} of {totalPosts} stories
+          </div>
+        </>
+      ) : (
+        <div class="text-center py-16">
+          <div class="text-8xl mb-6">{selectedCategoryInfo.emoji}</div>
+          <h2 class="text-2xl font-bold mb-3">
+            {selectedCategory === 'all'
+              ? 'No stories yet'
+              : `No ${selectedCategoryInfo.name} stories yet`}
+          </h2>
+          <p class="opacity-60 mb-8">Check back soon! We're cooking up some fire content</p>
+          {selectedCategory !== 'all' && (
+            <a
+              href="/archive"
+              class="inline-flex items-center gap-2 px-6 py-3 rounded-full gradient-bg text-black font-bold hover:scale-105 transition-all"
+            >
+              View All Stories
+            </a>
+          )}
+        </div>
+      )}
+
+      <!-- Back to Home -->
+      <div class="mt-12 text-center">
+        <a
+          href="/"
+          class="inline-flex items-center gap-2 px-6 py-3 rounded-full glass hover:bg-purple-500/20 font-semibold transition-all"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+          </svg>
+          Back to Home
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+

@@ -33,7 +33,7 @@ function checkRateLimit(ip: string): boolean {
 
 export default async (req: Request, context: Context) => {
   const headers = {
-    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Origin": "https://trustmebro.pro",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
     "Content-Type": "application/json",

@@ -1,0 +1,40 @@
+version: 2
+updates:
+  # NPM dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    groups:
+      astro:
+        patterns:
+          - "astro"
+          - "@astrojs/*"
+      netlify:
+        patterns:
+          - "@netlify/*"
+          - "netlify*"
+      tailwind:
+        patterns:
+          - "tailwindcss"
+          - "@tailwindcss/*"
+      typescript:
+        patterns:
+          - "typescript"
+          - "@types/*"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "ci"
+      include: "scope"

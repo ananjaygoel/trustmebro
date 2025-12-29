@@ -14,17 +14,94 @@
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    # HSTS - enforce HTTPS with preload
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    # Permissions Policy - restrict sensitive APIs
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()"
+    # Content Security Policy
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://pagead2.googlesyndication.com https://news.google.com https://static.cloudflareinsights.com https://www.google-analytics.com https://adservice.google.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://pagead2.googlesyndication.com https://public.api.bsky.app https://*.cloudflareinsights.com https://news.google.com; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests"
 
-# Cache static assets
+# Cache static assets (Astro hashed files)
 [[headers]]
   for = "/_astro/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
+# Cache images - 1 week
+[[headers]]
+  for = "/*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"
+
+[[headers]]
+  for = "/*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"
+
+[[headers]]
+  for = "/*.jpeg"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"
+
+[[headers]]
+  for = "/*.webp"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"
+
+[[headers]]
+  for = "/*.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"
+
+[[headers]]
+  for = "/*.gif"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"
+
+[[headers]]
+  for = "/*.ico"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"
+
+# Cache fonts - 1 year
+[[headers]]
+  for = "/*.woff"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.woff2"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.ttf"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.otf"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# RSS feeds - 1 hour cache
+[[headers]]
+  for = "/rss.xml"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, stale-while-revalidate=600"
+    Content-Type = "application/rss+xml; charset=utf-8"
+
+[[headers]]
+  for = "/feed.xml"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, stale-while-revalidate=600"
+    Content-Type = "application/rss+xml; charset=utf-8"
+
 [[headers]]
   for = "/sitemap*.xml"
   [headers.values]
     Content-Type = "application/xml"
+    Cache-Control = "public, max-age=3600, stale-while-revalidate=600"
 
 # Redirect /sitemap.xml to /sitemap-index.xml for Google Search Console
 [[redirects]]

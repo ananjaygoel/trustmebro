@@ -7,6 +7,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "typecheck": "astro check",
+    "lint": "echo 'No linter configured yet'",
     "fetch-news": "tsx scripts/fetch-news.ts",
     "post-social": "tsx scripts/post-social.ts",
     "post-reddit": "tsx scripts/post-reddit.ts"
@@ -24,7 +26,10 @@
     "tailwindcss": "^4.1.17"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.0",
     "@types/jsdom": "^27.0.0",
-    "tsx": "^4.20.6"
+    "png-to-ico": "^3.0.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.7.0"
   }
 }

@@ -121,6 +121,23 @@ const searchData = posts.map(post => ({
     const resultCount = document.getElementById('result-count');
     const searchTermDisplay = document.getElementById('search-term');
 
+    // HTML escape function to prevent XSS
+    function escapeHtml(str) {
+      if (typeof str !== 'string') {
+        return '';
+      }
+      const htmlEscapes = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      };
+      return str.replace(/[&<>"']/g, function(char) {
+        return htmlEscapes[char] || char;
+      });
+    }
+
     function formatDate(dateStr) {
       const date = new Date(dateStr);
       const now = new Date();
@@ -166,37 +183,46 @@ const searchData = posts.map(post => ({
       }
 
       noResults.classList.add('hidden');
-      resultsContainer.innerHTML = results.map(post => `
-        <a 
-          href="/posts/${post.slug}"
-          class="block p-4 rounded-xl bg-[--color-bg-secondary] hover:bg-[--color-bg-tertiary] transition-all group"
-        >
-          <div class="flex gap-4">
-            ${post.image ? `
-              <img 
-                src="${post.image}" 
-                alt="" 
-                class="w-20 h-20 object-cover rounded-lg flex-shrink-0"
-              />
-            ` : ''}
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 mb-1">
-                <span class="text-xs font-semibold text-[--color-neon-purple] uppercase tracking-wide">
-                  ${post.category}
-                </span>
-                <span class="text-xs text-[--color-text-muted]">•</span>
-                <span class="text-xs text-[--color-text-muted]">${formatDate(post.date)}</span>
+      resultsContainer.innerHTML = results.map(post => {
+        // Sanitize all user-controlled data before rendering
+        const safeSlug = encodeURIComponent(post.slug || '');
+        const safeImage = escapeHtml(post.image || '');
+        const safeCategory = escapeHtml(post.category || '');
+        const safeTitle = escapeHtml(post.title || '');
+        const safeExcerpt = escapeHtml(post.excerpt || '');
+
+        return `
+          <a
+            href="/posts/${safeSlug}"
+            class="block p-4 rounded-xl bg-[--color-bg-secondary] hover:bg-[--color-bg-tertiary] transition-all group"
+          >
+            <div class="flex gap-4">
+              ${safeImage ? `
+                <img
+                  src="${safeImage}"
+                  alt=""
+                  class="w-20 h-20 object-cover rounded-lg flex-shrink-0"
+                />
+              ` : ''}
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="text-xs font-semibold text-[--color-neon-purple] uppercase tracking-wide">
+                    ${safeCategory}
+                  </span>
+                  <span class="text-xs text-[--color-text-muted]">•</span>
+                  <span class="text-xs text-[--color-text-muted]">${formatDate(post.date)}</span>
+                </div>
+                <h3 class="font-bold text-[--color-text-primary] group-hover:text-[--color-neon-pink] transition-colors line-clamp-2">
+                  ${highlightMatch(safeTitle, query)}
+                </h3>
+                <p class="text-sm text-[--color-text-secondary] line-clamp-1 mt-1">
+                  ${highlightMatch(safeExcerpt, query)}
+                </p>
               </div>
-              <h3 class="font-bold text-[--color-text-primary] group-hover:text-[--color-neon-pink] transition-colors line-clamp-2">
-                ${highlightMatch(post.title, query)}
-              </h3>
-              <p class="text-sm text-[--color-text-secondary] line-clamp-1 mt-1">
-                ${highlightMatch(post.excerpt, query)}
-              </p>
             </div>
-          </div>
-        </a>
-      `).join('');
+          </a>
+        `;
+      }).join('');
     }
 
     function highlightMatch(text, query) {

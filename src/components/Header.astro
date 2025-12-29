@@ -1,13 +1,10 @@
 ---
-const categories = [
-  { name: 'Tech', emoji: '💻', slug: 'tech' },
-  { name: 'AI', emoji: '🤖', slug: 'ai' },
-  { name: 'Gaming', emoji: '🎮', slug: 'gaming' },
-  { name: 'Entertainment', emoji: '🎬', slug: 'entertainment' },
-  { name: 'Sports', emoji: '⚽', slug: 'sports' },
-  { name: 'Science', emoji: '🔬', slug: 'science' },
-  { name: 'Viral', emoji: '🔥', slug: 'viral' },
-];
+import { categories as allCategories } from '../lib/constants';
+
+// Select categories for header navigation (subset of all categories)
+const categories = allCategories.filter(cat =>
+  ['tech', 'ai', 'gaming', 'entertainment', 'sports', 'science', 'viral'].includes(cat.slug)
+);
 ---
 
 <!-- Top Bar -->

@@ -6,7 +6,7 @@ export default async (req: Request, context: Context) => {
   
   // Handle CORS
   const headers = {
-    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Origin": "https://trustmebro.pro",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
     "Content-Type": "application/json",
@@ -55,7 +55,9 @@ export default async (req: Request, context: Context) => {
       try {
         const existing = await store.get(slug, { type: "json" });
         if (existing) vibes = existing;
-      } catch {}
+      } catch (error) {
+        console.error(`Failed to fetch existing vibes for slug "${slug}":`, error);
+      }
 
       // Increment the reaction
       vibes[reaction as keyof typeof vibes]++;
