@@ -45,44 +45,36 @@ import { categoryEmojis } from '../lib/constants';
   <Footer />
 </Layout>
 
-<script define:vars={{ categoryEmojis }}>
-  const BOOKMARKS_KEY = 'trustmebro_bookmarks';
-  const savedList = document.getElementById('saved-list');
-  const emptyState = document.getElementById('empty-state');
-  const clearSection = document.getElementById('clear-section');
-  const clearAllBtn = document.getElementById('clear-all');
+<script is:inline define:vars={{ categoryEmojis }}>
+  var BOOKMARKS_KEY = 'trustmebro_bookmarks';
+  var savedList = document.getElementById('saved-list');
+  var emptyState = document.getElementById('empty-state');
+  var clearSection = document.getElementById('clear-section');
+  var clearAllBtn = document.getElementById('clear-all');
 
-  interface Bookmark {
-    slug: string;
-    title: string;
-    image: string;
-    category: string;
-    savedAt: string;
-  }
-
-  function getBookmarks(): Bookmark[] {
+  function getBookmarks() {
     try {
       return JSON.parse(localStorage.getItem(BOOKMARKS_KEY) || '[]');
-    } catch {
+    } catch (e) {
       return [];
     }
   }
 
-  function saveBookmarks(bookmarks: Bookmark[]) {
+  function saveBookmarks(bookmarks) {
     localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(bookmarks));
   }
 
-  function formatDate(dateStr: string): string {
-    const date = new Date(dateStr);
+  function formatDate(dateStr) {
+    var date = new Date(dateStr);
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   }
 
   // HTML escape function to prevent XSS
-  function escapeHtml(str: string): string {
+  function escapeHtml(str) {
     if (typeof str !== 'string') {
       return '';
     }
-    const htmlEscapes: Record<string, string> = {
+    var htmlEscapes = {
       '&': '&amp;',
       '<': '&lt;',
       '>': '&gt;',
@@ -95,72 +87,74 @@ import { categoryEmojis } from '../lib/constants';
   }
 
   function renderBookmarks() {
-    const bookmarks = getBookmarks();
+    var bookmarks = getBookmarks();
 
     if (bookmarks.length === 0) {
-      emptyState?.classList.remove('hidden');
-      savedList!.innerHTML = '';
-      clearSection?.classList.add('hidden');
+      if (emptyState) emptyState.classList.remove('hidden');
+      if (savedList) savedList.innerHTML = '';
+      if (clearSection) clearSection.classList.add('hidden');
       return;
     }
 
-    emptyState?.classList.add('hidden');
-    clearSection?.classList.remove('hidden');
+    if (emptyState) emptyState.classList.add('hidden');
+    if (clearSection) clearSection.classList.remove('hidden');
 
-    savedList!.innerHTML = bookmarks.map((bookmark, index) => {
-      // Sanitize all user-controlled data before rendering
-      const safeSlug = encodeURIComponent(bookmark.slug || '');
-      const safeImage = escapeHtml(bookmark.image || '');
-      const safeCategory = escapeHtml(bookmark.category || '');
-      const safeTitle = escapeHtml(bookmark.title || '');
-      const safeSavedAt = escapeHtml(bookmark.savedAt || '');
-      const categoryEmoji = categoryEmojis[bookmark.category] || '📰';
+    if (savedList) {
+      savedList.innerHTML = bookmarks.map(function(bookmark, index) {
+        // Sanitize all user-controlled data before rendering
+        var safeSlug = encodeURIComponent(bookmark.slug || '');
+        var safeImage = escapeHtml(bookmark.image || '');
+        var safeCategory = escapeHtml(bookmark.category || '');
+        var safeTitle = escapeHtml(bookmark.title || '');
+        var safeSavedAt = escapeHtml(bookmark.savedAt || '');
+        var catEmoji = categoryEmojis[bookmark.category] || '📰';
 
-      return `
-        <div class="flex gap-4 p-4 rounded-xl glass group" data-index="${index}">
-          <a href="/posts/${safeSlug}" class="flex-shrink-0">
-            ${safeImage
-              ? `<img src="${safeImage}" alt="" class="w-24 h-20 object-cover rounded-lg" />`
-              : `<div class="w-24 h-20 rounded-lg gradient-bg flex items-center justify-center text-2xl">${categoryEmoji}</div>`
-            }
-          </a>
-          <div class="flex-1 min-w-0">
-            <span class="text-xs font-semibold text-cyan-400 uppercase tracking-wide">
-              ${categoryEmoji} ${safeCategory}
-            </span>
-            <a href="/posts/${safeSlug}" class="block">
-              <h3 class="font-bold text-lg group-hover:text-cyan-400 transition-colors line-clamp-2 mt-1">
-                ${safeTitle}
-              </h3>
-            </a>
-            <p class="text-sm text-gray-500 mt-1">Saved ${formatDate(safeSavedAt)}</p>
-          </div>
-          <button class="remove-btn flex-shrink-0 w-10 h-10 rounded-full glass flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500/20 hover:text-red-400" data-index="${index}" title="Remove">
-            ✕
-          </button>
-        </div>
-      `;
-    }).join('');
+        return '<div class="flex gap-4 p-4 rounded-xl glass group" data-index="' + index + '">' +
+          '<a href="/posts/' + safeSlug + '" class="flex-shrink-0">' +
+          (safeImage
+            ? '<img src="' + safeImage + '" alt="" class="w-24 h-20 object-cover rounded-lg" />'
+            : '<div class="w-24 h-20 rounded-lg gradient-bg flex items-center justify-center text-2xl">' + catEmoji + '</div>'
+          ) +
+          '</a>' +
+          '<div class="flex-1 min-w-0">' +
+          '<span class="text-xs font-semibold text-cyan-400 uppercase tracking-wide">' +
+          catEmoji + ' ' + safeCategory +
+          '</span>' +
+          '<a href="/posts/' + safeSlug + '" class="block">' +
+          '<h3 class="font-bold text-lg group-hover:text-cyan-400 transition-colors line-clamp-2 mt-1">' +
+          safeTitle +
+          '</h3>' +
+          '</a>' +
+          '<p class="text-sm text-gray-500 mt-1">Saved ' + formatDate(safeSavedAt) + '</p>' +
+          '</div>' +
+          '<button class="remove-btn flex-shrink-0 w-10 h-10 rounded-full glass flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500/20 hover:text-red-400" data-index="' + index + '" title="Remove">' +
+          '✕' +
+          '</button>' +
+          '</div>';
+      }).join('');
+    }
 
     // Add remove button listeners
-    document.querySelectorAll('.remove-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const index = parseInt((e.currentTarget as HTMLElement).dataset.index || '0');
-        const bookmarks = getBookmarks();
-        bookmarks.splice(index, 1);
-        saveBookmarks(bookmarks);
+    document.querySelectorAll('.remove-btn').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        var idx = parseInt(e.currentTarget.dataset.index || '0');
+        var bmarks = getBookmarks();
+        bmarks.splice(idx, 1);
+        saveBookmarks(bmarks);
         renderBookmarks();
       });
     });
   }
 
   // Clear all
-  clearAllBtn?.addEventListener('click', () => {
-    if (confirm('Remove all saved articles?')) {
-      localStorage.removeItem(BOOKMARKS_KEY);
-      renderBookmarks();
-    }
-  });
+  if (clearAllBtn) {
+    clearAllBtn.addEventListener('click', function() {
+      if (confirm('Remove all saved articles?')) {
+        localStorage.removeItem(BOOKMARKS_KEY);
+        renderBookmarks();
+      }
+    });
+  }
 
   // Initial render
   renderBookmarks();
