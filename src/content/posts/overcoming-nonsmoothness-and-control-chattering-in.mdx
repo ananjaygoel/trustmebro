@@ -1,0 +1,44 @@
+---
+title: "Overcoming Nonsmoothness and Control Chattering in Noncon..."
+excerpt: "With some hints for good numerics The post Overcoming Nonsmoothness and Control Chattering in Nonconvex Optimal Control Problems appeared..."
+category: "ai"
+date: 2025-12-30
+publishedAt: "2025-12-30T18:19:27.080Z"
+image: "https://contributor.insightmediagroup.io/wp-content/uploads/2025/12/car_vid.mp4"
+author: "certified yapper 🗣️"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Alright so With some hints for good numerics The post Overcoming Nonsmoothness and Control Chattering in Nonconvex Optimal Control Problems appeared first on Towards Data Science.
+
+Introduction One might encounter a number of frustrating difficulties when trying to numerically solve a difficult nonlinear and nonconvex optimal control problem. In this article I will consider such a difficult problem, that of finding the shortest path between two points through an obstacle field for a well-known model of a wheeled robot. (we're not making this up)
+
+I will examine common issues that arise when trying to solve such a problem numerically (in particular, nonsmoothness of the cost and chattering in the control) and how to address them.
+
+## The Details
+
+Examples help to clarify the concepts. 1 Outline First, Ill introduce the car model that well study throughout the article.
+
+Then, Ill state the optimal control problem in all its detail. The next section then exposes all the numerical difficulties that arise, finishing with a sensible nonlinear programme that attempts to deal with them.
+
+## Why This Matters
+
+Ill then present the details of a homotopy method , which helps in guiding the solver towards a good solution. Ill then show you some numerical experiments to clarify everything, and finish off with references for further reading. A car model Well consider the following equations of motion, \[ \begin(align) \dot x_1(t) = u_1(t)\cos(x_3(t)), \\ \dot x_2(t) = u_1(t)\sin(x_3(t)), \\ \dot x_3(t) = u_2(t), \end(align) \] where \(t \geq 0\) denotes time, \(x_1\in\mathbb(R)\) and \(x_2\in\mathbb(R)\) denote the cars position, \(x_3\in\mathbb(R)\) denotes its orientation, \(u_1\in\mathbb(R)\) its velocity and \(u_2\in\mathbb(R)\) its rate of turning.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- This is a common model of a differential-drive robot , which consists of two wheels that can turn independently.
+- This allows it to drive forwards and backwards, rotate when stationary and perform other elaborate driving manoeuvres.
+- Note that, because \(u_1\) can be 0, the model allows the car to stop instantaneously.
+- A differential drive robot, as modelled of motion.
+
+## The Bottom Line
+
+Note that, because \(u_1\) can be 0, the model allows the car to stop instantaneously. A differential drive robot, as modelled of motion.
+
+Sound off in the comments.
