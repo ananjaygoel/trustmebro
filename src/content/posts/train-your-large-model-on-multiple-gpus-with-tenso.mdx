@@ -1,0 +1,37 @@
+---
+title: "Train Your Large Model on Multiple GPUs with Tensor Paral..."
+excerpt: "This article is divided into five parts; they are: • An Example of Tensor Parallelism • Setting Up Tensor Parallelism • Preparing Model f..."
+category: "ai"
+date: 2026-01-01
+publishedAt: "2026-01-01T06:21:04.609Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/01/seth-kane-XOEAHbE_vO8-unsplash-scaled.jpg"
+author: "ur news bff 💕"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+So get this: This article is divided into five parts; they are: • An Example of Tensor Parallelism • Setting Up Tensor Parallelism • Preparing Model for Tensor Parallelism • Train a Model with Tensor Parallelism • Combining Tensor Parallelism with FSDP Tensor parallelism originated from the Megatron-LM paper.
+
+Train Your Large Model on Multiple GPUs with Tensor Parallelism By Adrian Tam on in Training Transformer Models 0 Post Tensor parallelism is a model-parallelism technique that shards a tensor along a specific dimension. It distributes the computation of a tensor across multiple devices with minimal communication overhead. (let that sink in)
+
+This technique is suitable for models with large parameter tensors where even a single matrix multiplication is too large to fit on a single GPU.
+
+## The Details
+
+In this article, you will learn how to use tensor parallelism. In particular, you will learn about: What is tensor parallelism How to design a tensor parallel plan How to apply tensor parallelism in PyTorch Lets get kicked off!
+
+Overview This article is divided into five parts; they are: An Example of Tensor Parallelism Setting Up Tensor Parallelism Preparing Model for Tensor Parallelism Train a Model with Tensor Parallelism Combining Tensor Parallelism with FSDP An Example of Tensor Parallelism Tensor parallelism originated from the Megatron-LM paper. This technique does not apply to all operations; but, certain operations, such as matrix multiplication, are implemented with sharded computation.
+
+## Why This Matters
+
+Column-wise tensor parallel: You sharded the weight $\mathbf(W)$ into columns, and applied the matrix multiplication $\mathbf(XW)=\mathbf(Y)$ to produce sharded output that needs to be concatenated. Lets consider a simple matrix-matrix multiplication operation as follows: It is a $3\times 4$ matrix $\mathbf(X)$ multiplied by a $4\times 6$ matrix $\mathbf(W)$ to produce a $3\times 6$ matrix $\mathbf(Y)$. You can indeed break it down into two matrix multiplications, one is $\mathbf(X)$ times a $4\times 3$ matrix $\mathbf(W)_1$ to produce a $3\times 3$ matrix $\mathbf(Y)_1$, and the other is $\mathbf(X)$ times another $3\times 2$ matrix $\mathbf(W)_2$ to produce a $3\times 3$ matrix $\mathbf(Y)_2$.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## The Bottom Line
+
+You can indeed break it down into two matrix multiplications, one is $\mathbf(X)$ times a $4\times 3$ matrix $\mathbf(W)_1$ to produce a $3\times 3$ matrix $\mathbf(Y)_1$, and the other is $\mathbf(X)$ times another $3\times 2$ matrix $\mathbf(W)_2$ to produce a $3\times 3$ matrix $\mathbf(Y)_2$.
+
+Is this a W or an L? You decide.
