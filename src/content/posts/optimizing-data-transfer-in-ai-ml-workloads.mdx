@@ -1,0 +1,37 @@
+---
+title: "Optimizing Data Transfer in AI/ML Workloads"
+excerpt: "A deep dive on data transfer bottlenecks, their identification, and their resolution with the help of NVIDIA Nsight™ Systems The post Opt..."
+category: "ai"
+date: 2026-01-04
+publishedAt: "2026-01-04T12:23:18.842Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "your fave news bestie 💅"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Alright so A deep dive on data transfer bottlenecks, their identification, and their resolution with the help of NVIDIA Nsight™ Systems The post Optimizing Data Transfer in AI/ML Workloads appeared first on Towards Data Science.
+
+In a typical AI/ML workload , a deep learning model is executed on a dedicated GPU accelerator using input data batches it receives from a CPU host. Ideally, the GPU — the more expensive resource — should be maximally utilized, with minimal periods of idle time. (we're not making this up)
+
+In particular, this means that every time it completes its execution on a batch, the subsequent batch will be “ripe and ready” for processing.
+
+## The Details
+
+When this does not happen, the GPU idles while waiting for input data — a common performance bottleneck often referred to as GPU starvation. , see A Caching Strategy for Identifying Bottlenecks on the Data Input Pipeline ), we discussed common causes of this issue, including: inefficient storage retrieval, CPU resource exhaustion, and host-to-device transfer bottlenecks.
+
+In this post, we zoom in on data transfer bottlenecks and revisit their identification and resolution — this time with the help of NVIDIA Nsight™ Systems (nsys) , a performance profiler designed for analyzing the system-wide activity of workloads running on NVIDIA GPUs. PyTorch Profiler Readers familiar with our work may be surprised at the mention of NVIDIA Nsight profiler rather than PyTorch Profiler .
+
+## Why This Matters
+
+In our previous posts we have advocated strongly for the use of PyTorch Profiler in AI/ML model development as a tool for identifying and optimizing runtime performance. Time and again, we have demonstrated its app to a wide variety of performance issues. Its use does not require any special installations and can be run without special OS permissions.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## The Bottom Line
+
+Its use does not require any special installations and can be run without special OS permissions. NVIDIA Nsight profiler, on the other hand, requires a dedicated system setup (or a dedicated NVIDIA container ) and — for some of its features — elevated permissions, making its use less accessible and more complicated than PyTorch Profiler.
+
+Is this a W or an L? You decide.
