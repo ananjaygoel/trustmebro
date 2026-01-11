@@ -1,0 +1,42 @@
+---
+title: "Quantizing LLMs Step-by-Step: Converting FP16 Models to GGUF"
+excerpt: "Large language models like LLaMA, Mistral, and Qwen have billions of parameters that demand a lot of memory and compute power."
+category: "ai"
+date: 2026-01-11
+publishedAt: "2026-01-11T12:23:47.557Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/01/mlm-How-to-Quantize-Your-Own-Model-From-FP16-to-GGUF.png"
+author: "your fave news bestie 💅"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+Breaking it down: Large language models like LLaMA, Mistral, and Qwen have billions of parameters that demand a lot of memory and compute power.
+
+Quantizing LLMs Step-by-Step: Converting FP16 Models to GGUF By Kanwal Mehreen on in Language Models 0 Post In this article, you will learn how quantization shrinks large language models and how to convert an FP16 checkpoint into an efficient GGUF file you can and run locally. Topics we will cover include: What precision types (FP32, FP16, 8-bit, 4-bit) mean for model size and speed How to use huggingface_hub to fetch a model and authenticate How to convert to GGUF with llama. (shocking, we know)
+
+Cpp and upload the result to Hugging Face And away we go.
+
+## The Details
+
+For example, running LLaMA 7B in full precision can require over 12 GB of VRAM, making it impractical for many users. You can check the details in this Hugging Face discussion .
+
+Don’t worry about what full precision means yet; we’ll break it down soon. The main idea is this: these models are too big to run on standard hardware without help.
+
+## Why This Matters
+
+Quantization allows independent researchers and hobbyists to run large models on personal computers size of the model without severely impacting performance. In this guide, we’ll explore how quantization works, what different precision formats mean, and then walk through quantizing a sample FP16 model into a GGUF format and uploading it to Hugging Face . At a basic level, quantization is about making a model smaller without breaking it.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## Key Takeaways
+
+- Large language models are made up of billions of numerical values called weights .
+- These numbers control how strongly different parts of the network influence each other when producing an output.
+
+## The Bottom Line
+
+Large language models are made up of billions of numerical values called weights . These numbers control how strongly different parts of the network influence each other when producing an output.
+
+We want to hear your thoughts on this.
