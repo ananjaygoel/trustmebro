@@ -1,0 +1,44 @@
+---
+title: "Optimizing Data Transfer in Batched AI/ML Inference Workl..."
+excerpt: "A deep dive on data transfer bottlenecks, their identification, and their resolution with the help of NVIDIA Nsight™ Systems - part 2 The..."
+category: "ai"
+date: 2026-01-12
+publishedAt: "2026-01-12T12:28:40.420Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "certified yapper 🗣️"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Alright so A deep dive on data transfer bottlenecks, their identification, and their resolution with the help of NVIDIA Nsight™ Systems - part 2 The post Optimizing Data Transfer in Batched AI/ML Inference Workloads appeared first on Towards Data Science.
+
+This is a sequel post to Optimizing Data Transfer in AI/ML Workloads where we demonstrated the use of NVIDIA Nsight™ Systems (nsys) in studying and solving the common data-loading bottleneck — occurrences where the GPU idles while it waits for input data from the CPU. In this post we focus our attention on data travelling in the opposite direction, from the GPU device to the CPU host. (shocking, we know)
+
+More specifically, we address AI/ML inference workloads where the size of the output being returned is relatively high.
+
+## The Details
+
+Common examples include: 1) running a scene segmentation (per-pixel labeling) model on batches of high-resolution images and 2) capturing high dimensional feature embeddings of input sequences using an encoder model (e. , to create a vector database ).
+
+Both examples involve executing a model on an input batch and then copying the output tensor from the GPU to the CPU for additional processing, storage, and/or over-the-network communication. GPU-to-CPU memory copies of the model output typically receive much less attention in optimization tutorials than the CPU-to-GPU copies that feed the model (e.
+
+## Why This Matters
+
+But their potential impact on model efficiency and execution costs can be just as detrimental. Also, while optimizations to CPU-to-GPU data-loading are well documented and easy to implement, optimizing data copy in the opposite direction requires a bit more manual labor. In this post we will apply the same strategy we used in our previous post: We will define a toy model and use nsys profiler to identify and solve performance bottlenecks.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- We will run our experiments on an Amazon EC2 g6e.
+- 2xlarge instance (with an NVIDIA L40S GPU) running an AWS Deep Learning (Ubuntu 24.
+- 8) , nsys-cli profiler (version 2025.
+- 1), and the NVIDIA Tools Extension (NVTX) library.
+
+## The Bottom Line
+
+1), and the NVIDIA Tools Extension (NVTX) library. Disclaimers The code we will is intended for demonstrative purposes; please do not rely on its correctness or optimality.
+
+What do you think about all this?
