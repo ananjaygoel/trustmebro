@@ -1,0 +1,37 @@
+---
+title: "Time Series Isn’t Enough: How Graph Neural Networks Chang..."
+excerpt: "Why modeling SKUs as a network reveals what traditional forecasts miss The post Time Series Isn’t Enough: How Graph Neural Networks Chang..."
+category: "ai"
+date: 2026-01-19
+publishedAt: "2026-01-19T12:29:35.561Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "ur news bff 💕"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Here's the thing: Why modeling SKUs as a network reveals what traditional forecasts miss The post Time Series Isn’t Enough: How Graph Neural Networks Change Demand Forecasting appeared first on Towards Data Science.
+
+Demand forecasting in supply-chain planning has traditionally been treated as a time-series problem. Each SKU is modeled independently. (and honestly, same)
+
+A rolling time window (say, last 14 days) is used to predict tomorrows sales.
+
+## The Details
+
+Seasonality is captured, promotions are added, and forecasts are reconciled downstream. And yet, despite increasingly sophisticated models, the usual problems persist: Chronic over-and under-stocking Emergency production changes Excess inventory sitting in the wrong place High forecast accuracy on paper, but weak planning outcomes in practice The issue is that demand in a supply chain is not independent.
+
+As an example, this is what just 12 SKUs from a typical supply chain look like when you map their d plants, product groups, subgroups, and storage locations. So when demand shifts in one corner of the network, the effects are felt throughout the network.
+
+## Why This Matters
+
+In this article, we step outside the model-first thinking and look at the problem the way a supply chain actually behaves — as a connected operational system. Using a real FMCG dataset, we show why even a simple graph-based neural network(GNN) fundamentally outperforms traditional approaches, and what that means for both business leaders and data scientists. A real supply chain experiment We tested this idea on a real FMCG dataset ( SupplyGraph ) that combines two views of the business: Static supply-chain relationships The dataset has 40 active SKUs, 9 plants, 21 product groups, 36 sub-groups and 13 storage locations.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## The Bottom Line
+
+From a planning standpoint, this network encodes institutional knowledge that often lives only in planners’ heads: “If this SKU spikes, these others will feel it. ” Temporal operational signals and sales outcomes The dataset has temporal data for 221 days.
+
+Sound off in the comments.
