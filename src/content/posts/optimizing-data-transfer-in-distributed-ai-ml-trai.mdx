@@ -1,0 +1,43 @@
+---
+title: "Optimizing Data Transfer in Distributed AI/ML Training Wo..."
+excerpt: "A deep dive on data transfer bottlenecks, their identification, and their resolution with the help of NVIDIA Nsight™ Systems – part 3 The..."
+category: "ai"
+date: 2026-01-24
+publishedAt: "2026-01-24T06:19:50.338Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "the tea spiller ☕"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Here's the thing: A deep dive on data transfer bottlenecks, their identification, and their resolution with the help of NVIDIA Nsight™ Systems – part 3 The post Optimizing Data Transfer in Distributed AI/ML Training Workloads appeared first on Towards Data Science.
+
+This is the third part of a series of posts on optimizing data transfer using NVIDIA Nsight™ Systems (nsys) profiler. Part one focused on CPU-to-GPU data copies, and part two on GPU-to-CPU copies. (we're not making this up)
+
+In this post, we turn our attention to data transfer between GPUs.
+
+## The Details
+
+Nowadays, it is quite common for AI/ML training — particularly of large models — to be distributed across multiple GPUs. While there are many different schemes for performing such distribution, what they all have in common is their reliance on the constant transfer of data — such as gradients, weights, statistics, and/or metrics — between the GPUs, throughout training.
+
+As with the other types of data transfer we analyzed in our previous posts, here too, a weak implementation could easily lead to under-utilization of compute resources and the unjustified inflation of training costs. Optimizing GPU-to-GPU communication is an active area of research and innovation involving both hardware and software development.
+
+## Why This Matters
+
+In this post, we will focus on the most common form of distributed training — data-distributed training. In data-distributed training, identical copies of the ML model are maintained on each GPU. Each input batch is evenly distributed among the GPUs, each of which executes a training step to calculate the local gradients.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## Key Takeaways
+
+- The local gradients are then d and averaged across the GPUs, resulting in an identical gradient update to each of the model copies.
+- Disclaimers The code we will in this post is intended for demonstrative purposes; please do not rely on its accuracy or optimality.
+- Please do not interpret our mention of any tool, framework, library, service, or platform as an endorsement of its use.
+
+## The Bottom Line
+
+Please do not interpret our mention of any tool, framework, library, service, or platform as an endorsement of its use. Thanks to Yitzhak Levi for his contributions to this post.
+
+Thoughts? Drop them below.
