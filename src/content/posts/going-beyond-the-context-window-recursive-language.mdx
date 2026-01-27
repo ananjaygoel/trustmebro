@@ -1,0 +1,42 @@
+---
+title: "Going Beyond the Context Window: Recursive Language Model..."
+excerpt: "Explore a practical approach to analysing massive datasets with LLMs The post Going Beyond the Context Window: Recursive Language Models ..."
+category: "ai"
+date: 2026-01-27
+publishedAt: "2026-01-27T18:26:17.965Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "the tea spiller ☕"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Real talk: Explore a practical approach to analysing massive datasets with LLMs The post Going Beyond the Context Window: Recursive Language Models in Action appeared first on Towards Data Science.
+
+In GenAI applications , context fr is everything. The quality of an LLM’s output is tightly linked to the quality and amount of information you provide. (we're not making this up)
+
+In practice, many real-world use cases come with massive contexts: code generation over large codebases, querying complex knowledge systems, or even long, meandering chats while researching the immaculate holiday destination (we’ve all been there).
+
+## The Details
+
+Unfortunately, LLMs can only work efficiently with a limited amount of context. And this isn’t just about the hard limits of the context window, especially now that frontier models support hundreds of thousands, or even millions, of tokens.
+
+And those limits are continuing to grow. The bigger challenge is a phenomenon known as context rot , where model performance degrades as the context length increases.
+
+## Why This Matters
+
+This effect is clearly demonstrated in the paper “RULER: What’s the Real Context Size of Your Long-Context Language Models? The authors introduce RULER, a new benchmark for evaluating long-context performance, and test a range of models. The results show a consistent pattern: as context length grows, performance drops majorly across all models.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- Figure from the paper Hsieh et al, 2024 | source In their recent paper “Recursive Language Models” , Zhang et al.
+- Propose a promising approach to tackling the context rot problem.
+
+## The Bottom Line
+
+In this article, I’d like to take a closer look at this idea and explore how it works in practice, leveraging DSPy’s just added support for this inference strategy. Recursive Language Models Recursive Language Models (RLMs) were introduced to address performance degradation as context length grows, and to enable LLMs to work with large contexts (up to two orders of magnitude beyond the model’s native context window).
+
+What's your take on this whole situation?
