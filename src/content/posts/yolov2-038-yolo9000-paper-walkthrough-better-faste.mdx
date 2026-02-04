@@ -1,0 +1,44 @@
+---
+title: "YOLOv2 YOLO9000 Paper Walkthrough: Better, Faster,..."
+excerpt: "From YOLOv1 to YOLOv2: prior box, k-means, Darknet-19, passthrough layer, and more The post YOLOv2 YOLO9000 Paper Walkthrough: Bet..."
+category: "ai"
+date: 2026-02-04
+publishedAt: "2026-02-04T01:11:16.957Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "main character energy 💫"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Breaking it down: From YOLOv1 to YOLOv2: prior box, k-means, Darknet-19, passthrough layer, and more The post YOLOv2 YOLO9000 Paper Walkthrough: Better, Faster, Stronger appeared first on Towards Data Science.
+
+Better, Faster, Stronger — that’s the ambitious title the authors chose for their paper introducing both YOLOv2 and YOLO9000. The title of the paper itself is “ YOLO9000: Better, Faster, Stronger ” [1], which was published back in December 2016. (wild, right?)
+
+The main focus of this paper is indeed to create YOLO9000.
+
+## The Details
+
+Despite the title of the paper, the model proposed in the study is called YOLOv2. The name YOLO9000 is their proposed algorithm specialized to detect over 9000 object categories which is built on top of the YOLOv2 architecture.
+
+In this article I am going to focus on how YOLOv2 works and how to implement the architecture from scratch with PyTorch. I will also talk a little bit about how the authors at some point wrapped up up with YOLO9000.
+
+## Why This Matters
+
+From YOLOv1 to YOLOv2 As the name suggests, YOLOv2 is the advancement of YOLOv1. Thus, to understand YOLOv2, I recommend you read my previous article about YOLOv1 [2] and its loss function [3] before reading this one. There were two main problems raised on YOLOv1: first, the high localization error, or in other words the bounding box predictions made is not quite accurate.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- Second, the low recall, which is a condition where the model is unable to detect all objects within the image.
+- There were lots of modifications made on YOLOv1 to address the above issues, which in general the changes they made are summarized in Figure 1.
+- We are going to discuss each of these modifications one the subsequent sub-sections.
+- The changes the authors made on YOLOv1 to build YOLOv2 [1].
+
+## The Bottom Line
+
+It was first introduced back when BN layer was not quite popular just yet, which was the reason why YOLOv1 do not utilize this normalization mechanism in the first place. It is already proven that BN layer is able to stabilize training, speed up convergence, dan regularize model.
+
+Are you here for this or nah?
