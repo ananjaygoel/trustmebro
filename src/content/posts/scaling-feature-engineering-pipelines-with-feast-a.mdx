@@ -1,0 +1,42 @@
+---
+title: "Scaling Feature Engineering Pipelines with Feast and Ray"
+excerpt: "Utilizing feature stores like Feast and distributed compute frameworks like Ray in production ML systems The post Scaling Feature Enginee..."
+category: "ai"
+date: 2026-02-26
+publishedAt: "2026-02-26T01:13:17.662Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "main character energy 💫"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Here's the thing: Utilizing feature stores like Feast and distributed compute frameworks like Ray in production ML systems The post Scaling Feature Engineering Pipelines with Feast and Ray appeared first on Towards Data Science.
+
+In a recent project involving the build of propensity models to predict users’ prospective purchases, I encountered feature engineering issues that I had seen numerous times before. These challenges can be broadly classified into two categories: 1) Inadequate Feature Management Definitions, lineage, and versions of features generated were not systematically tracked, there reuse and reproducibility of model runs. (and honestly, same)
+
+Feature logic was manually maintained across separate training and inference scripts, leading to a risk of inconsistent features for training and inference (i.
+
+## The Details
+
+, training-serving skew) Features were stored as flat files (e. , CSV), which lack schema enforcement and support for low-latency or scalable access.
+
+2) High Feature Engineering Latency Heavy feature engineering workloads often arise when dealing with time-series data, where multiple window-based transformations must be computed. When these computations are executed sequentially rather than optimized for parallel execution, the latency of feature engineering can increase majorly.
+
+## Why This Matters
+
+In this article, I clearly explain the concepts and implementation of feature stores ( Feast ) and distributed compute frameworks ( Ray ) for feature engineering in production ML (ML) pipelines. Contents (1) Example Use Case (2) Understanding Feast and Ray (3) Roles of Feast and Ray in Feature Engineering (4) Code Walkthrough You can find the accompanying GitHub repo here . (1) Example Use Case (i) Objective To illustrate the capabilities of Feast and Ray, our example scenario involves building an ML pipeline to train and serve a 30-day customer purchase propensity model.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- (ii) Dataset We will use the UCI Online Retail dataset (CC BY 4.
+- 0) , which comprises purchase transactions for a UK online retailer between December 2010 and December 2011.
+
+## The Bottom Line
+
+(ii) Dataset We will use the UCI Online Retail dataset (CC BY 4. 0) , which comprises purchase transactions for a UK online retailer between December 2010 and December 2011.
+
+Is this a W or an L? You decide.
