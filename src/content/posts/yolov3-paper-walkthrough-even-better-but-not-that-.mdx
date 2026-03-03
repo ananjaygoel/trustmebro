@@ -1,0 +1,42 @@
+---
+title: "YOLOv3 Paper Walkthrough: Even Better, But Not That Much"
+excerpt: "A PyTorch implementation on the YOLOv3 architecture from scratch The post YOLOv3 Paper Walkthrough: Even Better, But Not That Much appear..."
+category: "ai"
+date: 2026-03-03
+publishedAt: "2026-03-03T06:38:46.021Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "main character energy 💫"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Listen up: A PyTorch implementation on the YOLOv3 architecture from scratch The post YOLOv3 Paper Walkthrough: Even Better, But Not That Much appeared first on Towards Data Science.
+
+YOLOv2, which used to be the state-of-the-art object detection algorithm, looked to become obsolete thanks to the appearance of other methods like SSD (Single Shot Multibox Detector), DSSD (Deconvolutional Single Shot Detector), and RetinaNet. Finally, after two years since the introduction of YOLOv2, the authors decided to improve the algorithm where they at some point came up with the next YOLO version reported in a paper titled “ YOLOv3: An Incremental Improvement ” [1]. (and honestly, same)
+
+As the title suggests, there were indeed not many things the authors improved upon YOLOv2 for the underlying algorithm.
+
+## The Details
+
+But hey, when it comes to performance, it actually looks pretty wild. In this article I am going to talk about the modifications the authors made to YOLOv2 to create YOLOv3 and how to implement the model architecture from scratch with PyTorch.
+
+I highly recommend you reading my previous article about YOLOv1 [2, 3] and YOLOv2 [4] before this one, unless you already got a strong foundation in how these two earlier versions of YOLO work. What Makes YOLOv3 Better Than YOLOv2 The Vanilla Darknet-53 The modification the authors made was mainly related to the architecture, in which they proposed a backbone model referred to as Darknet-53.
+
+## Why This Matters
+
+See the detailed structure of this network in Figure 1. As the name suggests, this model is an improvement upon the Darknet-19 used in YOLOv2. If you count the number of layers in Darknet-53, you will find that this network consists of 52 convolution layers and a single fully-connected layer at the end.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- Keep in mind that later when we implement it on YOLOv3, we will feed it with images of size 416×416 rather than 256×256 as written in the figure.
+- The vanilla Darknet-53 architecture [1].
+
+## The Bottom Line
+
+The vanilla Darknet-53 architecture [1]. If you’re familiar with Darknet-19, you must remember that it performs spatial downsmapling using maxpooling operations after every stack of several convolution layers.
+
+We want to hear your thoughts on this.
