@@ -1,0 +1,43 @@
+---
+title: "Agentic RAG vs Classic RAG: From a Pipeline to a Control ..."
+excerpt: "A practical guide to choosing between single-pass pipelines and adaptive retrieval loops based on your use case's complexity, cost, and r..."
+category: "ai"
+date: 2026-03-03
+publishedAt: "2026-03-03T12:35:06.625Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "certified yapper 🗣️"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Not gonna lie, A practical guide to choosing between single-pass pipelines and adaptive retrieval loops based on your use case's complexity, cost, and reliability requirements The post Agentic RAG vs Classic RAG: From a Pipeline to a Control Loop appeared first on Towards Data Science.
+
+Introduction : Why this comparison matters RAG began with a straightforward goal: ground model outputs in external evidence rather than relying solely on model weights. Most teams implemented this as a pipeline: retrieve once, then generate an answer with citations. (it feels like chaos)
+
+Over the last year, more teams have kicked off moving from that one-pass pipeline towards agent-like loops that can retry retrieval and call tools when the first pass is weak.
+
+## The Details
+
+Gartner even forecasts that 33% of enterprise software applications will include agentic AI by 2028 , a sign that agentic patterns are becoming mainstream rather than niche. Agentic RAG changes the system structure.
+
+Retrieval becomes a control loop: retrieve, reason, decide, then retrieve again or stop. This mirrors the core pattern of reason and act approaches, such as ReAct , in which the system alternates between reasoning and action to gather new evidence.
+
+## Why This Matters
+
+But, agents do not enhance RAG without tradeoffs. Introducing loops and tool calls increases adaptability but reduces predictability. Correctness, latency, observability, and failure modes all change when debugging a process instead of a single retrieval step.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- Classic RAG: the pipeline mental model Classic RAG is straightforward to understand because it follows a linear process.
+- A user query is received, the system retrieves a fixed set of passages, and the model generates an answer based on that single retrieval.
+- If issues arise, debugging usually focuses on retrieval relevance or context assembly.
+
+## The Bottom Line
+
+A user query is received, the system retrieves a fixed set of passages, and the model generates an answer based on that single retrieval. If issues arise, debugging usually focuses on retrieval relevance or context assembly.
+
+Are you here for this or nah?
