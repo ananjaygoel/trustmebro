@@ -1,0 +1,37 @@
+---
+title: "AI in Multiple GPUs: ZeRO FSDP"
+excerpt: "Learn how Zero Redundancy Optimizer works, how to implement it from scratch, and how to use it in PyTorch The post AI in Multiple GPUs: Z..."
+category: "ai"
+date: 2026-03-06
+publishedAt: "2026-03-06T06:36:03.483Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "main character energy 💫"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+So basically Learn how Zero Redundancy Optimizer works, how to implement it from scratch, and how to use it in PyTorch The post AI in Multiple GPUs: ZeRO & FSDP appeared first on Towards Data Science.
+
+This article is part of a series about distributed AI across multiple GPUs: Part 1: Understanding the Host and Device Paradigm Part 2: Point-to-Point and Collective Operations Part 3: How GPUs Communicate Part 4: Gradient Accumulation & Distributed Data Parallelism (DDP) Part 5: ZeRO (this article) Part 6: Tensor Parallelism (coming soon) Introduction In the previous post, we saw how Distributed Data Parallelism (DDP) speeds up training across GPUs. DDP solves the throughput problem, but it introduces a new challenge: memory redundancy . (yes, really)
+
+In vanilla DDP, every GPU holds a complete copy of the model parameters, gradients, and optimizer states.
+
+## The Details
+
+For large models like GPT-3 (175B parameters), this redundancy becomes a big waste of precious VRAM. Image by author: Model, gradients and optimizer are redundant across GPUs in regular DDP ZeRO (Zero Redundancy Optimizer) solves this.
+
+There are three levels: ZeRO-1 partitions only optimizer states ZeRO-2 partitions optimizer states + gradients ZeRO-3 partitions optimizer states + gradients + model parameters ZeRO isn’t a parallelism technique because all GPUs still run the same forward and backward passes. It’s a memory optimization strategy that eliminates redundancy across GPUs, letting you train larger models on the same hardware.
+
+## Why This Matters
+
+The Memory Problem in DDP Let’s break down what actually consumes memory during training. For a model with parameters: Model Parameters : values (the weights of your neural network) Gradients : values (one gradient per parameter) Optimizer States (Adam) : values (first moment and second moment for each parameter) Activations : Intermediate outputs stored during forward pass for use in backward pass The first three grow with model size and are redundant across GPUs in DDP. Activations grow with batch size, sequence length, and # neurons, and are unique per GPU since each GPU processes different data.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## The Bottom Line
+
+Activations grow with batch size, sequence length, and # neurons, and are unique per GPU since each GPU processes different data. ZeRO doesn’t touch activation memory.
+
+We want to hear your thoughts on this.
