@@ -1,0 +1,37 @@
+---
+title: "Understanding Context and Contextual Retrieval in RAG"
+excerpt: "Why traditional RAG loses context and how contextual retrieval dramatically improves retrieval accuracy The post Understanding Context an..."
+category: "ai"
+date: 2026-03-08
+publishedAt: "2026-03-08T01:15:24.802Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "vibes curator ✨"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Not gonna lie, Why traditional RAG loses context and how contextual retrieval dramatically improves retrieval accuracy The post Understanding Context and Contextual Retrieval in RAG appeared first on Towards Data Science.
+
+In my latest post , I talked about how hybrid search can be utilised to majorly improve the effectiveness of a RAG pipeline. RAG, in its basic version, using just semantic search on embeddings, can be effective, allowing us to utilise the power of AI in our own documents. (yes, really)
+
+Nonetheless, semantic search, as powerful as it is, when utilised in large knowledge bases, can sometimes miss exact matches of the users query, even if they exist in the documents.
+
+## The Details
+
+This weakness of traditional RAG can be dealt with by adding a keyword search component in the pipeline, like BM25. In this way, hybrid search, combining semantic and keyword search, leads to much more comprehensive results and majorly improves the performance of a RAG system.
+
+Be that as it may, even when using RAG with hybrid search, we can still sometimes miss important information that is scattered in different parts of the document. This can happen because when a document is broken down into text chunks, sometimes the context — that is, the surrounding text of the chunk that forms part of its meaning — is took an L.
+
+## Why This Matters
+
+This can especially happen for text that is complex, with meaning that is interconnected and scattered across several pages, and inevitably cannot be wholly included within a single chunk. Think, for example, referencing a table or an image across several different text sections without explicitly defining to which table we are refering to (e. , as shown in the Table, profits increased by 6% — which table?
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## The Bottom Line
+
+So, when the text chunks are then retrieved, they are stripped down of their context, sometimes resulting in the retrieval of irrelevant chunks and generation of irrelevant responses. This loss of context was a major issue for RAG systems for some time, and several not-so-successful solutions have been explored for improving it.
+
+Are you here for this or nah?
