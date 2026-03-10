@@ -1,0 +1,43 @@
+---
+title: "Hybrid Neuro-Symbolic Fraud Detection: Guiding Neural Net..."
+excerpt: "I fr thought I was onto something big: add a couple of simple domain rules to the loss function, and watch fraud detection just skyrocket..."
+category: "ai"
+date: 2026-03-10
+publishedAt: "2026-03-10T18:35:58.845Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "vibes curator ✨"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Listen up: I fr thought I was onto something big: add a couple of simple domain rules to the loss function, and watch fraud detection just skyrocket on super-imbalanced data.
+
+The first run looked insane… until I fixed a sneaky threshold bug and ran the whole thing across five different random seeds. Suddenly the “huge win” mostly evaporated. (and honestly, same)
+
+What I wrapped up up with instead was honestly way more useful: a reminder that on rare-event problems like fraud, the way we measure success (thresholds, seeds, metri Abstract Credit card fraud datasets are deadass imbalanced, with positive rates below 0.
+
+## The Details
+
+Standard neural networks trained with weighted binary cross-entropy often achieve high ROC-AUC but struggle to identify suspicious transactions under threshold-sensitive metrics. I propose a Hybrid Neuro-Symbolic (HNS) approach that incorporates domain knowledge directly into the training objective as a differentiable rule loss — encouraging the model to assign high fraud probability to transactions with unusually large amounts and atypical PCA signatures.
+
+On the Kaggle Credit Card Fraud dataset, the hybrid achieves ROC-AUC of 0. 005 across 5 random seeds, compared to 0.
+
+## Why This Matters
+
+003 for the pure neural baseline under symmetric evaluation. A key practical finding: on imbalanced data, threshold selection strategy affects F1 as much as model architecture — both models must be evaluated with the same approach for any comparison to be meaningful. Code and reproducibility materials are available at GitHub .
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## Key Takeaways
+
+- The Problem: When ROC-AUC Lies I had a fraud dataset at 0.
+- Trained a weighted BCE network, got ROC-AUC of 0.
+- Then I pulled up the score distributions and threshold-dependent metrics.
+
+## The Bottom Line
+
+That knowledge just never makes it into the training loop. What if I encoded that analyst intuition as a soft constraint directly in the loss function — something the network has to satisfy while also fitting the labels?
+
+Is this a W or an L? You decide.
