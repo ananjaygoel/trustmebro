@@ -1,0 +1,37 @@
+---
+title: "From Text to Tables: Feature Engineering with LLMs for Ta..."
+excerpt: "While large language models (LLMs) are typically used for conversational purposes in use cases that revolve around natural language inter..."
+category: "ai"
+date: 2026-03-12
+publishedAt: "2026-03-12T01:07:39.979Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/02/mlm-turning-raw-text-into-ml-features-with-llms.png"
+author: "the tea spiller ☕"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+Real talk: While large language models (LLMs) are typically used for conversational purposes in use cases that revolve around natural language interactions, they can also assist with tasks like feature engineering on complex datasets.
+
+From Text to Tables: Feature Engineering with LLMs for Tabular Data By Iván Palomares Carrascosa on in Language Models 0 Post In this article, you will learn how to use a pre-trained large language model to extract structured features from text and combine them with numeric columns to train a supervised classifier. Topics we will cover include: Creating a toy dataset with mixed text and numeric fields for classification Using a Groq-hosted LLaMA model to extract JSON features from ticket text with a Pydantic schema Training and evaluating a scikit-learn classifier on the engineered tabular dataset Lets not waste any more time. (wild, right?)
+
+Specifically, you can use pre-trained LLMs from providers like Groq (for example, models from the Llama family) to undertake data transformation and preprocessing tasks, including turning unstructured data like text into fully structured, tabular data that can be used to fuel predictive ML models .
+
+## The Details
+
+In this article, I will guide you through the full process of applying feature engineering to structured text, turning it into tabular data suitable for a ML model namely, a classifier trained on features created from text LLM. Setup and Imports First, we will make all the necessary imports for this practical example: import pandas as pd import json from pydantic import BaseModel, Field from openai import OpenAI from google.
+
+Colab import userdata from sklearn. Ensemble import RandomForestClassifier from sklearn.
+
+## Why This Matters
+
+Model_selection import train_test_split from sklearn. Metrics import classification_report from sklearn.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## The Bottom Line
+
+This story is still developing, and we'll keep you updated as more info drops.
+
+Are you here for this or nah?
