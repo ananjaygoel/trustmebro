@@ -1,0 +1,44 @@
+---
+title: "An Intuitive Guide to MCMC (Part I): The Metropolis-Hasti..."
+excerpt: "Tired of the AI hype? Let's talk about the probabilistic algorithms actually driving high-end quantitative finance."
+category: "ai"
+date: 2026-03-12
+publishedAt: "2026-03-12T06:41:46.901Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "ur news bff 💕"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Listen up: Let's talk about the probabilistic algorithms actually driving high-end quantitative finance.
+
+The post An Intuitive Guide to MCMC (Part I): The Metropolis-Hastings Algorithm appeared first on Towards Data Science. If youre exploring Bayesian statistics youve likely encountered MCMC. (let that sink in)
+
+While the rest of the world is fixated on the latest LLM hype, Markov Chain Monte Carlo remains the quiet workhorse of high-end quantitative finance and risk management.
+
+## The Details
+
+It is the tool of choice when guessing isnt enough and you need to rigorously map out uncertainty. Despite the intimidating acronym, Markov Chain Monte Carlo is a combination of two straightforward concepts: A Markov Chain is a stochastic process where the next state of the system depends entirely on its current state and not on the sequences of events that preceded it.
+
+This property is usually referred to as memorylessness . A Monte Carlo method simply refers to any algorithm that relies on repeated random sampling to obtain numerical results.
+
+## Why This Matters
+
+In this series, we will present the core algorithms used in MCMC frameworks. We primarily focus on those used for Bayesian methods. We begin with Metropolis-Hastings : the foundational algorithm that enabled the fields earliest breakthroughs.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## Key Takeaways
+
+- But before diving into the mechanics, lets discuss the problem MCMC methods help solve.
+- The Problem Suppose we want to be able to sample variables from a probability distribution which we know the density formula for.
+- In this example we use the standard normal distribution.
+- Lets call a function that can sample from it rnorm .
+
+## The Bottom Line
+
+In other words, if we were to let rnorm run \(100,000\) times and if we were to collect these values and plot them they appeared (a histogram), the shape would resemble the standard normal distribution. We start with the formula for the unnormalised density of the normal distribution: \[p(x) = e^(-\frac(x^2)(2))\] This function returns a density for a given \(x\) instead of a probability.
+
+Is this a W or an L? You decide.
