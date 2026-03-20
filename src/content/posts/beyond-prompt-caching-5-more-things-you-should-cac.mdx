@@ -1,0 +1,42 @@
+---
+title: "Beyond Prompt Caching: 5 More Things You Should Cache in ..."
+excerpt: "A practical guide to caching layers across the RAG pipeline, from query embeddings to full query-response reuse The post Beyond Prompt Ca..."
+category: "ai"
+date: 2026-03-20
+publishedAt: "2026-03-20T01:15:01.958Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "ur news bff 💕"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Breaking it down: A practical guide to caching layers across the RAG pipeline, from query embeddings to full query-response reuse The post Beyond Prompt Caching: 5 More Things You Should Cache in RAG Pipelines appeared first on Towards Data Science.
+
+In my latest post , we talked in detail about what Prompt Caching is in LLMs and how it can save you a lot of money and time when running AI-powered apps with high traffic. But apart from Prompt Caching, the concept of a cache can also be utilized in several other parts of AI applications, such as RAG retrieval caching or caching of entire query-response pairs, providing further cost and time savings. (and honestly, same)
+
+In this post, we are going to take a look in more detail at what other components of an AI app can benefit from caching mechanisms.
+
+## The Details
+
+So, lets take a look at caching in AI beyond Prompt Caching. Why does it make sense to cache other things?
+
+So, Prompt Caching makes sense because we expect system prompts and instructions to be passed as input to the LLM, in exactly the same format every time. But beyond this, we can also expect user queries to be repeated or look alike to some extent.
+
+## Why This Matters
+
+Especially when talking about deploying RAG or other AI apps within an organization, we expect a large portion of the queries to be semantically similar, or even identical. Naturally, groups of users within an organization are going to be interested in similar things most of the time, like how many days of annual leave is an employee entitled to according to the HR policy , or what is the process for submitting travel expenses . Still, statistically, it is highly unlikely that multiple users will ask the exact same query (the exact same words allowing for an exact match), unless we provide them with proposed, standardized queries within the UI of the app.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- Nonetheless, there is a high chance that users ask queries with different words that are semantically similar .
+- Thus, it makes sense to also think of a semantic cache apart from the conventional cache.
+
+## The Bottom Line
+
+Thus, it makes sense to also think of a semantic cache apart from the conventional cache. In this way, we can further distinguish between the two types of cache: Exact-Match Caching , that is, when we cache the original text or some normalized version of it.
+
+Are you here for this or nah?
