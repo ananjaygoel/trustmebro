@@ -30,6 +30,6 @@
     "@types/jsdom": "^27.0.0",
     "png-to-ico": "^3.0.1",
     "tsx": "^4.20.6",
-    "typescript": "^5.7.0"
+    "typescript": "^6.0.2"
   }
 }
