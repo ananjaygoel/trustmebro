@@ -1,0 +1,37 @@
+---
+title: "Prompt Caching with the OpenAI API: A Full Hands-On Pytho..."
+excerpt: "A step-by-step guide to making your OpenAI apps faster, cheaper, and more efficient The post Prompt Caching with the OpenAI API: A Full H..."
+category: "ai"
+date: 2026-03-23
+publishedAt: "2026-03-23T06:58:48.477Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "your fave news bestie 💅"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Breaking it down: A step-by-step guide to making your OpenAI apps faster, cheaper, and more efficient The post Prompt Caching with the OpenAI API: A Full Hands-On Python tutorial appeared first on Towards Data Science.
+
+In my previous post , we talked about Prompt Caching — what it is, how it works, and how it can save you a lot of money and time when running AI-powered apps with high traffic. In todays post, I walk you through implementing Prompt Caching specifically using OpenAIs API, and we discuss some common pitfalls. (let that sink in)
+
+A brief reminder on Prompt Caching Before getting our hands dirty, lets briefly revisit what exactly the concept of Prompt Caching is.
+
+## The Details
+
+Prompt Caching is a functionality provided in frontier model API services like the OpenAI API or Claudes API, that allows caching and reusing parts of the LLMs input that are repeated frequently. Such repeated parts may be system prompts or instructions that are passed to the model every time when running an AI app, along with any other variable content, like the users query or information retrieved from a knowledge base.
+
+To be able to hit cache with prompt caching, the repeated parts of the prompt must be at the beginning of it, namely, a prompt prefix . Plus, in order for prompt caching to be activated, this prefix must exceed a certain threshold (e.
+
+## Why This Matters
+
+, for OpenAI the prefix should be more than 1,024 tokens, while Claude has different minimum cache lengths for different models). As far as those two conditions are satisfied — repeated tokens as a prefix exceeding the size threshold defined service and model — caching can be activated to achieve economies of grow when running AI apps. Unlike caching in other components in a RAG or other AI app, prompt caching operates at the token level, in the internal procedures of the LLM.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## The Bottom Line
+
+Unlike caching in other components in a RAG or other AI app, prompt caching operates at the token level, in the internal procedures of the LLM. In particular, LLM inference takes place in two steps: Pre-fill , that is, the LLM takes into account the user prompt to generate the first token, and Decoding , that is, the LLM recursively generates the tokens of the output one by one In short, prompt caching stores the computations that take place in the pre-fill stage, so the model doesnt need to recompute it again when the same prefix reappears.
+
+What's your take on this whole situation?
