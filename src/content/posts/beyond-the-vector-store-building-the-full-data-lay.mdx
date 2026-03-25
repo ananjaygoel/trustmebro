@@ -1,0 +1,37 @@
+---
+title: "Beyond the Vector Store: Building the Full Data Layer for..."
+excerpt: "If you look at the architecture diagram of almost any AI startup today, you will see a large language model (LLM) connected to a vector s..."
+category: "ai"
+date: 2026-03-25
+publishedAt: "2026-03-25T12:44:19.353Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/03/mlm-mayo-vector-relational-1.png"
+author: "no cap correspondent 🧢"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+Okay so If you look at the architecture diagram of almost any AI startup today, you will see a large language model (LLM) connected to a vector store.
+
+Beyond the Vector Store: Building the Full Data Layer for AI Applications By Matthew Mayo on in AI 0 Post In this article, you will learn why production AI applications need both a vector database for semantic retrieval and a relational database for structured, transactional workloads. Topics we will cover include: What vector databases do well, and where they fall short in production AI systems. (wild, right?)
+
+Why relational databases remain essential for permissions, metadata, billing, and app state.
+
+## The Details
+
+How hybrid architectures, including the use of pgvector , combine both approaches into a practical data layer. Keep reading for all the details.
+
+Vector databases have become so closely associated with modern AI that it is easy to treat them as the entire data layer, the one database you need to power a generative AI product. But once you move beyond a proof-of-concept chatbot and start building something that handles real users, real permissions, and real money, a vector database alone is not enough.
+
+## Why This Matters
+
+Production AI applications need two complementary data engines working in lockstep: a vector database for semantic retrieval, and a relational database for everything else. This is not a controversial claim once you examine what each system actually does though it is often overlooked. Vector databases like Pinecone, Milvus, or Weaviate excel at finding data based on meaning and intent, using high-dimensional embeddings to perform rapid semantic search.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## The Bottom Line
+
+Vector databases like Pinecone, Milvus, or Weaviate excel at finding data based on meaning and intent, using high-dimensional embeddings to perform rapid semantic search. Relational databases like PostgreSQL or MySQL manage structured data with SQL, providing deterministic queries, complex filtering, and strict ACID guarantees that vector stores lack by design.
+
+Is this a W or an L? You decide.
