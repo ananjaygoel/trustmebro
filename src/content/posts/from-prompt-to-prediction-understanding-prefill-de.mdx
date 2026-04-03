@@ -1,0 +1,37 @@
+---
+title: "From Prompt to Prediction: Understanding Prefill, Decode,..."
+excerpt: "This article is divided into three parts; they are: • How Attention Works During Prefill • The Decode Phase of LLM Inference • KV Cache: ..."
+category: "ai"
+date: 2026-04-03
+publishedAt: "2026-04-03T12:40:31.813Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/03/neda-astani-KWTkd7mHqKE-unsplash-scaled.jpg"
+author: "ur news bff 💕"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+So basically This article is divided into three parts; they are: • How Attention Works During Prefill • The Decode Phase of LLM Inference • KV Cache: How to Make Decode More Efficient Consider the prompt: Today’s weather is so .
+
+From Prompt to Prediction: Understanding Prefill, Decode, and the KV Cache in LLMs By Yoyo Chan on in Inference from Transformer Models 0 Post In the previous article , we saw how a language model converts logits into probabilities and samples the next token. But where do these logits come from? (yes, really)
+
+In this tutorial, we take a hands-on approach to understand the generation pipeline: How the prefill phase processes your entire prompt in a single parallel pass How the decode phase generates tokens one at a time using before computed context How the KV cache eliminates redundant computation to make decoding efficient , you will understand the two-phase mechanics behind LLM inference and why the KV cache is essential for generating long responses at grow.
+
+## The Details
+
+Overview This article is divided into three parts; they are: How Attention Works During Prefill The Decode Phase of LLM Inference KV Cache: How to Make Decode More Efficient How Attention Works During Prefill Consider the prompt: Today’s weather is so As humans, we can infer the next token should be an adjective , because the last word so is a setup. We also know it probably describes weather, so words like nice or warm are more likely than something unrelated like delicious .
+
+Transformers arrive at the same conclusion through attention. During prefill, the model processes the entire prompt in a single forward pass.
+
+## Why This Matters
+
+Every token attends to itself and all tokens before it, building up a contextual representation that captures relationships across the full sequence. The mechanism behind this is the scaled dot-product attention formula: $$ \text(Attention)(Q, K, V) = \mathrm(softmax)\left(\frac(QK^\top)(\sqrt(d_k))\right)V $$ We will walk through this concretely below.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## The Bottom Line
+
+This story is still developing, and we'll keep you updated as more info drops.
+
+How do you feel about this development?
