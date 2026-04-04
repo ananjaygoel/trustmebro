@@ -1,0 +1,44 @@
+---
+title: "DenseNet Paper Walkthrough: All Connected"
+excerpt: "When we try to train a deep neural network model, one issue that we might encounter is the vanishing gradient problem."
+category: "ai"
+date: 2026-04-04
+publishedAt: "2026-04-04T12:33:52.052Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "the tea spiller ☕"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Breaking it down: When we try to train a deep neural network model, one issue that we might encounter is the vanishing gradient problem.
+
+This is essentially a problem where the weight update of a model during training slows down or even stops, hence causing the model not to improve. When a network is deep, the [] The post DenseNet Paper Walkthrough: All Connected appeared first on Towards Data Science. (it feels like chaos)
+
+When a network is deep, the gradient computation during backpropagation involves multiplying many derivative terms together through the chain rule.
+
+## The Details
+
+Remember that if we multiply small numbers (typically less than 1) too many times, it will make the resulting numbers becoming deadass small. In the case of neural networks, these numbers are used as the basis of the weight update.
+
+So, if the gradient is small, then the weight update will be slow, causing the training to be slow as well. To address this vanishing gradient problem, we can actually use shortcut paths so that the gradients can flow more easily through a deep network.
+
+## Why This Matters
+
+One of the most popular architectures that attempts to solve this is ResNet, where it implements skip connections that jump over several layers in the network. This idea is adopted by DenseNet, where the skip connections are implemented much more aggressively, making it better than ResNet in handling the vanishing gradient problem. In this article I would like to talk about how exactly DenseNet works and how to implement the architecture from scratch.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- The DenseNet Architecture Dense Block DenseNet was originally proposed in a paper titled “ Densely Connected Convolutional Networks ” written et al.
+- The main idea of DenseNet is indeed to solve the vanishing gradient problem.
+- The reason that it performs better than ResNet is because of the shortcut paths branching out from a single layer to all other subsequent layers.
+- To better illustrate this idea, you can see in Figure 1 below that the input tensor x₀ is forwarded to H₁ , H₂ , H₃ , H₄ , and the transition layers.
+
+## The Bottom Line
+
+The reason that it performs better than ResNet is because of the shortcut paths branching out from a single layer to all other subsequent layers. To better illustrate this idea, you can see in Figure 1 below that the input tensor x₀ is forwarded to H₁ , H₂ , H₃ , H₄ , and the transition layers.
+
+Thoughts? Drop them below.
