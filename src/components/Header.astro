@@ -1,144 +1,172 @@
 ---
 import { categories as allCategories } from '../lib/constants';
 
-// Select categories for header navigation (subset of all categories)
-const categories = allCategories.filter(cat =>
-  ['tech', 'ai', 'gaming', 'entertainment', 'sports', 'science', 'viral'].includes(cat.slug)
+const categories = allCategories.filter((cat) =>
+  ['tech', 'ai', 'gaming', 'entertainment', 'business', 'world'].includes(cat.slug)
 );
+
+const todayLabel = new Date().toLocaleDateString('en-US', {
+  weekday: 'long',
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+});
 ---
 
-<!-- Top Bar -->
-<div class="topbar border-b py-2 text-xs">
-  <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
-    <div class="flex items-center gap-3 topbar-text">
-      <span>{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
-      <span class="opacity-30">|</span>
-      <span class="text-cyan-500 font-semibold">🔥 trending</span>
+<div class="border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-2 text-xs md:flex-row md:items-center md:justify-between">
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[var(--color-text-muted)]">
+      <span class="eyebrow" style="margin-bottom: 0; font-size: 11px;">TrustMeBro desk</span>
+      <span>Source-first summaries</span>
+      <span>Searchable archive</span>
     </div>
-    <button id="theme-toggle" class="w-8 h-8 rounded-full glass flex items-center justify-center hover:bg-purple-500 hover:text-white transition-all">
-      🌙
-    </button>
+    <span class="text-[var(--color-text-muted)]">{todayLabel}</span>
   </div>
 </div>
 
-<!-- Main Header -->
-<header class="main-header sticky top-0 z-50 backdrop-blur-xl border-b">
-  <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-    <!-- Logo -->
-    <a href="/" class="flex items-center gap-3 group">
-      <div class="logo-icon w-12 h-12 rounded-xl gradient-bg flex items-center justify-center text-2xl neon-glow transition-all group-hover:scale-110">
-        🔥
+<header class="sticky top-0 z-50 border-b border-[var(--color-border)] bg-[color:var(--color-bg-secondary)]/95 backdrop-blur-md">
+  <div class="max-w-7xl mx-auto px-4 py-4">
+    <div class="flex items-center justify-between gap-4">
+      <a href="/" class="min-w-0">
+        <p class="text-xs uppercase tracking-[0.25em] text-[var(--color-text-muted)]">Daily briefing</p>
+        <div class="font-heading text-3xl leading-none tracking-[-0.04em] text-[var(--color-text)]">TrustMeBro</div>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-2">
+        <a href="/" class="header-link">Home</a>
+        {categories.map((cat) => (
+          <a href={`/category/${cat.slug}`} class="header-link">{cat.name}</a>
+        ))}
+      </nav>
+
+      <div class="hidden md:flex items-center gap-2">
+        <a href="/search" class="header-link">Search</a>
+        <a href="/saved" class="header-link">Saved</a>
+        <a href="/#briefing" class="button-primary rounded-full px-4 py-2 text-sm">Get the briefing</a>
+        <button id="theme-toggle" class="header-icon" aria-label="Toggle theme">☾</button>
       </div>
-      <div>
-        <div class="font-black text-xl tracking-tight">
-          <span class="gradient-text">Trust</span><span class="text-white">Me</span><span class="gradient-text">Bro</span>
-        </div>
-        <div class="text-xs opacity-60">news that hits different 💅</div>
-      </div>
-    </a>
-    
-    <!-- Navigation -->
-    <nav class="hidden md:flex items-center gap-1">
-      <a href="/" class="nav-link px-4 py-2 rounded-lg text-sm font-medium transition-all">
-        🏠 Home
-      </a>
-      {categories.map(cat => (
-        <a href={`/category/${cat.slug}`} class="nav-link px-4 py-2 rounded-lg text-sm font-medium transition-all">
-          {cat.emoji} {cat.name}
-        </a>
-      ))}
-      <a href="/saved" class="ml-2 w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-purple-500 hover:text-white transition-all" title="Saved Articles">
-        🔖
-      </a>
-      <a href="/search" class="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-cyan-500 hover:text-white transition-all" title="Search">
-        🔍
-      </a>
-    </nav>
-    
-    <!-- Mobile Menu Button -->
-    <button id="mobile-menu-btn" class="md:hidden w-10 h-10 rounded-lg glass flex items-center justify-center">
-      ☰
-    </button>
+
+      <button id="mobile-menu-btn" class="header-icon md:hidden" aria-label="Open menu">☰</button>
+    </div>
   </div>
 </header>
 
-<!-- Mobile Menu -->
-<div id="mobile-menu" class="fixed inset-0 mobile-menu backdrop-blur-xl z-[9998] hidden flex-col p-6 pt-20">
-  <button id="mobile-close" class="absolute top-6 right-6 w-12 h-12 rounded-full glass text-2xl">✕</button>
-  <nav class="flex flex-col gap-2">
-    <a href="/" class="px-4 py-3 rounded-xl glass text-lg font-medium">🏠 Home</a>
-    <a href="/search" class="px-4 py-3 rounded-xl glass text-lg font-medium">🔍 Search</a>
-    <a href="/saved" class="px-4 py-3 rounded-xl glass text-lg font-medium">🔖 Saved</a>
-    {categories.map(cat => (
-      <a href={`/category/${cat.slug}`} class="px-4 py-3 rounded-xl glass text-lg font-medium">
-        {cat.emoji} {cat.name}
-      </a>
-    ))}
-    <a href="/categories" class="px-4 py-3 rounded-xl glass text-lg font-medium">📂 All Categories</a>
-  </nav>
+<div id="mobile-menu" class="mobile-panel hidden">
+  <div class="max-w-sm ml-auto min-h-screen bg-[var(--color-bg-secondary)] px-6 py-6 shadow-2xl">
+    <div class="flex items-center justify-between border-b border-[var(--color-border)] pb-4">
+      <div>
+        <p class="text-xs uppercase tracking-[0.25em] text-[var(--color-text-muted)]">TrustMeBro</p>
+        <p class="font-heading text-2xl text-[var(--color-text)]">Navigation</p>
+      </div>
+      <button id="mobile-close" class="header-icon" aria-label="Close menu">✕</button>
+    </div>
+
+    <nav class="mt-6 flex flex-col gap-2">
+      <a href="/" class="mobile-link">Home</a>
+      <a href="/search" class="mobile-link">Search</a>
+      <a href="/saved" class="mobile-link">Saved</a>
+      <a href="/archive" class="mobile-link">Archive</a>
+      <a href="/#briefing" class="mobile-link">Get the briefing</a>
+      {categories.map((cat) => (
+        <a href={`/category/${cat.slug}`} class="mobile-link">{cat.name}</a>
+      ))}
+      <button id="mobile-theme-toggle" class="mobile-link text-left" type="button">Toggle theme</button>
+    </nav>
+  </div>
 </div>
 
 <style>
-  .topbar {
-    background: var(--color-bg-secondary);
-    border-color: var(--color-border);
-  }
-  .topbar-text {
+  .header-link {
+    border-radius: 999px;
+    padding: 0.55rem 0.95rem;
+    font-size: 0.92rem;
     color: var(--color-text-secondary);
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
-  .main-header {
-    background: var(--color-bg);
-    border-color: var(--color-border);
-  }
-  :global(.light) .main-header {
-    background: rgba(248, 250, 252, 0.95);
-  }
-  :global(.light) .text-white {
-    color: #0f172a !important;
-  }
-  .logo-icon {
-    box-shadow: 0 0 25px rgba(255, 110, 199, 0.5), 0 0 50px rgba(138, 92, 255, 0.3);
-    animation: pulse-glow 2s ease-in-out infinite;
-  }
-  @keyframes pulse-glow {
-    0%, 100% { box-shadow: 0 0 25px rgba(255, 110, 199, 0.5), 0 0 50px rgba(138, 92, 255, 0.3); }
-    50% { box-shadow: 0 0 35px rgba(255, 110, 199, 0.7), 0 0 70px rgba(138, 92, 255, 0.5); }
-  }
-  .nav-link:hover {
+
+  .header-link:hover {
     background: var(--color-glass);
-    color: var(--color-neon-cyan);
+    color: var(--color-text);
   }
-  .mobile-menu {
-    background: var(--color-bg);
-    opacity: 0.98;
+
+  .header-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-glass);
+    color: var(--color-text);
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .header-icon:hover {
+    background: var(--color-bg-tertiary);
+    border-color: var(--color-border-strong);
+  }
+
+  .mobile-panel {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    background: rgba(24, 34, 45, 0.2);
+    backdrop-filter: blur(6px);
+  }
+
+  .mobile-link {
+    border-radius: 1rem;
+    border: 1px solid var(--color-border);
+    padding: 0.95rem 1rem;
+    color: var(--color-text);
+    background: var(--color-glass);
   }
 </style>
 
 <script>
-  // Mobile menu
-  document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {
-    document.getElementById('mobile-menu')?.classList.remove('hidden');
-    document.getElementById('mobile-menu')?.classList.add('flex');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const openMenu = document.getElementById('mobile-menu-btn');
+  const closeMenu = document.getElementById('mobile-close');
+  const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
+
+  function toggleTheme() {
+    document.documentElement.classList.toggle('dark');
+    const isDark = document.documentElement.classList.contains('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    syncThemeToggle();
+  }
+
+  function syncThemeToggle() {
+    const isDark = document.documentElement.classList.contains('dark');
+    const desktop = document.getElementById('theme-toggle');
+    const mobile = document.getElementById('mobile-theme-toggle');
+    if (desktop) desktop.textContent = isDark ? '☀︎' : '☾';
+    if (mobile) mobile.textContent = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+  }
+
+  openMenu?.addEventListener('click', () => {
+    mobileMenu?.classList.remove('hidden');
   });
-  
-  document.getElementById('mobile-close')?.addEventListener('click', () => {
-    document.getElementById('mobile-menu')?.classList.add('hidden');
-    document.getElementById('mobile-menu')?.classList.remove('flex');
+
+  closeMenu?.addEventListener('click', () => {
+    mobileMenu?.classList.add('hidden');
   });
-  
-  // Close on Escape
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      document.getElementById('mobile-menu')?.classList.add('hidden');
-      document.getElementById('mobile-menu')?.classList.remove('flex');
+
+  mobileMenu?.addEventListener('click', (event) => {
+    if (event.target === mobileMenu) {
+      mobileMenu.classList.add('hidden');
     }
   });
 
-  // Update theme toggle icon on load
-  document.addEventListener('DOMContentLoaded', () => {
-    const toggle = document.getElementById('theme-toggle');
-    if (toggle && document.documentElement.classList.contains('light')) {
-      toggle.textContent = '☀️';
+  document.getElementById('theme-toggle')?.addEventListener('click', toggleTheme);
+  mobileThemeToggle?.addEventListener('click', toggleTheme);
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      mobileMenu?.classList.add('hidden');
     }
   });
+
+  syncThemeToggle();
 </script>

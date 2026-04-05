@@ -2,122 +2,87 @@
 const year = new Date().getFullYear();
 ---
 
-<footer class="bg-[#0a0d15] border-t border-white/5 mt-20">
-  <!-- Newsletter Section -->
-  <div class="border-b border-white/5">
-    <div class="max-w-7xl mx-auto px-4 py-16">
-      <div class="max-w-2xl mx-auto text-center">
-        <h2 class="text-3xl font-extrabold gradient-text mb-4">stay in the loop 📬</h2>
-        <p class="text-gray-400 mb-8">get the freshest news drops straight to your inbox. no spam, just vibes.</p>
-        <form id="newsletter-form" class="flex gap-3 max-w-md mx-auto">
-          <p class="hidden"><label>Don't fill this out: <input name="bot-field" /></label></p>
-          <input 
-            type="email" 
-            name="email"
-            placeholder="your@email.com" 
-            required
-            class="flex-1 px-6 py-4 rounded-xl bg-[#0f1724] border border-white/10 focus:outline-none focus:border-purple-500 transition-all"
-          />
-          <button type="submit" class="px-8 py-4 rounded-xl gradient-bg font-bold text-black hover:scale-105 transition-all whitespace-nowrap">
-            subscribe 🚀
-          </button>
-        </form>
-        <div id="newsletter-message" class="mt-4 hidden"></div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Footer Links -->
-  <div class="max-w-7xl mx-auto px-4 py-12">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-      <div>
-        <h3 class="font-bold text-purple-400 mb-4">Categories</h3>
-        <ul class="space-y-2 text-gray-400">
-          <li><a href="/category/tech" class="hover:text-cyan-400 transition-colors">💻 Tech</a></li>
-          <li><a href="/category/ai" class="hover:text-cyan-400 transition-colors">🤖 AI</a></li>
-          <li><a href="/category/gaming" class="hover:text-cyan-400 transition-colors">🎮 Gaming</a></li>
-          <li><a href="/category/science" class="hover:text-cyan-400 transition-colors">🔬 Science</a></li>
-        </ul>
-      </div>
-      <div>
-        <h3 class="font-bold text-purple-400 mb-4">More</h3>
-        <ul class="space-y-2 text-gray-400">
-          <li><a href="/category/entertainment" class="hover:text-cyan-400 transition-colors">🎬 Entertainment</a></li>
-          <li><a href="/category/sports" class="hover:text-cyan-400 transition-colors">⚽ Sports</a></li>
-          <li><a href="/category/world" class="hover:text-cyan-400 transition-colors">🌍 World</a></li>
-          <li><a href="/category/viral" class="hover:text-cyan-400 transition-colors">🔥 Viral</a></li>
-        </ul>
-      </div>
-      <div>
-        <h3 class="font-bold text-purple-400 mb-4">About</h3>
-        <ul class="space-y-2 text-gray-400">
-          <li><a href="/about" class="hover:text-cyan-400 transition-colors">About Us</a></li>
-          <li><a href="/privacy" class="hover:text-cyan-400 transition-colors">Privacy</a></li>
-          <li><a href="/terms" class="hover:text-cyan-400 transition-colors">Terms</a></li>
-          <li><a href="/contact" class="hover:text-cyan-400 transition-colors">Contact</a></li>
-        </ul>
-      </div>
-      <div>
-        <h3 class="font-bold text-purple-400 mb-4">Follow</h3>
-        <div class="flex gap-3">
-          <a href="https://twitter.com/trustmebro111" target="_blank" class="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-[#1da1f2] transition-all" title="Twitter/X">𝕏</a>
-          <a href="https://bsky.app/profile/trustmebro.bsky.social" target="_blank" class="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-[#0085ff] transition-all" title="Bluesky">🦋</a>
-          <a href="/rss.xml" target="_blank" class="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-orange-500 transition-all" title="RSS Feed">📡</a>
+<footer class="mt-20 border-t border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
+  <div class="max-w-7xl mx-auto px-4 py-14">
+    <div class="grid gap-10 lg:grid-cols-[1.4fr_repeat(3,minmax(0,1fr))]">
+      <div class="space-y-4">
+        <p class="eyebrow">TrustMeBro</p>
+        <h2 class="section-title text-3xl">A calmer read on the internet's noisiest news cycle.</h2>
+        <p class="muted-copy max-w-xl">
+          We keep the product simple: clear story pages, visible source labels when available,
+          a searchable archive, and a briefing signup that actually works.
+        </p>
+        <div class="flex flex-wrap gap-3 pt-2">
+          <a href="/archive" class="button-secondary">Open archive</a>
+          <a href="/#briefing" class="button-secondary">Get the briefing</a>
         </div>
       </div>
-    </div>
-  </div>
-  
-  <!-- Bottom Bar -->
-  <div class="border-t border-white/5 py-6">
-    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-lg gradient-bg flex items-center justify-center text-sm">🔥</div>
-        <span>TrustMeBro © {year}</span>
+
+      <div>
+        <h3 class="footer-heading">Sections</h3>
+        <ul class="footer-list">
+          <li><a href="/category/tech">Tech</a></li>
+          <li><a href="/category/ai">AI</a></li>
+          <li><a href="/category/gaming">Gaming</a></li>
+          <li><a href="/category/entertainment">Entertainment</a></li>
+        </ul>
       </div>
-      <div>made with 💜 for the chronically online</div>
+
+      <div>
+        <h3 class="footer-heading">Explore</h3>
+        <ul class="footer-list">
+          <li><a href="/search">Search</a></li>
+          <li><a href="/saved">Saved articles</a></li>
+          <li><a href="/categories">All categories</a></li>
+          <li><a href="/rss.xml">RSS feed</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="footer-heading">About</h3>
+        <ul class="footer-list">
+          <li><a href="/about">About</a></li>
+          <li><a href="/privacy">Privacy</a></li>
+          <li><a href="/terms">Terms</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-12 flex flex-col gap-4 border-t border-[var(--color-border)] pt-6 text-sm text-[var(--color-text-muted)] md:flex-row md:items-center md:justify-between">
+      <p>TrustMeBro © {year}. Built for fast reading, not endless clicking.</p>
+      <div class="flex items-center gap-4">
+        <a href="https://twitter.com/trustmebro111" target="_blank" rel="noreferrer" class="footer-social">X</a>
+        <a href="https://bsky.app/profile/trustmebro.bsky.social" target="_blank" rel="noreferrer" class="footer-social">Bluesky</a>
+        <a href="/rss.xml" class="footer-social">RSS</a>
+      </div>
     </div>
   </div>
 </footer>
 
-<script>
-  document.getElementById('newsletter-form')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const form = e.target as HTMLFormElement;
-    const msg = document.getElementById('newsletter-message');
-    const btn = form.querySelector('button');
-    
-    if (btn) btn.textContent = 'subscribing...';
-    
-    try {
-      const formData = new FormData(form);
-      const response = await fetch('/api/newsletter', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: String(formData.get('email') || '').trim(),
-          botField: String(formData.get('bot-field') || '')
-        })
-      });
-      const data = await response.json().catch(() => ({}));
-      
-      if (response.ok) {
-        if (msg) {
-          msg.classList.remove('hidden');
-          msg.className = 'mt-4 text-green-400';
-          msg.textContent = (data as { message?: string }).message || '✅ you\'re in! welcome to the squad';
-        }
-        form.reset();
-      } else {
-        throw new Error((data as { error?: string }).error || 'Failed');
-      }
-    } catch (err) {
-      if (msg) {
-        msg.classList.remove('hidden');
-        msg.className = 'mt-4 text-red-400';
-        msg.textContent = err instanceof Error ? `❌ ${err.message}` : '❌ something went wrong, try again?';
-      }
-    }
-    if (btn) btn.textContent = 'subscribe 🚀';
-  });
-</script>
+<style>
+  .footer-heading {
+    margin-bottom: 1rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .footer-list {
+    display: grid;
+    gap: 0.75rem;
+    color: var(--color-text-secondary);
+  }
+
+  .footer-list a,
+  .footer-social {
+    transition: color 0.2s ease;
+  }
+
+  .footer-list a:hover,
+  .footer-social:hover {
+    color: var(--color-accent-cool);
+  }
+</style>

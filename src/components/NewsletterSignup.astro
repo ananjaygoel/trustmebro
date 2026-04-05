@@ -1,0 +1,117 @@
+---
+interface Props {
+  id?: string;
+  title?: string;
+  description?: string;
+  buttonLabel?: string;
+  className?: string;
+  compact?: boolean;
+}
+
+const {
+  id = 'briefing',
+  title = 'Get the daily briefing',
+  description = 'A short, useful roundup for people who want the signal without the scroll fatigue.',
+  buttonLabel = 'Join the briefing',
+  className = '',
+  compact = false,
+} = Astro.props;
+---
+
+<section id={id} data-newsletter-signup class={`surface rounded-[1.75rem] p-6 md:p-8 ${className}`}>
+  <div class:list={['space-y-5', compact ? 'max-w-none' : 'max-w-2xl']}>
+    <div class="space-y-3">
+      <p class="eyebrow">Daily briefing</p>
+      <h2 class="section-title text-3xl md:text-4xl">{title}</h2>
+      <p class="muted-copy max-w-2xl">{description}</p>
+    </div>
+
+    <form data-newsletter-form class:list={[
+      'gap-3',
+      compact ? 'flex flex-col' : 'flex flex-col md:flex-row md:items-center'
+    ]}>
+      <label class="sr-only" for={`${id}-email`}>Email address</label>
+      <p class="hidden">
+        <label>
+          Do not fill this out
+          <input name="bot-field" />
+        </label>
+      </p>
+      <input
+        id={`${id}-email`}
+        type="email"
+        name="email"
+        placeholder="you@example.com"
+        required
+        autocomplete="email"
+        class="min-h-[3.35rem] flex-1 rounded-full border border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-5 text-sm text-[var(--color-text)] outline-none transition-all placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-accent-cool)]"
+      />
+      <button type="submit" class="button-primary min-h-[3.35rem] justify-center rounded-full px-6">
+        {buttonLabel}
+      </button>
+    </form>
+
+    <p data-newsletter-message class="hidden text-sm"></p>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll('[data-newsletter-signup]').forEach((signup) => {
+    if ((signup as HTMLElement).dataset.bound === 'true') return;
+    (signup as HTMLElement).dataset.bound = 'true';
+
+    const form = signup.querySelector('[data-newsletter-form]') as HTMLFormElement | null;
+    const message = signup.querySelector('[data-newsletter-message]') as HTMLParagraphElement | null;
+    const button = form?.querySelector('button') as HTMLButtonElement | null;
+
+    form?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const formData = new FormData(form);
+
+      if (button) {
+        button.disabled = true;
+        button.textContent = 'Joining...';
+      }
+
+      try {
+        const response = await fetch('/api/newsletter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: String(formData.get('email') || '').trim(),
+            botField: String(formData.get('bot-field') || '')
+          })
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error((data as { error?: string }).error || 'Could not save your email.');
+        }
+
+        if (message) {
+          message.classList.remove('hidden');
+          message.className = 'text-sm text-[var(--color-accent-cool)]';
+          message.textContent = (data as { message?: string }).message || 'You are in. Expect the next useful drop soon.';
+        }
+
+        form.reset();
+      } catch (error) {
+        if (message) {
+          message.classList.remove('hidden');
+          message.className = 'text-sm text-[var(--color-accent-strong)]';
+          message.textContent = error instanceof Error ? error.message : 'Something went wrong. Please try again.';
+        }
+      } finally {
+        if (button) {
+          button.disabled = false;
+          button.textContent = button.dataset.label || button.textContent;
+        }
+      }
+    });
+
+    if (button) {
+      button.dataset.label = button.textContent || 'Join the briefing';
+    }
+  });
+</script>

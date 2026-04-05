@@ -2,295 +2,259 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import NewsletterSignup from '../components/NewsletterSignup.astro';
 import PostCard from '../components/PostCard.astro';
-import { getCollection } from 'astro:content';
-import { categoryEmojis } from '../lib/constants';
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { categories, categoryEmojis } from '../lib/constants';
 
-// Get all posts sorted by publishedAt (most recent first)
+const getPostDate = (post: CollectionEntry<'posts'>) =>
+  post.data.publishedAt ? new Date(post.data.publishedAt) : post.data.date;
+
 const posts = await getCollection('posts');
-const sortedPosts = posts.sort((a, b) => {
-  // Use publishedAt if available, fallback to date
-  const aTime = a.data.publishedAt ? new Date(a.data.publishedAt).getTime() : a.data.date.getTime();
-  const bTime = b.data.publishedAt ? new Date(b.data.publishedAt).getTime() : b.data.date.getTime();
-  return bTime - aTime;
-});
+const sortedPosts = posts.sort((a, b) => getPostDate(b).getTime() - getPostDate(a).getTime());
+
 const featuredPost = sortedPosts[0];
-const latestPosts = sortedPosts.slice(1, 7);
-const trendingPosts = sortedPosts.slice(0, 5);
+const latestPosts = featuredPost ? sortedPosts.slice(1, 7) : sortedPosts.slice(0, 6);
+const nowFiling = featuredPost ? sortedPosts.slice(1, 5) : sortedPosts.slice(0, 4);
+
+const categoryCounts = categories
+  .map((category) => ({
+    ...category,
+    count: sortedPosts.filter((post) => post.data.category === category.slug).length,
+  }))
+  .filter((category) => category.count > 0)
+  .sort((a, b) => b.count - a.count);
+
+const archiveCount = sortedPosts.length;
+const sourceCount = new Set(sortedPosts.map((post) => post.data.source).filter(Boolean)).size;
+const sectionCount = categoryCounts.length;
+const latestUpdate = featuredPost ? getPostDate(featuredPost) : null;
+
+const formatStamp = (date: Date) =>
+  date.toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
 ---
 
-<Layout title="Home">
+<Layout
+  title="Home"
+  description="A calmer daily briefing for people who want source labels, searchable context, and less noise."
+>
   <Header />
-  
+
   <main>
-    <!-- Hero Section -->
-    <section class="py-8 bg-gradient-to-b from-[#0b0f1a] to-[#0f1724]">
-      <div class="max-w-7xl mx-auto px-4">
-        <div class="grid md:grid-cols-3 gap-6">
-          <!-- Featured Post -->
-          {featuredPost && (
-            <PostCard 
-              title={featuredPost.data.title}
-              slug={featuredPost.slug}
-              excerpt={featuredPost.data.excerpt}
-              category={featuredPost.data.category}
-              categoryEmoji={categoryEmojis[featuredPost.data.category] || '📰'}
-              date={featuredPost.data.date}
-              image={featuredPost.data.image}
-              featured={true}
-            />
-          )}
-          
-          <!-- Side Stories -->
-          <div class="space-y-4">
-            <h3 class="text-sm font-bold text-cyan-400">⚡ Latest</h3>
-            {latestPosts.slice(0, 4).map(post => (
-              <a href={`/posts/${post.slug}`} class="flex gap-3 p-3 rounded-xl glass hover:border-purple-500 transition-all group">
-                <div class="w-20 h-16 rounded-lg overflow-hidden flex-shrink-0">
-                  {post.data.image ? (
-                    <img src={post.data.image} alt={post.data.title} class="w-full h-full object-cover" />
-                  ) : (
-                    <div class="w-full h-full gradient-bg flex items-center justify-center">
-                      {categoryEmojis[post.data.category] || '📰'}
+    <section class="border-b border-[var(--color-border)]">
+      <div class="max-w-7xl mx-auto px-4 py-10 md:py-14">
+        <div class="grid gap-8 lg:grid-cols-[1.25fr_0.75fr] lg:items-start">
+          <div class="space-y-8">
+            <div class="space-y-4">
+              <p class="eyebrow">Daily briefing</p>
+              <h1 class="section-title max-w-4xl text-5xl md:text-7xl">
+                A calmer read on what moved online today.
+              </h1>
+              <p class="muted-copy max-w-2xl text-lg">
+                TrustMeBro keeps the internet news cycle readable: visible sources when available,
+                exact timestamps, and a searchable archive instead of a pile of noisy widgets.
+              </p>
+            </div>
+
+            {featuredPost && (
+              <article class="surface-strong overflow-hidden rounded-[2rem]">
+                <div class="grid gap-0 lg:grid-cols-[1.1fr_0.9fr]">
+                  <div class="order-2 p-6 md:p-8 lg:order-1 lg:p-10">
+                    <div class="flex flex-wrap items-center gap-3 text-sm text-[var(--color-text-muted)]">
+                      <a href={`/category/${featuredPost.data.category}`} class="eyebrow" style="margin-bottom: 0;">
+                        {categoryEmojis[featuredPost.data.category] || '📰'} {featuredPost.data.category}
+                      </a>
+                      {featuredPost.data.source && (
+                        <>
+                          <span class="opacity-40">•</span>
+                          <span>{featuredPost.data.source}</span>
+                        </>
+                      )}
+                      {latestUpdate && (
+                        <>
+                          <span class="opacity-40">•</span>
+                          <time datetime={latestUpdate.toISOString()}>{formatStamp(latestUpdate)}</time>
+                        </>
+                      )}
                     </div>
-                  )}
+
+                    <h2 class="font-heading mt-4 text-4xl leading-tight tracking-[-0.04em] md:text-5xl">
+                      {featuredPost.data.title}
+                    </h2>
+                    <p class="muted-copy mt-4 max-w-2xl text-lg">{featuredPost.data.excerpt}</p>
+
+                    <div class="mt-8 flex flex-wrap gap-3">
+                      <a href={`/posts/${featuredPost.slug}`} class="button-primary">Read the lead story</a>
+                      <a href="/archive" class="button-secondary">Browse the full archive</a>
+                    </div>
+                  </div>
+
+                  <div class="order-1 min-h-[280px] border-b border-[var(--color-border)] lg:order-2 lg:border-b-0 lg:border-l">
+                    {featuredPost.data.image ? (
+                      <img
+                        src={featuredPost.data.image}
+                        alt={featuredPost.data.title}
+                        class="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div class="gradient-bg flex h-full min-h-[280px] items-center justify-center text-6xl text-white">
+                        {categoryEmojis[featuredPost.data.category] || '📰'}
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div class="min-w-0">
-                  <span class="text-xs text-cyan-400">{categoryEmojis[post.data.category]} {post.data.category}</span>
-                  <h4 class="text-sm font-semibold line-clamp-2 group-hover:text-cyan-400 transition-colors">{post.data.title}</h4>
-                </div>
-              </a>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-    
-    <!-- Quick Actions -->
-    <section class="py-4 border-y border-white/5 bg-[#0f1724]">
-      <div class="max-w-7xl mx-auto px-4 flex gap-3 overflow-x-auto">
-        <button id="filter-latest" class="pill filter-btn bg-purple-500 border-purple-500 text-white" data-filter="latest">🆕 Latest</button>
-        <button id="filter-trending" class="pill filter-btn" data-filter="trending">🔥 Trending</button>
-        <button id="filter-most-read" class="pill filter-btn" data-filter="most-read">📈 Most Read</button>
-        <button id="random-btn" class="pill">🎲 Random</button>
-        <button id="share-site-btn" class="pill">📤 Share</button>
-      </div>
-    </section>
-    
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 py-12">
-      <div class="grid lg:grid-cols-3 gap-8">
-        <!-- Posts Grid -->
-        <div class="lg:col-span-2">
-          <div class="flex justify-between items-center mb-6">
-            <h2 id="posts-heading" class="text-xl font-extrabold gradient-text">📰 Latest News</h2>
-            <a href="/archive" class="text-sm text-cyan-400 hover:underline">See All →</a>
+              </article>
+            )}
           </div>
 
-          <div id="posts-grid" class="grid md:grid-cols-2 gap-6">
-            {latestPosts.map((post, index) => (
-              <div
-                class="post-card-wrapper"
-                data-date={post.data.publishedAt ? new Date(post.data.publishedAt).getTime() : post.data.date.getTime()}
-                data-category={post.data.category}
-                data-index={index}
-                data-slug={post.slug}
-              >
-                <PostCard
-                  title={post.data.title}
-                  slug={post.slug}
-                  excerpt={post.data.excerpt}
-                  category={post.data.category}
-                  categoryEmoji={categoryEmojis[post.data.category] || '📰'}
-                  date={post.data.date}
-                  image={post.data.image}
-                />
+          <aside class="space-y-5">
+            <div class="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
+              <div class="stat-card">
+                <span class="text-sm text-[var(--color-text-muted)]">Stories in archive</span>
+                <strong class="stat-value">{archiveCount.toLocaleString()}</strong>
               </div>
-            ))}
-          </div>
-          
-          {sortedPosts.length === 0 && (
-            <div class="text-center py-20 glass rounded-2xl">
-              <p class="text-4xl mb-4">🚧</p>
-              <p class="text-gray-400">No posts yet! Run the news fetcher to add content.</p>
-              <code class="block mt-4 text-sm text-purple-400">npm run fetch-news</code>
+              <div class="stat-card">
+                <span class="text-sm text-[var(--color-text-muted)]">Active sections</span>
+                <strong class="stat-value">{sectionCount}</strong>
+              </div>
+              <div class="stat-card">
+                <span class="text-sm text-[var(--color-text-muted)]">Named sources</span>
+                <strong class="stat-value">{sourceCount || '—'}</strong>
+              </div>
             </div>
-          )}
+
+            <div class="surface rounded-[1.75rem] p-6">
+              <p class="eyebrow">Why this feels calmer</p>
+              <ul class="space-y-4 text-sm text-[var(--color-text-secondary)]">
+                <li>Every story card prioritizes source, section, and freshness before visual effects.</li>
+                <li>The homepage has one real signup path, one archive path, and one lead story path.</li>
+                <li>“Most read” guesses and decorative widgets are gone. The feed now reflects actual chronology.</li>
+              </ul>
+            </div>
+
+            <NewsletterSignup
+              id="briefing"
+              compact={true}
+              title="Get the useful version"
+              description="One working signup. No fake widget. Just the next good briefing in your inbox."
+              buttonLabel="Join the briefing"
+            />
+          </aside>
         </div>
-        
-        <!-- Sidebar -->
-        <aside class="space-y-6">
-          <!-- Trending -->
-          <div class="glass rounded-2xl p-5">
-            <h3 class="text-sm font-bold text-cyan-400 mb-4">🔥 Trending Now</h3>
-            <ol class="space-y-4">
-              {trendingPosts.map((post, i) => (
-                <li class="flex gap-3">
-                  <span class={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
-                    i === 0 ? 'gradient-bg text-black' : 
-                    i === 1 ? 'bg-purple-500' : 
-                    i === 2 ? 'bg-cyan-500 text-black' : 'glass'
-                  }`}>{i + 1}</span>
-                  <div>
-                    <a href={`/posts/${post.slug}`} class="text-sm font-medium hover:text-cyan-400 transition-colors line-clamp-2">{post.data.title}</a>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </div>
-          
-          <!-- Categories -->
-          <div class="glass rounded-2xl p-5">
-            <h3 class="text-sm font-bold text-cyan-400 mb-4">📁 Categories</h3>
-            <div class="flex flex-wrap gap-2">
-              {Object.entries(categoryEmojis).map(([cat, emoji]) => (
-                <a href={`/category/${cat}`} class="pill text-xs">{emoji} {cat}</a>
-              ))}
-            </div>
-          </div>
-          
-          <!-- Newsletter -->
-          <div class="glass rounded-2xl p-5">
-            <h3 class="text-sm font-bold text-cyan-400 mb-2">📬 Stay Updated</h3>
-            <p class="text-xs text-gray-400 mb-4">Get the latest drops in your inbox.</p>
-            <form class="space-y-3">
-              <input type="email" placeholder="your@email.com" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-sm focus:outline-none focus:border-cyan-400" />
-              <button class="w-full py-3 rounded-xl gradient-bg font-bold text-black text-sm hover:scale-105 transition-all">Subscribe</button>
-            </form>
-          </div>
-        </aside>
       </div>
-    </div>
+    </section>
+
+    {nowFiling.length > 0 && (
+      <section class="border-b border-[var(--color-border)]">
+        <div class="max-w-7xl mx-auto px-4 py-10">
+          <div class="flex items-end justify-between gap-4 mb-6">
+            <div>
+              <p class="eyebrow">Now filing</p>
+              <h2 class="font-heading text-3xl tracking-[-0.04em]">Fresh additions to the desk</h2>
+            </div>
+            <a href="/archive" class="button-secondary">See everything</a>
+          </div>
+
+          <div class="grid gap-4 lg:grid-cols-4">
+            {nowFiling.map((post) => {
+              const postDate = getPostDate(post);
+              return (
+                <a href={`/posts/${post.slug}`} class="surface rounded-[1.5rem] p-5 hover:border-[var(--color-accent-cool)] transition-all">
+                  <div class="flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.14em] text-[var(--color-text-muted)]">
+                    <span class="text-[var(--color-accent-cool)]">{categoryEmojis[post.data.category] || '📰'} {post.data.category}</span>
+                    {post.data.source && (
+                      <>
+                        <span class="opacity-40">•</span>
+                        <span>{post.data.source}</span>
+                      </>
+                    )}
+                  </div>
+                  <h3 class="font-heading mt-3 text-2xl leading-tight tracking-[-0.03em]">{post.data.title}</h3>
+                  <p class="muted-copy mt-3 line-clamp-3 text-sm">{post.data.excerpt}</p>
+                  <time class="mt-4 block text-sm text-[var(--color-text-muted)]" datetime={postDate.toISOString()}>
+                    {formatStamp(postDate)}
+                  </time>
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <section>
+      <div class="max-w-7xl mx-auto px-4 py-12">
+        <div class="grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
+          <div>
+            <div class="flex items-end justify-between gap-4 mb-6">
+              <div>
+                <p class="eyebrow">Latest coverage</p>
+                <h2 class="font-heading text-4xl tracking-[-0.04em]">Read the newest stories first.</h2>
+              </div>
+              <a href="/archive" class="button-secondary">Open archive</a>
+            </div>
+
+            {latestPosts.length > 0 ? (
+              <div class="grid gap-6 md:grid-cols-2">
+                {latestPosts.map((post) => (
+                  <PostCard
+                    title={post.data.title}
+                    slug={post.slug}
+                    excerpt={post.data.excerpt}
+                    category={post.data.category}
+                    categoryEmoji={categoryEmojis[post.data.category] || '📰'}
+                    date={getPostDate(post)}
+                    image={post.data.image}
+                    source={post.data.source}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div class="surface rounded-[1.75rem] p-10 text-center">
+                <p class="font-heading text-3xl">No stories yet.</p>
+                <p class="muted-copy mt-3">Run the fetch job and this desk will populate automatically.</p>
+              </div>
+            )}
+          </div>
+
+          <aside class="space-y-6">
+            <div class="surface rounded-[1.75rem] p-6">
+              <p class="eyebrow">Browse by section</p>
+              <div class="space-y-3">
+                {categoryCounts.slice(0, 8).map((category) => (
+                  <a
+                    href={`/category/${category.slug}`}
+                    class="flex items-center justify-between gap-4 rounded-2xl border border-transparent px-4 py-3 transition-all hover:border-[var(--color-accent-cool)] hover:bg-[var(--color-bg-secondary)]"
+                  >
+                    <span class="flex items-center gap-3 font-medium">
+                      <span>{category.emoji}</span>
+                      <span>{category.name}</span>
+                    </span>
+                    <span class="text-sm text-[var(--color-text-muted)]">{category.count}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            <div class="surface rounded-[1.75rem] p-6">
+              <p class="eyebrow">Useful paths</p>
+              <div class="grid gap-3">
+                <a href="/search" class="button-secondary justify-between">Search the archive <span>→</span></a>
+                <a href="/saved" class="button-secondary justify-between">Open saved stories <span>→</span></a>
+                <a href="/contact" class="button-secondary justify-between">Send a tip or note <span>→</span></a>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
   </main>
-  
+
   <Footer />
 </Layout>
-
-<script>
-  // Filter buttons functionality
-  const filterButtons = document.querySelectorAll('.filter-btn');
-  const postsGrid = document.getElementById('posts-grid');
-  const postsHeading = document.getElementById('posts-heading');
-  const postCards = Array.from(document.querySelectorAll('.post-card-wrapper'));
-
-  // Store original order
-  const originalOrder = postCards.map(card => ({
-    element: card,
-    date: parseInt((card as HTMLElement).dataset.date || '0'),
-    category: (card as HTMLElement).dataset.category || '',
-    index: parseInt((card as HTMLElement).dataset.index || '0'),
-    slug: (card as HTMLElement).dataset.slug || ''
-  }));
-
-  // Filter configurations
-  const filterConfig: Record<string, { heading: string; sort: (cards: typeof originalOrder) => typeof originalOrder }> = {
-    'latest': {
-      heading: '📰 Latest News',
-      sort: (cards) => [...cards].sort((a, b) => b.date - a.date)
-    },
-    'trending': {
-      heading: '🔥 Trending Now',
-      sort: (cards) => {
-        // Show posts from last 48 hours, shuffled for variety
-        const now = Date.now();
-        const fortyEightHours = 48 * 60 * 60 * 1000;
-        const recentCards = cards.filter(c => (now - c.date) < fortyEightHours);
-        // If not enough recent posts, include all
-        const toShuffle = recentCards.length >= 3 ? recentCards : [...cards];
-        // Fisher-Yates shuffle
-        for (let i = toShuffle.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [toShuffle[i], toShuffle[j]] = [toShuffle[j], toShuffle[i]];
-        }
-        return toShuffle;
-      }
-    },
-    'most-read': {
-      heading: '📈 Most Read',
-      sort: (cards) => {
-        // Prioritize popular categories and featured posts
-        const popularCategories = ['tech', 'ai', 'viral', 'business'];
-        return [...cards].sort((a, b) => {
-          const aPopular = popularCategories.indexOf(a.category);
-          const bPopular = popularCategories.indexOf(b.category);
-          const aScore = aPopular >= 0 ? popularCategories.length - aPopular : -1;
-          const bScore = bPopular >= 0 ? popularCategories.length - bPopular : -1;
-          if (aScore !== bScore) return bScore - aScore;
-          return b.date - a.date; // Fallback to date
-        });
-      }
-    }
-  };
-
-  function applyFilter(filterType: string) {
-    const config = filterConfig[filterType];
-    if (!config || !postsGrid || !postsHeading) return;
-
-    // Update heading
-    postsHeading.textContent = config.heading;
-
-    // Update button styles
-    filterButtons.forEach(btn => {
-      const btnFilter = (btn as HTMLElement).dataset.filter;
-      if (btnFilter === filterType) {
-        btn.classList.add('bg-purple-500', 'border-purple-500', 'text-white');
-      } else {
-        btn.classList.remove('bg-purple-500', 'border-purple-500', 'text-white');
-      }
-    });
-
-    // Sort and reorder posts
-    const sorted = config.sort(originalOrder);
-
-    // Add fade-out animation
-    postsGrid.classList.add('opacity-50');
-
-    setTimeout(() => {
-      // Clear grid
-      postCards.forEach(card => card.remove());
-
-      // Re-append in new order
-      sorted.forEach(item => {
-        postsGrid.appendChild(item.element);
-      });
-
-      // Fade back in
-      postsGrid.classList.remove('opacity-50');
-    }, 150);
-  }
-
-  // Attach click handlers to filter buttons
-  filterButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const filterType = (btn as HTMLElement).dataset.filter;
-      if (filterType) {
-        applyFilter(filterType);
-      }
-    });
-  });
-
-  // Random button
-  document.getElementById('random-btn')?.addEventListener('click', () => {
-    const links = document.querySelectorAll('a[href^="/posts/"]');
-    if (links.length) {
-      const randomLink = links[Math.floor(Math.random() * links.length)] as HTMLAnchorElement;
-      window.location.href = randomLink.href;
-    }
-  });
-
-  // Share button
-  document.getElementById('share-site-btn')?.addEventListener('click', async () => {
-    if (navigator.share) {
-      await navigator.share({ title: 'TrustMeBro', text: 'Check out this fire news portal!', url: window.location.origin });
-    } else {
-      await navigator.clipboard.writeText(window.location.origin);
-      alert('Link copied! 📋');
-    }
-  });
-</script>
-
-<style>
-  #posts-grid {
-    transition: opacity 0.15s ease-in-out;
-  }
-</style>

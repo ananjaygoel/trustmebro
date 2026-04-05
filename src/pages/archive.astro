@@ -128,8 +128,8 @@ const selectedCategoryInfo = categories.find(c => c.slug === selectedCategory) |
                 class:list={[
                   'pill text-sm transition-all',
                   selectedCategory === cat.slug
-                    ? 'bg-gradient-to-r from-cyan-500 to-purple-500 border-transparent text-white font-bold'
-                    : 'hover:border-cyan-400/50'
+                    ? 'gradient-bg border-transparent text-white font-semibold'
+                    : 'hover:border-[var(--color-accent-cool)]'
                 ]}
               >
                 {cat.emoji} {cat.name}
@@ -151,8 +151,9 @@ const selectedCategoryInfo = categories.find(c => c.slug === selectedCategory) |
                 excerpt={post.data.excerpt}
                 category={post.data.category}
                 categoryEmoji={categoryEmojis[post.data.category.toLowerCase()] || '📰'}
-                date={post.data.date}
+                date={post.data.publishedAt ? new Date(post.data.publishedAt) : post.data.date}
                 image={post.data.image}
+                source={post.data.source}
                 featured={currentPage === 1 && index === 0 && selectedCategory === 'all'}
               />
             ))}
@@ -269,4 +270,3 @@ const selectedCategoryInfo = categories.find(c => c.slug === selectedCategory) |
 
   <Footer />
 </Layout>
-

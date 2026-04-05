@@ -2,12 +2,14 @@
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import NewsletterSignup from '../../components/NewsletterSignup.astro';
+import PostCard from '../../components/PostCard.astro';
 import { getCollection } from 'astro:content';
 import { categoryEmojis } from '../../lib/constants';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts');
-  return posts.map(post => ({
+  return posts.map((post) => ({
     params: { slug: post.slug },
     props: { post },
   }));
@@ -16,36 +18,36 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content } = await post.render();
 
-const formatDate = (date: Date) => {
-  return date.toLocaleDateString('en-US', { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  });
-};
+const getPostDate = () => (post.data.publishedAt ? new Date(post.data.publishedAt) : post.data.date);
+const publishedDate = getPostDate();
 
-// Calculate reading time (average 200 words per minute)
+const formatExactTimestamp = (date: Date) =>
+  date.toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+
 const content = post.body || '';
-const wordCount = content.split(/\s+/).filter(word => word.length > 0).length;
+const wordCount = content.split(/\s+/).filter((word) => word.length > 0).length;
 const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 
-// Get related posts
 const allPosts = await getCollection('posts');
 const relatedPosts = allPosts
-  .filter(p => p.slug !== post.slug && p.data.category === post.data.category)
+  .filter((entry) => entry.slug !== post.slug && entry.data.category === post.data.category)
   .slice(0, 3);
 
 const askEnabled = import.meta.env.PUBLIC_ENABLE_ASK === 'true';
-
-// Prepare dates for structured data
 const publishedTime = post.data.publishedAt || post.data.date.toISOString();
 const modifiedTime = post.data.publishedAt || post.data.date.toISOString();
+const sourceLabel = post.data.source || 'TrustMeBro desk';
 ---
 
-<Layout 
-  title={post.data.title} 
-  description={post.data.excerpt} 
+<Layout
+  title={post.data.title}
+  description={post.data.excerpt}
   image={post.data.image}
   article={true}
   publishedTime={publishedTime}
@@ -54,202 +56,221 @@ const modifiedTime = post.data.publishedAt || post.data.date.toISOString();
   keywords={[post.data.category, 'news', 'trending']}
 >
   <Header />
-  
-  <main class="max-w-3xl mx-auto px-4 py-12">
-    <!-- Article Header -->
-    <article>
-      <header class="mb-10 text-center">
-        <a href={`/category/${post.data.category}`} class="inline-flex items-center gap-2 text-sm font-semibold text-cyan-400 uppercase tracking-wider mb-5 hover:text-purple-400 transition-colors">
-          {categoryEmojis[post.data.category] || '📰'} {post.data.category}
-        </a>
-        
-        <h1 class="text-3xl md:text-5xl font-extrabold leading-tight mb-6 tracking-tight">
-          {post.data.title}
-        </h1>
-        
-        <p class="text-lg text-gray-400 mb-8 max-w-2xl mx-auto leading-relaxed">
-          {post.data.excerpt}
-        </p>
-        
-        <div class="flex items-center justify-center gap-4 text-sm text-gray-500 mb-8 flex-wrap">
-          <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-full gradient-bg flex items-center justify-center text-sm">✍️</div>
-            <span class="font-medium">{post.data.author}</span>
+
+  <main class="px-4 py-10 md:py-14">
+    <article class="max-w-6xl mx-auto">
+      <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_280px]">
+        <div class="space-y-5">
+          <a href={`/category/${post.data.category}`} class="eyebrow inline-flex items-center gap-2" style="margin-bottom: 0;">
+            <span>{categoryEmojis[post.data.category] || '📰'}</span>
+            <span>{post.data.category}</span>
+          </a>
+
+          <h1 class="section-title text-4xl md:text-6xl">
+            {post.data.title}
+          </h1>
+
+          <p class="muted-copy max-w-3xl text-lg md:text-xl">
+            {post.data.excerpt}
+          </p>
+
+          <div class="flex flex-wrap gap-3 pt-2">
+            <button id="share-story" class="button-primary">Share story</button>
+            <button
+              id="bookmark-btn"
+              class="button-secondary"
+              data-slug={post.slug}
+              data-title={post.data.title}
+              data-image={post.data.image}
+              data-category={post.data.category}
+              title="Save article"
+            >
+              Save article
+            </button>
+            <a href={`/category/${post.data.category}`} class="button-secondary">
+              More from {post.data.category}
+            </a>
           </div>
-          <span class="hidden sm:inline">•</span>
-          <span>{formatDate(post.data.date)}</span>
-          <span class="hidden sm:inline">•</span>
-          <span>📖 {readingTime} min read</span>
         </div>
-        
-        <!-- Share Buttons -->
-        <div class="flex flex-wrap gap-2 justify-center mb-8">
-          <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.data.title)}&url=${Astro.url}`} target="_blank" class="pill hover:bg-[#1da1f2]" title="Share on X">
-            𝕏
-          </a>
-          <a href={`https://wa.me/?text=${encodeURIComponent(post.data.title + ' ' + Astro.url)}`} target="_blank" class="pill hover:bg-[#25D366]" title="Share on WhatsApp">
-            💬
-          </a>
-          <a href={`https://t.me/share/url?url=${encodeURIComponent(String(Astro.url))}&text=${encodeURIComponent(post.data.title)}`} target="_blank" class="pill hover:bg-[#0088cc]" title="Share on Telegram">
-            ✈️
-          </a>
-          <a href={`https://www.reddit.com/submit?url=${encodeURIComponent(String(Astro.url))}&title=${encodeURIComponent(post.data.title)}`} target="_blank" class="pill hover:bg-[#FF4500]" title="Share on Reddit">
-            🔴
-          </a>
-          <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(String(Astro.url))}`} target="_blank" class="pill hover:bg-[#0A66C2]" title="Share on LinkedIn">
-            💼
-          </a>
-          <button id="copy-link" class="pill" title="Copy link">
-            🔗
-          </button>
-          <button id="bookmark-btn" class="pill" data-slug={post.slug} data-title={post.data.title} data-image={post.data.image} data-category={post.data.category} title="Save for later">
-            🔖
-          </button>
-          <button id="native-share" class="pill" title="More options">
-            📤
-          </button>
-        </div>
-      </header>
-      
-      <!-- Featured Image -->
+
+        <aside class="surface self-start rounded-[1.75rem] p-6 lg:sticky lg:top-24">
+          <p class="eyebrow">Story details</p>
+          <dl class="space-y-5">
+            <div>
+              <dt class="text-xs uppercase tracking-[0.18em] text-[var(--color-text-muted)]">Published</dt>
+              <dd class="mt-1 font-medium text-[var(--color-text)]">{formatExactTimestamp(publishedDate)}</dd>
+            </div>
+            <div>
+              <dt class="text-xs uppercase tracking-[0.18em] text-[var(--color-text-muted)]">Byline</dt>
+              <dd class="mt-1 font-medium text-[var(--color-text)]">{post.data.author}</dd>
+            </div>
+            <div>
+              <dt class="text-xs uppercase tracking-[0.18em] text-[var(--color-text-muted)]">Reading time</dt>
+              <dd class="mt-1 font-medium text-[var(--color-text)]">{readingTime} min read</dd>
+            </div>
+            <div>
+              <dt class="text-xs uppercase tracking-[0.18em] text-[var(--color-text-muted)]">Source label</dt>
+              <dd class="mt-1 font-medium text-[var(--color-text)]">{sourceLabel}</dd>
+            </div>
+          </dl>
+          <p class="mt-6 text-sm text-[var(--color-text-secondary)]">
+            We show the original source label whenever it is available in the post metadata.
+          </p>
+        </aside>
+      </div>
+
       {post.data.image && (
-        <figure class="mb-12">
-          <div class="rounded-2xl overflow-hidden shadow-2xl">
-            <img 
-              src={post.data.image} 
-              alt={post.data.title}
-              class="w-full h-auto max-h-[400px] object-cover"
-            />
-          </div>
-          <figcaption class="text-center text-sm text-gray-500 mt-3 italic">
-            Image: {post.data.source || 'TrustMeBro'}
+        <figure class="mt-10 overflow-hidden rounded-[2rem] border border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
+          <img
+            src={post.data.image}
+            alt={post.data.title}
+            class="max-h-[520px] w-full object-cover"
+          />
+          <figcaption class="border-t border-[var(--color-border)] px-5 py-4 text-sm text-[var(--color-text-muted)]">
+            {post.data.source ? `Source: ${post.data.source}` : 'Image supplied with the story metadata.'}
           </figcaption>
         </figure>
       )}
-      
-      <!-- Article Content -->
-      <div class="prose max-w-none">
-        <Content />
-      </div>
-      
-      <!-- End of Article Divider -->
-      <div class="my-12 flex items-center gap-4">
-        <div class="flex-1 h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent"></div>
-        <span class="text-2xl">✨</span>
-        <div class="flex-1 h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent"></div>
-      </div>
-      
-      <!-- Source -->
-      {post.data.source && (
-        <div class="text-center mb-8">
-          <p class="text-sm text-gray-500">
-            Originally reported by <span class="font-semibold text-cyan-400">{post.data.source}</span>
-          </p>
+
+      <div class="mt-12 grid gap-10 lg:grid-cols-[minmax(0,1fr)_280px]">
+        <div class="prose max-w-none">
+          <Content />
         </div>
-      )}
-      
-      {askEnabled && (
-        <div class="mt-12 p-6 glass rounded-2xl" id="ask-widget">
-          <h3 class="text-lg font-bold mb-3">Got a question about this? 🤔</h3>
-          <p class="text-sm text-gray-400 mb-4">Ask anything about this article and get an instant answer.</p>
-          
-          <div class="flex gap-3">
-            <input 
-              type="text" 
-              id="ask-input"
-              placeholder="What does this mean for...?"
-              class="flex-1 px-4 py-3 rounded-xl bg-[#0f1724] border border-white/10 focus:outline-none focus:border-purple-500 transition-all text-sm"
-              maxlength="500"
-            />
-            <button 
-              id="ask-btn"
-              class="px-6 py-3 rounded-xl gradient-bg font-bold text-black hover:scale-[1.02] transition-all text-sm whitespace-nowrap"
-            >
-              Ask ✨
+
+        <aside class="space-y-5 lg:sticky lg:top-24 self-start">
+          <div class="surface rounded-[1.5rem] p-5">
+            <p class="eyebrow">Source note</p>
+            <p class="muted-copy text-sm">
+              This page keeps the byline, section, publish time, and source label together so the story is easier to scan and verify quickly.
+            </p>
+          </div>
+
+          <div class="surface rounded-[1.5rem] p-5">
+            <p class="eyebrow">Useful next step</p>
+            <a href={`/category/${post.data.category}`} class="button-secondary w-full justify-between">
+              Browse more {post.data.category}
+              <span>→</span>
+            </a>
+          </div>
+        </aside>
+      </div>
+
+      <div class="mt-12 space-y-6">
+        {askEnabled && (
+          <div class="surface rounded-[1.75rem] p-6" id="ask-widget">
+            <h3 class="font-heading text-3xl">Ask a follow-up about this story</h3>
+            <p class="muted-copy mt-2 text-sm">
+              Ask a question tied to the article content. Responses are AI-generated from the text on this page.
+            </p>
+
+            <div class="mt-5 flex flex-col gap-3 md:flex-row">
+              <input
+                type="text"
+                id="ask-input"
+                placeholder="What changed, and why does it matter?"
+                class="min-h-[3.25rem] flex-1 rounded-full border border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-5 text-sm text-[var(--color-text)] outline-none transition-all placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-accent-cool)]"
+                maxlength="500"
+              />
+              <button
+                id="ask-btn"
+                class="button-primary min-h-[3.25rem] justify-center rounded-full px-6"
+              >
+                Ask
+              </button>
+            </div>
+
+            <div id="ask-response" class="mt-4 hidden">
+              <div id="ask-loading" class="text-sm text-[var(--color-text-muted)] hidden">Thinking…</div>
+              <div id="ask-answer" class="surface mt-3 hidden rounded-[1.25rem] p-4 text-sm">
+                <p id="ask-answer-text" class="muted-copy"></p>
+              </div>
+              <div id="ask-error" class="mt-3 text-sm text-[var(--color-accent-strong)] hidden"></div>
+            </div>
+          </div>
+        )}
+
+        <NewsletterSignup
+          id="article-briefing"
+          title="Get the next useful briefing"
+          description="If this story was worth your time, the next one should be too. Get the daily briefing in one clean email."
+          buttonLabel="Join the briefing"
+        />
+
+        <div class="surface rounded-[1.75rem] p-6">
+          <p class="eyebrow">Reader reaction</p>
+          <div class="flex flex-wrap gap-3" id="reactions-container" data-slug={post.slug}>
+            <button class="reaction-btn pill px-4 py-3" data-reaction="fire">
+              🔥 <span class="count font-semibold">0</span>
+            </button>
+            <button class="reaction-btn pill px-4 py-3" data-reaction="cap">
+              🧢 <span class="count font-semibold">0</span>
+            </button>
+            <button class="reaction-btn pill px-4 py-3" data-reaction="skull">
+              💀 <span class="count font-semibold">0</span>
+            </button>
+            <button class="reaction-btn pill px-4 py-3" data-reaction="goat">
+              🐐 <span class="count font-semibold">0</span>
             </button>
           </div>
-          
-          <div id="ask-response" class="mt-4 hidden">
-            <div id="ask-loading" class="text-sm text-gray-400 hidden">
-              Thinking... 💭
-            </div>
-            <div id="ask-answer" class="p-4 bg-[#0f1724] rounded-xl text-sm hidden">
-              <p class="text-gray-300" id="ask-answer-text"></p>
-            </div>
-            <div id="ask-error" class="text-sm text-red-400 hidden"></div>
-          </div>
-          
-          <p class="text-xs text-gray-500 mt-3">Answers are AI-generated based on the article content.</p>
+          <p class="mt-3 text-sm text-[var(--color-text-muted)]" id="vote-status"></p>
         </div>
-      )}
-      
-      <!-- Reactions -->
-      <div class="mt-12 p-6 glass rounded-2xl">
-        <p class="text-sm text-gray-400 mb-4">vibe check:</p>
-        <div class="flex flex-wrap gap-3" id="reactions-container" data-slug={post.slug}>
-          <button class="reaction-btn flex items-center gap-2 text-xl p-3 px-4 rounded-xl glass hover:scale-105 transition-all" data-reaction="fire">
-            🔥 <span class="text-sm font-bold count">0</span>
-          </button>
-          <button class="reaction-btn flex items-center gap-2 text-xl p-3 px-4 rounded-xl glass hover:scale-105 transition-all" data-reaction="cap">
-            🧢 <span class="text-sm font-bold count">0</span>
-          </button>
-          <button class="reaction-btn flex items-center gap-2 text-xl p-3 px-4 rounded-xl glass hover:scale-105 transition-all" data-reaction="skull">
-            💀 <span class="text-sm font-bold count">0</span>
-          </button>
-          <button class="reaction-btn flex items-center gap-2 text-xl p-3 px-4 rounded-xl glass hover:scale-105 transition-all" data-reaction="goat">
-            🐐 <span class="text-sm font-bold count">0</span>
-          </button>
-        </div>
-        <p class="text-xs text-gray-500 mt-3" id="vote-status"></p>
       </div>
     </article>
-    
-    <!-- Related Posts -->
+
     {relatedPosts.length > 0 && (
-      <section class="mt-16">
-        <h2 class="text-xl font-extrabold gradient-text mb-6">more like this 👀</h2>
-        <div class="grid md:grid-cols-3 gap-6">
-          {relatedPosts.map(rpost => (
-            <a href={`/posts/${rpost.slug}`} class="card p-4 group">
-              {rpost.data.image && (
-                <img src={rpost.data.image} alt={rpost.data.title} class="w-full h-32 object-cover rounded-lg mb-3" />
-              )}
-              <h3 class="font-bold text-sm line-clamp-2 group-hover:text-cyan-400 transition-colors">{rpost.data.title}</h3>
-            </a>
+      <section class="max-w-7xl mx-auto mt-16">
+        <div class="mb-6 flex items-end justify-between gap-4">
+          <div>
+            <p class="eyebrow">Continue reading</p>
+            <h2 class="font-heading text-4xl">More from this section</h2>
+          </div>
+          <a href={`/category/${post.data.category}`} class="button-secondary">More {post.data.category}</a>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-3">
+          {relatedPosts.map((related) => (
+            <PostCard
+              title={related.data.title}
+              slug={related.slug}
+              excerpt={related.data.excerpt}
+              category={related.data.category}
+              categoryEmoji={categoryEmojis[related.data.category] || '📰'}
+              date={related.data.publishedAt ? new Date(related.data.publishedAt) : related.data.date}
+              image={related.data.image}
+              source={related.data.source}
+            />
           ))}
         </div>
       </section>
     )}
   </main>
-  
+
   <Footer />
 </Layout>
 
 <script>
-  // Copy link
-  document.getElementById('copy-link')?.addEventListener('click', async () => {
-    await navigator.clipboard.writeText(window.location.href);
-    const btn = document.getElementById('copy-link');
-    if (btn) {
-      btn.textContent = '✅';
-      setTimeout(() => btn.textContent = '🔗', 2000);
-    }
-  });
-  
-  // Native share
-  document.getElementById('native-share')?.addEventListener('click', async () => {
+  document.getElementById('share-story')?.addEventListener('click', async () => {
+    const payload = {
+      title: document.title,
+      url: window.location.href
+    };
+
     if (navigator.share) {
-      await navigator.share({
-        title: document.title,
-        url: window.location.href
-      });
+      await navigator.share(payload);
+      return;
+    }
+
+    await navigator.clipboard.writeText(window.location.href);
+    const button = document.getElementById('share-story');
+    if (button) {
+      button.textContent = 'Link copied';
+      setTimeout(() => (button.textContent = 'Share story'), 2000);
     }
   });
-  
-  // ============ BOOKMARK FUNCTIONALITY ============
-  const bookmarkBtn = document.getElementById('bookmark-btn') as HTMLButtonElement;
+
+  const bookmarkBtn = document.getElementById('bookmark-btn') as HTMLButtonElement | null;
   const BOOKMARKS_KEY = 'trustmebro_bookmarks';
-  
+
   interface Bookmark {
     slug: string;
     title: string;
@@ -257,7 +278,7 @@ const modifiedTime = post.data.publishedAt || post.data.date.toISOString();
     category: string;
     savedAt: string;
   }
-  
+
   function getBookmarks(): Bookmark[] {
     try {
       return JSON.parse(localStorage.getItem(BOOKMARKS_KEY) || '[]');
@@ -265,42 +286,39 @@ const modifiedTime = post.data.publishedAt || post.data.date.toISOString();
       return [];
     }
   }
-  
+
   function saveBookmarks(bookmarks: Bookmark[]) {
     localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(bookmarks));
   }
-  
+
   function isBookmarked(slug: string): boolean {
-    return getBookmarks().some(b => b.slug === slug);
+    return getBookmarks().some((bookmark) => bookmark.slug === slug);
   }
-  
+
   function updateBookmarkButton() {
     const slug = bookmarkBtn?.dataset.slug || '';
+    if (!bookmarkBtn) return;
     if (isBookmarked(slug)) {
-      bookmarkBtn.textContent = '✅';
-      bookmarkBtn.title = 'Saved!';
+      bookmarkBtn.textContent = 'Saved';
+      bookmarkBtn.title = 'Saved article';
     } else {
-      bookmarkBtn.textContent = '🔖';
-      bookmarkBtn.title = 'Save for later';
+      bookmarkBtn.textContent = 'Save article';
+      bookmarkBtn.title = 'Save article';
     }
   }
-  
+
   bookmarkBtn?.addEventListener('click', () => {
     const slug = bookmarkBtn.dataset.slug || '';
     const title = bookmarkBtn.dataset.title || '';
     const image = bookmarkBtn.dataset.image || '';
     const category = bookmarkBtn.dataset.category || '';
-    
+
     let bookmarks = getBookmarks();
-    
+
     if (isBookmarked(slug)) {
-      // Remove bookmark
-      bookmarks = bookmarks.filter(b => b.slug !== slug);
+      bookmarks = bookmarks.filter((bookmark) => bookmark.slug !== slug);
       saveBookmarks(bookmarks);
-      bookmarkBtn.textContent = '🔖';
-      bookmarkBtn.title = 'Save for later';
     } else {
-      // Add bookmark
       bookmarks.unshift({
         slug,
         title,
@@ -309,164 +327,146 @@ const modifiedTime = post.data.publishedAt || post.data.date.toISOString();
         savedAt: new Date().toISOString()
       });
       saveBookmarks(bookmarks);
-      bookmarkBtn.textContent = '✅';
-      bookmarkBtn.title = 'Saved!';
     }
+
+    updateBookmarkButton();
   });
-  
-  // Initialize bookmark button state
+
   updateBookmarkButton();
-  
-  // ============ ASK WIDGET ============
-  const askInput = document.getElementById('ask-input') as HTMLInputElement;
-  const askBtn = document.getElementById('ask-btn');
+
+  const askInput = document.getElementById('ask-input') as HTMLInputElement | null;
+  const askBtn = document.getElementById('ask-btn') as HTMLButtonElement | null;
   const askResponse = document.getElementById('ask-response');
   const askLoading = document.getElementById('ask-loading');
   const askAnswer = document.getElementById('ask-answer');
   const askAnswerText = document.getElementById('ask-answer-text');
   const askError = document.getElementById('ask-error');
-  
-  // Get article content from the page
+
   const articleContent = document.querySelector('.prose')?.textContent || '';
   const articleTitle = document.querySelector('h1')?.textContent || '';
   const articleSlug = window.location.pathname.split('/').pop() || '';
-  
+
   async function askQuestion() {
     const question = askInput?.value.trim();
     if (!question || question.length < 5) {
-      showError('Please ask a longer question (at least 5 characters)');
+      showError('Ask a slightly longer question so the answer has enough context.');
       return;
     }
-    
-    // Show loading state
-    askBtn!.textContent = '...';
+
+    askBtn!.textContent = 'Working...';
     askBtn!.setAttribute('disabled', 'true');
     askResponse?.classList.remove('hidden');
     askLoading?.classList.remove('hidden');
     askAnswer?.classList.add('hidden');
     askError?.classList.add('hidden');
-    
+
     try {
-      const res = await fetch('/api/ask', {
+      const response = await fetch('/api/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           question,
           articleTitle,
-          articleContent: articleContent.slice(0, 4000), // Limit content size
+          articleContent: articleContent.slice(0, 4000),
           articleSlug
         })
       });
-      
-      const data = await res.json();
-      
-      if (!res.ok || data.error) {
-        showError(data.error || 'Something went wrong. Please try again!');
+
+      const data = await response.json();
+
+      if (!response.ok || data.error) {
+        showError(data.error || 'Something went wrong. Please try again.');
         return;
       }
-      
-      // Show answer
+
       askLoading?.classList.add('hidden');
       askAnswer?.classList.remove('hidden');
-      if (askAnswerText) {
-        askAnswerText.textContent = data.answer;
-      }
-      
-    } catch (err) {
-      showError('Couldn\'t connect. Please try again!');
+      if (askAnswerText) askAnswerText.textContent = data.answer;
+    } catch {
+      showError('The article assistant could not connect. Please try again.');
     } finally {
-      askBtn!.textContent = 'Ask ✨';
+      askBtn!.textContent = 'Ask';
       askBtn!.removeAttribute('disabled');
     }
   }
-  
-  function showError(msg: string) {
+
+  function showError(message: string) {
     askLoading?.classList.add('hidden');
     askAnswer?.classList.add('hidden');
     askError?.classList.remove('hidden');
-    if (askError) askError.textContent = msg;
+    if (askError) askError.textContent = message;
   }
-  
+
   askBtn?.addEventListener('click', askQuestion);
-  askInput?.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') askQuestion();
+  askInput?.addEventListener('keypress', (event) => {
+    if (event.key === 'Enter') askQuestion();
   });
-  
-  // Global reactions are stored via the edge API.
+
   const container = document.getElementById('reactions-container');
   const slug = container?.dataset.slug || 'unknown';
   const votedKey = `voted_${slug}`;
   const API_URL = '/api/vibes';
-  
-  // Load reactions from API
+
   async function loadReactions() {
     try {
-      const res = await fetch(`${API_URL}?slug=${encodeURIComponent(slug)}`);
-      const reactions = await res.json();
-      
-      document.querySelectorAll('.reaction-btn').forEach(btn => {
-        const reaction = (btn as HTMLElement).dataset.reaction || '';
-        const countEl = btn.querySelector('.count');
+      const response = await fetch(`${API_URL}?slug=${encodeURIComponent(slug)}`);
+      const reactions = await response.json();
+
+      document.querySelectorAll('.reaction-btn').forEach((button) => {
+        const reaction = (button as HTMLElement).dataset.reaction || '';
+        const countEl = button.querySelector('.count');
         if (countEl) countEl.textContent = reactions[reaction] || '0';
       });
-      
-      // Show if user already voted (still use localStorage for this)
+
       const voted = localStorage.getItem(votedKey);
       if (voted) {
         const votedBtn = document.querySelector(`[data-reaction="${voted}"]`);
-        votedBtn?.classList.add('bg-purple-500/50', 'border-purple-500');
+        votedBtn?.classList.add('!border-[var(--color-accent-cool)]', '!text-[var(--color-text)]');
         const status = document.getElementById('vote-status');
-        if (status) status.textContent = `you vibed with ${voted === 'fire' ? '🔥' : voted === 'cap' ? '🧢' : voted === 'skull' ? '💀' : '🐐'}`;
+        if (status) status.textContent = 'Your reaction is already recorded for this story.';
       }
-    } catch (err) {
-      console.error('Failed to load vibes:', err);
+    } catch (error) {
+      console.error('Failed to load reactions:', error);
     }
   }
-  
+
   loadReactions();
-  
-  document.querySelectorAll('.reaction-btn').forEach(btn => {
-    btn.addEventListener('click', async () => {
+
+  document.querySelectorAll('.reaction-btn').forEach((button) => {
+    button.addEventListener('click', async () => {
       const voted = localStorage.getItem(votedKey);
+      const status = document.getElementById('vote-status');
+
       if (voted) {
-        const status = document.getElementById('vote-status');
-        if (status) status.textContent = "bestie you already vibed on this one 💅";
+        if (status) status.textContent = 'You already reacted to this story.';
         return;
       }
-      
-      const reaction = (btn as HTMLElement).dataset.reaction || '';
-      
-      // Show optimistic update
-      btn.classList.add('bg-purple-500/50', 'border-purple-500', 'scale-110');
-      setTimeout(() => btn.classList.remove('scale-110'), 200);
-      
-      const status = document.getElementById('vote-status');
-      if (status) status.textContent = "saving vibe... ⏳";
-      
+
+      const reaction = (button as HTMLElement).dataset.reaction || '';
+      button.classList.add('!border-[var(--color-accent-cool)]');
+      if (status) status.textContent = 'Saving your reaction...';
+
       try {
-        // Send to API
-        const res = await fetch(`${API_URL}?slug=${encodeURIComponent(slug)}`, {
+        const response = await fetch(`${API_URL}?slug=${encodeURIComponent(slug)}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ reaction })
         });
-        
-        const reactions = await res.json();
-        
-        // Update all counts from server response
-        document.querySelectorAll('.reaction-btn').forEach(b => {
-          const r = (b as HTMLElement).dataset.reaction || '';
-          const countEl = b.querySelector('.count');
-          if (countEl) countEl.textContent = reactions[r] || '0';
+
+        const reactions = await response.json();
+
+        document.querySelectorAll('.reaction-btn').forEach((item) => {
+          const key = (item as HTMLElement).dataset.reaction || '';
+          const countEl = item.querySelector('.count');
+          if (countEl) countEl.textContent = reactions[key] || '0';
         });
-        
-        // Save that user voted
+
         localStorage.setItem(votedKey, reaction);
-        if (status) status.textContent = "vibe recorded globally ✨";
-      } catch (err) {
-        console.error('Failed to save vibe:', err);
-        if (status) status.textContent = "couldn't save vibe, try again 😢";
-        btn.classList.remove('bg-purple-500/50', 'border-purple-500');
+        if (status) status.textContent = 'Reaction saved.';
+      } catch (error) {
+        console.error('Failed to save reaction:', error);
+        if (status) status.textContent = 'Could not save your reaction. Please try again.';
+        button.classList.remove('!border-[var(--color-accent-cool)]');
       }
     });
   });

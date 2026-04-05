@@ -48,8 +48,9 @@ const posts = allPosts
               excerpt={post.data.excerpt}
               category={post.data.category}
               categoryEmoji={categoryInfo.emoji}
-              date={post.data.date}
+              date={post.data.publishedAt ? new Date(post.data.publishedAt) : post.data.date}
               image={post.data.image}
+              source={post.data.source}
               featured={index === 0}
             />
           ))}
@@ -61,7 +62,7 @@ const posts = allPosts
           <p class="opacity-60 mb-8">Check back soon! We're cooking up some fire content 🔥</p>
           <a 
             href="/" 
-            class="inline-flex items-center gap-2 px-6 py-3 rounded-full gradient-bg text-white font-bold hover:scale-105 transition-all"
+            class="button-primary"
           >
             ← Back to Home
           </a>

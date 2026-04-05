@@ -36,7 +36,7 @@ const ADSENSE_CLIENT_ID = "ca-pub-7689171652945488";
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0b0f1a" />
+    <meta name="theme-color" content="#f3ede2" />
     
     <!-- Canonical URL -->
     <link rel="canonical" href={canonicalURL} />
@@ -86,7 +86,7 @@ const ADSENSE_CLIENT_ID = "ca-pub-7689171652945488";
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,500;6..72,700;6..72,800&display=swap" rel="stylesheet" />
     <!-- Favicons -->
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -95,20 +95,7 @@ const ADSENSE_CLIENT_ID = "ca-pub-7689171652945488";
     
     <!-- RSS Feed -->
     <link rel="alternate" type="application/rss+xml" title="TrustMeBro RSS" href="/rss.xml" />
-    
-    <!-- Google Analytics 4 -->
-    {GA_MEASUREMENT_ID && (
-      <>
-        <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}></script>
-        <script define:vars={{ GA_MEASUREMENT_ID }}>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', GA_MEASUREMENT_ID);
-        </script>
-      </>
-    )}
-    
+
     <!-- Google AdSense -->
     {ADSENSE_CLIENT_ID && (
       <script 
@@ -157,39 +144,29 @@ const ADSENSE_CLIENT_ID = "ca-pub-7689171652945488";
         }
       })
     })} />
+
+    <script is:inline>
+      (() => {
+        const theme = localStorage.getItem('theme') || 'light';
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
   </head>
   <body class="antialiased">
     <slot />
-    
-    <script>
-      // Theme toggle
-      const theme = localStorage.getItem('theme') || 'dark';
-      if (theme === 'light') document.documentElement.classList.add('light');
-      
-      // Make theme toggle work
-      document.addEventListener('DOMContentLoaded', () => {
-        const toggle = document.getElementById('theme-toggle');
-        if (toggle) {
-          toggle.addEventListener('click', () => {
-            document.documentElement.classList.toggle('light');
-            const isLight = document.documentElement.classList.contains('light');
-            localStorage.setItem('theme', isLight ? 'light' : 'dark');
-            toggle.textContent = isLight ? '☀️' : '🌙';
-          });
-        }
-      });
-    </script>
-    
+
     <!-- Cookie Consent Banner -->
-    <div id="cookie-banner" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 1rem 1.5rem; z-index: 9999; border-top: 1px solid rgba(0, 245, 212, 0.3); box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);">
+    <div id="cookie-banner" style="display: none; position: fixed; bottom: 1rem; left: 1rem; right: 1rem; background: rgba(253, 250, 244, 0.95); padding: 1rem 1.25rem; z-index: 9999; border: 1px solid rgba(24, 34, 45, 0.12); border-radius: 1.25rem; box-shadow: 0 20px 50px rgba(24, 34, 45, 0.12); backdrop-filter: blur(14px);">
       <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem;">
-        <p style="margin: 0; color: #e2e8f0; font-size: 0.9rem; flex: 1;">
-          🍪 yo bestie, we use cookies to make this site slap harder. by staying, you're saying "bet" to our 
-          <a href="/privacy" style="color: #00f5d4; text-decoration: underline;">cookie policy</a>. no cap.
+        <p style="margin: 0; color: #41505d; font-size: 0.9rem; flex: 1;">
+          We use cookies for analytics and a few quality-of-life features. Read the full
+          <a href="/privacy" style="color: #1f5368; text-decoration: underline;">privacy policy</a>.
         </p>
         <div style="display: flex; gap: 0.5rem;">
-          <button id="reject-cookies" style="padding: 0.5rem 1rem; background: transparent; border: 1px solid #64748b; color: #94a3b8; border-radius: 8px; cursor: pointer; font-size: 0.85rem;">nah, i'm good</button>
-          <button id="accept-cookies" style="padding: 0.5rem 1.5rem; background: linear-gradient(135deg, #00f5d4, #7b61ff); border: none; color: #0a0a0a; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem;">bet, accept all 🔥</button>
+          <button id="reject-cookies" style="padding: 0.6rem 1rem; background: transparent; border: 1px solid rgba(24, 34, 45, 0.12); color: #41505d; border-radius: 999px; cursor: pointer; font-size: 0.85rem;">Reject</button>
+          <button id="accept-cookies" style="padding: 0.6rem 1.2rem; background: #1f5368; border: none; color: #fffdf8; border-radius: 999px; cursor: pointer; font-weight: 600; font-size: 0.85rem;">Accept</button>
         </div>
       </div>
     </div>
