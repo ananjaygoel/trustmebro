@@ -36,6 +36,8 @@ const relatedPosts = allPosts
   .filter(p => p.slug !== post.slug && p.data.category === post.data.category)
   .slice(0, 3);
 
+const askEnabled = import.meta.env.PUBLIC_ENABLE_ASK === 'true';
+
 // Prepare dates for structured data
 const publishedTime = post.data.publishedAt || post.data.date.toISOString();
 const modifiedTime = post.data.publishedAt || post.data.date.toISOString();
@@ -146,39 +148,40 @@ const modifiedTime = post.data.publishedAt || post.data.date.toISOString();
         </div>
       )}
       
-      <!-- Ask a Question Widget -->
-      <div class="mt-12 p-6 glass rounded-2xl" id="ask-widget">
-        <h3 class="text-lg font-bold mb-3">Got a question about this? 🤔</h3>
-        <p class="text-sm text-gray-400 mb-4">Ask anything about this article and get an instant answer.</p>
-        
-        <div class="flex gap-3">
-          <input 
-            type="text" 
-            id="ask-input"
-            placeholder="What does this mean for...?"
-            class="flex-1 px-4 py-3 rounded-xl bg-[#0f1724] border border-white/10 focus:outline-none focus:border-purple-500 transition-all text-sm"
-            maxlength="500"
-          />
-          <button 
-            id="ask-btn"
-            class="px-6 py-3 rounded-xl gradient-bg font-bold text-black hover:scale-[1.02] transition-all text-sm whitespace-nowrap"
-          >
-            Ask ✨
-          </button>
-        </div>
-        
-        <div id="ask-response" class="mt-4 hidden">
-          <div id="ask-loading" class="text-sm text-gray-400 hidden">
-            Thinking... 💭
+      {askEnabled && (
+        <div class="mt-12 p-6 glass rounded-2xl" id="ask-widget">
+          <h3 class="text-lg font-bold mb-3">Got a question about this? 🤔</h3>
+          <p class="text-sm text-gray-400 mb-4">Ask anything about this article and get an instant answer.</p>
+          
+          <div class="flex gap-3">
+            <input 
+              type="text" 
+              id="ask-input"
+              placeholder="What does this mean for...?"
+              class="flex-1 px-4 py-3 rounded-xl bg-[#0f1724] border border-white/10 focus:outline-none focus:border-purple-500 transition-all text-sm"
+              maxlength="500"
+            />
+            <button 
+              id="ask-btn"
+              class="px-6 py-3 rounded-xl gradient-bg font-bold text-black hover:scale-[1.02] transition-all text-sm whitespace-nowrap"
+            >
+              Ask ✨
+            </button>
           </div>
-          <div id="ask-answer" class="p-4 bg-[#0f1724] rounded-xl text-sm hidden">
-            <p class="text-gray-300" id="ask-answer-text"></p>
+          
+          <div id="ask-response" class="mt-4 hidden">
+            <div id="ask-loading" class="text-sm text-gray-400 hidden">
+              Thinking... 💭
+            </div>
+            <div id="ask-answer" class="p-4 bg-[#0f1724] rounded-xl text-sm hidden">
+              <p class="text-gray-300" id="ask-answer-text"></p>
+            </div>
+            <div id="ask-error" class="text-sm text-red-400 hidden"></div>
           </div>
-          <div id="ask-error" class="text-sm text-red-400 hidden"></div>
+          
+          <p class="text-xs text-gray-500 mt-3">Answers are AI-generated based on the article content.</p>
         </div>
-        
-        <p class="text-xs text-gray-500 mt-3">Answers are AI-generated based on the article content.</p>
-      </div>
+      )}
       
       <!-- Reactions -->
       <div class="mt-12 p-6 glass rounded-2xl">
