@@ -1,5 +1,3 @@
-import { EmailMessage } from "cloudflare:email";
-
 function json(body, init = {}) {
   const headers = new Headers(init.headers);
   headers.set("Content-Type", "application/json; charset=UTF-8");
@@ -12,18 +10,6 @@ function isValidEmail(value) {
 
 function cleanLine(value) {
   return String(value || "").replace(/[\r\n]+/g, " ").trim();
-}
-
-function buildRawEmail({ fromName, fromEmail, toEmail, subject, text }) {
-  return [
-    `From: ${cleanLine(fromName)} <${cleanLine(fromEmail)}>`,
-    `To: ${cleanLine(toEmail)}`,
-    `Subject: ${cleanLine(subject)}`,
-    "MIME-Version: 1.0",
-    "Content-Type: text/plain; charset=UTF-8",
-    "",
-    text.replace(/\r?\n/g, "\r\n"),
-  ].join("\r\n");
 }
 
 export async function onRequest({ request, env }) {
@@ -69,24 +55,6 @@ export async function onRequest({ request, env }) {
       .run();
 
     const isNewSubscription = Boolean(result.meta && result.meta.changes > 0);
-    const toEmail = cleanLine(env.NEWSLETTER_TO_EMAIL || env.CONTACT_TO_EMAIL || "hello@trustmebro.pro");
-    const fromEmail = cleanLine(env.CONTACT_FROM_EMAIL || "noreply@trustmebro.pro");
-
-    if (isNewSubscription && env.NOTIFICATIONS_EMAIL?.send) {
-      const raw = buildRawEmail({
-        fromName: "TrustMeBro Newsletter",
-        fromEmail,
-        toEmail,
-        subject: "[TrustMeBro] New newsletter signup",
-        text: `New newsletter subscriber: ${email}`,
-      });
-
-      try {
-        await env.NOTIFICATIONS_EMAIL.send(new EmailMessage(fromEmail, toEmail, raw));
-      } catch (error) {
-        console.error("Newsletter notification email failed:", error);
-      }
-    }
 
     return json({
       ok: true,

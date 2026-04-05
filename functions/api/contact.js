@@ -1,5 +1,3 @@
-import { EmailMessage } from "cloudflare:email";
-
 function json(body, init = {}) {
   const headers = new Headers(init.headers);
   headers.set("Content-Type", "application/json; charset=UTF-8");
@@ -12,19 +10,6 @@ function isValidEmail(value) {
 
 function cleanLine(value) {
   return String(value || "").replace(/[\r\n]+/g, " ").trim();
-}
-
-function buildRawEmail({ fromName, fromEmail, replyTo, toEmail, subject, text }) {
-  return [
-    `From: ${cleanLine(fromName)} <${cleanLine(fromEmail)}>`,
-    `To: ${cleanLine(toEmail)}`,
-    `Reply-To: ${cleanLine(replyTo)}`,
-    `Subject: ${cleanLine(subject)}`,
-    "MIME-Version: 1.0",
-    "Content-Type: text/plain; charset=UTF-8",
-    "",
-    text.replace(/\r?\n/g, "\r\n"),
-  ].join("\r\n");
 }
 
 export async function onRequest({ request, env }) {
@@ -82,35 +67,6 @@ export async function onRequest({ request, env }) {
     )
       .bind(name, email, subject, message)
       .run();
-
-    const toEmail = cleanLine(env.CONTACT_TO_EMAIL || "hello@trustmebro.pro");
-    const fromEmail = cleanLine(env.CONTACT_FROM_EMAIL || "noreply@trustmebro.pro");
-
-    if (env.NOTIFICATIONS_EMAIL?.send) {
-      const raw = buildRawEmail({
-        fromName: "TrustMeBro Contact",
-        fromEmail,
-        replyTo: email,
-        toEmail,
-        subject: `[TrustMeBro] Contact: ${subject}`,
-        text: [
-          "New contact form submission",
-          "",
-          `Name: ${name}`,
-          `Email: ${email}`,
-          `Subject: ${subject}`,
-          "",
-          "Message:",
-          message,
-        ].join("\n"),
-      });
-
-      try {
-        await env.NOTIFICATIONS_EMAIL.send(new EmailMessage(fromEmail, toEmail, raw));
-      } catch (error) {
-        console.error("Contact notification email failed:", error);
-      }
-    }
 
     return json({ ok: true });
   } catch (error) {
