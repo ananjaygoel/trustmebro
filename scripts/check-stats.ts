@@ -11,7 +11,7 @@ import * as path from 'path';
 const POSTS_DIR = './src/content/posts';
 const API_TRACKER = './src/content/.api-tracker.json';
 const SOCIAL_LOG = './src/content/.social-posted.json';
-const SITE_URL = 'https://sparkly-flan-50adeb.netlify.app';
+const SITE_URL = 'https://trustmebro.pro';
 
 interface ArticleStats {
   total: number;

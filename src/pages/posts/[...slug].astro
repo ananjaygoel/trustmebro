@@ -344,7 +344,7 @@ const modifiedTime = post.data.publishedAt || post.data.date.toISOString();
     askError?.classList.add('hidden');
     
     try {
-      const res = await fetch('/.netlify/functions/ask', {
+      const res = await fetch('/api/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -389,11 +389,11 @@ const modifiedTime = post.data.publishedAt || post.data.date.toISOString();
     if (e.key === 'Enter') askQuestion();
   });
   
-  // Global Reactions using Netlify Functions
+  // Global reactions are stored via the edge API.
   const container = document.getElementById('reactions-container');
   const slug = container?.dataset.slug || 'unknown';
   const votedKey = `voted_${slug}`;
-  const API_URL = '/.netlify/functions/vibes';
+  const API_URL = '/api/vibes';
   
   // Load reactions from API
   async function loadReactions() {

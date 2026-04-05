@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 jobs:
-  fetch-and-deploy:
+  fetch-and-push:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     
@@ -50,17 +50,10 @@ jobs:
           git push
           
       - name: Build site
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
         run: npm run build
         
-      - name: Deploy to Netlify
-        uses: nwtgck/actions-netlify@v3
-        with:
-          publish-dir: './dist'
-          production-deploy: true
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-      
       - name: Post to Social Media
         env:
           BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
