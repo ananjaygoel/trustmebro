@@ -19,8 +19,7 @@ import Footer from '../components/Footer.astro';
 
       <!-- Contact Form -->
       <div class="glass rounded-2xl p-8 mb-8">
-        <form id="contact-form" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="space-y-6">
-          <input type="hidden" name="form-name" value="contact" />
+        <form id="contact-form" class="space-y-6">
           <p class="hidden"><label>Don't fill this out: <input name="bot-field" /></label></p>
           <div>
             <label for="name" class="block text-sm font-medium mb-2">Your Name</label>
@@ -130,11 +129,19 @@ import Footer from '../components/Footer.astro';
     if (btn) btn.textContent = 'Sending...';
     
     try {
-      const response = await fetch('/', {
+      const formData = new FormData(form);
+      const response = await fetch('/api/contact', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(new FormData(form) as any).toString()
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: String(formData.get('name') || '').trim(),
+          email: String(formData.get('email') || '').trim(),
+          subject: String(formData.get('subject') || '').trim(),
+          message: String(formData.get('message') || '').trim(),
+          botField: String(formData.get('bot-field') || '')
+        })
       });
+      const data = await response.json().catch(() => ({}));
       
       if (response.ok) {
         if (msg) {
@@ -144,13 +151,13 @@ import Footer from '../components/Footer.astro';
         }
         form.reset();
       } else {
-        throw new Error('Failed');
+        throw new Error((data as { error?: string }).error || 'Failed');
       }
     } catch (err) {
       if (msg) {
         msg.classList.remove('hidden');
         msg.className = 'mt-4 text-center text-red-400';
-        msg.textContent = '❌ Something went wrong, try again?';
+        msg.textContent = err instanceof Error ? `❌ ${err.message}` : '❌ Something went wrong, try again?';
       }
     }
     if (btn) btn.textContent = 'Send Message 🚀';

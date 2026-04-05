@@ -9,8 +9,7 @@ const year = new Date().getFullYear();
       <div class="max-w-2xl mx-auto text-center">
         <h2 class="text-3xl font-extrabold gradient-text mb-4">stay in the loop 📬</h2>
         <p class="text-gray-400 mb-8">get the freshest news drops straight to your inbox. no spam, just vibes.</p>
-        <form id="newsletter-form" name="newsletter" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="flex gap-3 max-w-md mx-auto">
-          <input type="hidden" name="form-name" value="newsletter" />
+        <form id="newsletter-form" class="flex gap-3 max-w-md mx-auto">
           <p class="hidden"><label>Don't fill this out: <input name="bot-field" /></label></p>
           <input 
             type="email" 
@@ -91,27 +90,32 @@ const year = new Date().getFullYear();
     if (btn) btn.textContent = 'subscribing...';
     
     try {
-      const response = await fetch('/', {
+      const formData = new FormData(form);
+      const response = await fetch('/api/newsletter', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(new FormData(form) as any).toString()
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: String(formData.get('email') || '').trim(),
+          botField: String(formData.get('bot-field') || '')
+        })
       });
+      const data = await response.json().catch(() => ({}));
       
       if (response.ok) {
         if (msg) {
           msg.classList.remove('hidden');
           msg.className = 'mt-4 text-green-400';
-          msg.textContent = '✅ you\'re in! welcome to the squad';
+          msg.textContent = (data as { message?: string }).message || '✅ you\'re in! welcome to the squad';
         }
         form.reset();
       } else {
-        throw new Error('Failed');
+        throw new Error((data as { error?: string }).error || 'Failed');
       }
     } catch (err) {
       if (msg) {
         msg.classList.remove('hidden');
         msg.className = 'mt-4 text-red-400';
-        msg.textContent = '❌ something went wrong, try again?';
+        msg.textContent = err instanceof Error ? `❌ ${err.message}` : '❌ something went wrong, try again?';
       }
     }
     if (btn) btn.textContent = 'subscribe 🚀';
