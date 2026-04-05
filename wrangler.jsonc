@@ -1,0 +1,13 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "trustmebro",
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2026-04-05",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "trustmebro-prod",
+      "database_id": "dfe81076-0f41-4bd0-b2d2-576acce1cb61"
+    }
+  ]
+}
