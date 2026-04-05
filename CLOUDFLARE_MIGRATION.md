@@ -24,12 +24,8 @@ This repo is now prepared to run on Cloudflare Pages plus Pages Functions instea
 5. Add runtime/environment variables:
    - `GROQ_API_KEY`
    - `PUBLIC_GA_ID`
-   - `CONTACT_TO_EMAIL`
-   - `NEWSLETTER_TO_EMAIL`
-   - Optional: `CONTACT_FROM_EMAIL`
-6. Configure Cloudflare Email Routing / Send Email and bind it as `NOTIFICATIONS_EMAIL` if you want contact and newsletter notifications delivered to inbox automatically.
-7. Add `trustmebro.pro` as a custom domain in Cloudflare Pages and move DNS to Cloudflare.
-8. After cutover, remove old Netlify deploy secrets from GitHub if you no longer need rollback.
+6. Add `trustmebro.pro` as a custom domain in Cloudflare Pages and move DNS to Cloudflare.
+7. After cutover, remove old Netlify deploy secrets from GitHub if you no longer need rollback.
 
 ## Data Layer
 
@@ -38,6 +34,8 @@ The required D1 tables are defined in `cloudflare/d1/schema.sql`:
 - `article_vibes`
 - `contact_submissions`
 - `newsletter_subscriptions`
+
+The zero-cost version stores contact and newsletter submissions in D1. If you later want inbox notifications, add a separate Worker or third-party form delivery service after the cutover.
 
 ## Stakeholders / Integrations
 
