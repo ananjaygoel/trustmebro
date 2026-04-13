@@ -1,0 +1,43 @@
+---
+title: "Structured Outputs vs. Function Calling: Which Should You..."
+excerpt: "Language models (LMs), at their core, are text-in and text-out systems. Structured Outputs vs."
+category: "ai"
+date: 2026-04-13
+publishedAt: "2026-04-13T19:02:03.992Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/04/mlm-mayo-structured-outputs-vs-function-calling.png"
+author: "certified yapper 🗣️"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+Breaking it down: Language models (LMs), at their core, are text-in and text-out systems.
+
+Function Calling: Which Should Your Agent Use? By Matthew Mayo on in Language Models 0 Post In this article, you will learn the architectural differences between structured outputs and function calling in modern language model systems. (wild, right?)
+
+Topics we will cover include: How structured outputs and function calling work under the hood.
+
+## The Details
+
+When to use each approach in real-world ML systems. The performance, cost, and reliability trade-offs between the two.
+
+Image by Editor Introduction Language models (LMs), at their core, are text-in and text-out systems. For a human conversing with one via a chat interface, this is perfectly fine.
+
+## Why This Matters
+
+But for ML practitioners building autonomous agents and reliable software pipelines, raw unstructured text is a nightmare to parse, route, and integrate into deterministic systems. To build reliable agents, we need predictable, machine-readable outputs and the ability to interact seamlessly with external environments. To bridge this gap, modern LM API providers (like OpenAI, Anthropic, and Google Gemini) have introduced two primary mechanisms: Structured Outputs: Forcing the model to reply to a predefined schema (most commonly a JSON schema or a Python Pydantic model) Function Calling (Tool Use): Equipping the model with a library of functional definitions that it can choose to invoke dynamically based on the context of the prompt At first glance, these two capabilities look similar.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## Key Takeaways
+
+- But, they serve fundamentally different architectural purposes in agent design.
+- Conflating the two is a common pitfall.
+- Choosing the wrong mechanism for a feature can lead to brittle architectures, excessive latency, and unnecessarily inflated API costs.
+
+## The Bottom Line
+
+Conflating the two is a common pitfall. Choosing the wrong mechanism for a feature can lead to brittle architectures, excessive latency, and unnecessarily inflated API costs.
+
+What's your take on this whole situation?
