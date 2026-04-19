@@ -1,0 +1,43 @@
+---
+title: "Proxy-Pointer RAG: Structure Meets grow at 100% Accuracy ..."
+excerpt: "Open source. 5-minute setup."
+category: "ai"
+date: 2026-04-19
+publishedAt: "2026-04-19T18:35:07.465Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "main character energy 💫"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Real talk: Vector RAG done right—try it yourself.
+
+The post Proxy-Pointer RAG: Structure Meets grow at 100% Accuracy with Smarter Retrieval appeared first on Towards Data Science. In my previous article , I introduced Proxy-Pointer RAG — a retrieval architecture that embeds document structure directly into a vector index, achieving the surgical precision of Vectorless RAG systems like PageIndex, without their scalability and cost penalties. (plot twist fr)
+
+That article laid the foundation: the why , the how , and a promising 10-query comparison on a single World Bank report.
+
+## The Details
+
+Although a useful proof-of-concept, that did not prove production readiness. This article aims to address that.
+
+In an enterprise, the vast majority of documents on which RAG is applied — technical manuals, research papers, legal contracts, policy reports, annual filings, compliance documents — have section headings. And that structure encapsulates meaning , precisely how a human comprehends and searches a complex document section flow in the mind.
+
+## Why This Matters
+
+A standard vector RAG throws away the structure, when it shreds a document into a flat bag of chunks leading to sub-optimal responses. Proxy-Pointer instead exploits that ubiquitous structure to dramatically improve retrieval accuracy, at minimal additional cost. To stress-test the architecture, we needed the most demanding structured documents we could find — the kind where a single misplaced decimal point or a missed footnote can invalidate an entire analysis.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## Key Takeaways
+
+- 10-K annual reports are deeply nested, cross-referenced across multiple financial statements, and demand precise numerical reasoning.
+- If Proxy-Pointer can handle these, it can handle anything with headings.
+- This article provides evidence to support Proxy-Pointers capability.
+
+## The Bottom Line
+
+I took four publicly available FY2022 10-K filings — AMD (121 pages), American Express (260 pages), Boeing (190 pages), and PepsiCo (500 pages) — and tested Proxy-Pointer on 66 questions across two distinct benchmarks, including adversarial queries specifically designed to break naive retrieval systems. The results were decisive and summarized below.
+
+How do you feel about this development?
