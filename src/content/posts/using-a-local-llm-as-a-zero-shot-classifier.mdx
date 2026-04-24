@@ -1,0 +1,43 @@
+---
+title: "Using a Local LLM as a Zero-Shot Classifier"
+excerpt: "A practical pipeline for classifying messy free-text data into meaningful categories using a locally hosted LLM, no labeled training data..."
+category: "ai"
+date: 2026-04-24
+publishedAt: "2026-04-24T01:47:53.962Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "your fave news bestie 💅"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Here's the thing: A practical pipeline for classifying messy free-text data into meaningful categories using a locally hosted LLM, no labeled training data required.
+
+The post Using a Local LLM as a Zero-Shot Classifier appeared first on Towards Data Science. James Surowiecki wrote that “groups are remarkably intelligent, and are often smarter than the smartest people in them. (shocking, we know)
+
+” He was writing about decision-making , but the same principle applies to classification: get enough people to describe the same phenomenon and a taxonomy starts to emerge, even if no two people phrase it the same way.
+
+## The Details
+
+The challenge is extracting that signal from the noise. I had several thousand rows of free-text data and needed to do exactly that.
+
+Each row was a short natural-language annotation explaining why an automated security finding was irrelevant , which functions to use for a fix, or what coding practices to follow. One person wrote “this is test code, not deployed anywhere.
+
+## Why This Matters
+
+” Another wrote “non-production environment, safe to ignore. ” A third wrote “only runs in CI/CD pipeline during integration tests. ” All three meant the same thing, but no two d more than a word or two.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## Key Takeaways
+
+- I just needed the right tool to extract it.
+- This blog post explores how it performed, how it works, and some tips for using and deploying these systems yourself.
+- Why traditional clustering struggles with short free-text Standard unsupervised clustering works proximity in some feature space.
+
+## The Bottom Line
+
+“ This key is only used in development ” and “ This API key is hardcoded for convenience ” produce similar embeddings because the vocabulary overlaps. But one is about a non-production environment and the other is about an intentional security tradeoff.
+
+Is this a W or an L? You decide.
