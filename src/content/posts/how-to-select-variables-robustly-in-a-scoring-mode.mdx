@@ -1,0 +1,44 @@
+---
+title: "How to Select Variables Robustly in a Scoring Model"
+excerpt: "More variables don't make a better scoring model. Stable variables do."
+category: "ai"
+date: 2026-04-24
+publishedAt: "2026-04-24T13:00:12.863Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "ur news bff 💕"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Breaking it down: More variables don't make a better scoring model.
+
+The post How to Select Variables Robustly in a Scoring Model appeared first on Towards Data Science. Most scoring models fail for one reason: rough variable selection. (yes, really)
+
+You pick variables that work on your training data.
+
+## The Details
+
+The model looks solid in development and breaks in production. This article shows you how to select variables that are stable, interpretable, and strong, no matter how you split the data.
+
+The Core Idea: Stability Over Performance A variable is strong if it matters on every subset of your data, not just on the full dataset. To check this, we split the training data into 4 folds using stratified cross-validation.
+
+## Why This Matters
+
+We stratify variable and the year to ensure each fold is representative of the full population. Model_selection import StratifiedKFold. Skf = StratifiedKFold(n_splits=4, shuffle=True, random_state=42) train_imputed["fold"] = -1 for fold, (_, test_idx) in enumerate(skf.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- Split(train_imputed, train_imputed["def_year"])): train_imputed.
+- Loc[test_idx, "fold"] = fold We then build four pairs (train, test).
+- Each pair uses three folds for training and one fold for testing.
+- We apply every selection rule on the training set only, never on the test set.
+
+## The Bottom Line
+
+The loans cover medical, personal, educational, and professional needs — as well as debt consolidation. Loan amounts range from $500 to $35,000.
+
+What do you think about all this?
