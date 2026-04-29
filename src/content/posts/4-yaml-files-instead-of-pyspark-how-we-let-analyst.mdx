@@ -1,0 +1,43 @@
+---
+title: "4 YAML Files Instead of PySpark: How We Let analysts Buil..."
+excerpt: "How we replaced Python pipelines with dlt, dbt, and Trino — and cut delivery time from weeks to one day."
+category: "ai"
+date: 2026-04-29
+publishedAt: "2026-04-29T19:09:03.481Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "no cap correspondent 🧢"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Alright so How we replaced Python pipelines with dlt, dbt, and Trino — and cut delivery time from weeks to one day.
+
+The post 4 YAML Files Instead of PySpark: How We Let analysts Build Data Pipelines Without Engineers appeared first on Towards Data Science. It used to take us three weeks to ship a single data pipeline. (and honestly, same)
+
+Today, an analyst with zero Python experience does it in a day.
+
+## The Details
+
+I’m Kiril Kazlou, a data engineer at Mindbox. Our team regularly recalculates business metrics for clients — which means we’re constantly building data marts for billing and analytics, pulling from dozens of different sources.
+
+For a long time, we relied on PySpark for all our data processing. You can’t fr work with PySpark without Python experience.
+
+## Why This Matters
+
+Every new pipeline required a developer. And that meant waiting — sometimes for weeks. In this post, I’ll walk you through how we built an internal data platform where an analyst or product manager can spin up a regularly updated pipeline four YAML files.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## Key Takeaways
+
+- Why PySpark Was Slowing Us Down Let me illustrate the pain with a textbook example — calculating MAU (Monthly Active Users).
+- On the surface, this feels like a simple SQL job: COUNT(DISTINCT customerId) across a few tables over a time window.
+- A full week just to ship a MAU counter.
+
+## The Bottom Line
+
+The developer clarified details, wrote PySpark code, went through code review, configured the DAG, and deployed. What we actually wanted was for analysts and product managers — the people who understand the business logic best and are fluent in SQL and YAML — to handle this themselves.
+
+Are you here for this or nah?
