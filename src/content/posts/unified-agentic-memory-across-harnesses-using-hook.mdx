@@ -1,0 +1,43 @@
+---
+title: "Unified Agentic Memory Across Harnesses Using Hooks"
+excerpt: "How hook implementation gives Claude Code, Codex, and Cursor persistent memory via Neo4j, without locking you into any one of them."
+category: "ai"
+date: 2026-05-08
+publishedAt: "2026-05-08T13:08:59.720Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "the tea spiller ☕"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Let's talk about How hook implementation gives Claude Code, Codex, and Cursor persistent memory via Neo4j, without locking you into any one of them.
+
+The post Unified Agentic Memory Across Harnesses Using Hooks appeared first on Towards Data Science. LLMs are now so capable that the main debate isnt about when the next better model drops, but about who will build the right harness around them. (it feels like chaos)
+
+A harness is the scaffolding around the model: the agent loop, tool definitions, context management, memory, prompts, and workflows that turn a raw LLM into a useful product .
+
+## The Details
+
+The model is the engine, the harness is everything that makes it actually drive. Examples of harnesses are Cursor, Claude Desktop, and others.
+
+Theres a running debate in the AI coding tool space: does committing to a specific harness mean vendor lock-in? Memory is the sharpest edge of this.
+
+## Why This Matters
+
+If your agents memory lives inside a closed harness or behind a proprietary API, you dont fr own it, and switching costs add up fast. But it doesnt have to be that way. The idea is for this blog post is simple: keep the memory layer outside the harness, and let any harness plug into it.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## Key Takeaways
+
+- Unified agentic memory design.
+- The code for hook integration is available on GitHub .
+- MCP tools can only get you so far with memory MCP (Model Context Protocol) servers are the go-to answer for giving agents access to external systems.
+
+## The Bottom Line
+
+Theres no guarantee of consistency, one session might log everything, the next might log nothing. Youre relying on the models judgment about whats important for memory, in real time, while its busy doing something else.
+
+Thoughts? Drop them below.
