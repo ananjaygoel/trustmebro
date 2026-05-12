@@ -1,0 +1,43 @@
+---
+title: "Tilde Research Introduces Aurora: A use-Aware Optimizer T..."
+excerpt: "Researchers at Tilde Research have dropped Aurora, a new optimizer for training neural networks that addresses a structural flaw in the w..."
+category: "ai"
+date: 2026-05-12
+publishedAt: "2026-05-12T08:26:18.736Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "no cap correspondent 🧢"
+source: "MarkTechPost"
+featured: false
+---
+
+## What's Happening
+
+Here's the thing: Researchers at Tilde Research have dropped Aurora, a new optimizer for training neural networks that addresses a structural flaw in the widely-used Muon optimizer.
+
+The flaw quietly kills off a significant fraction of MLP neurons during training and keeps them permanently dead. 1B parameter pretraining experiment, a new state-of-the-art result on [] The post Tilde Research Introduces Aurora: A use-Aware Optimizer That Fixes a Hidden Neuron Death Problem in Muon AI AI Infrastructure Tech News AI Paper Summary Technology AI Shorts Editors Pick Language Model ML New Releases Staff Tilde Research Introduces Aurora: A use-Aware Optimizer That Fixes a Hidden Neuron Death Problem in Muon By Asif Razzaq - Researchers at Tilde Research have dropped Aurora , a new optimizer for training neural networks that addresses a structural flaw in the widely-used Muon optimizer. (plot twist fr)
+
+To understand Aurora, it helps to first understand Muon.
+
+## The Details
+
+The Muon optimizer attracted attention in the ML community after outperforming AdamW in wall-clock time to convergence on the nanoGPT speedrun competition — a community benchmark that measures how fast you can train a GPT-style model to a target validation loss. Since then, Muon has been adopted in frontier-grow model training groups.
+
+Muons key algorithmic step is computing the polar factor of the gradient matrix. For a gradient matrix G with thin Singular Value Decomposition (SVD) G = UΣVᵀ , Muon computes polar(G) = UVᵀ , which is the closest semi-orthogonal matrix to G in the Frobenius norm.
+
+## Why This Matters
+
+This orthogonalized gradient is then used to update the weights: W ← W − η UVᵀ for a learning rate η. The use of matmul-only iterative algorithms to compute the polar factor is what makes Muon practical at grow. The NorMuon Puzzle: Row Normalization Helps, But Why?
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- Before Aurora, NorMuon led the modded-nanoGPT speedrun.
+- It introduced a row-normalization step—similar to Adam’s per-parameter scaling—that adjusted the polar factor RMS norm.
+- While this often pulls the update away from a strictly orthogonal gradient, NorMuon still yields wild results.
+
+## The Bottom Line
+
+It introduced a row-normalization step—similar to Adam’s per-parameter scaling—that adjusted the polar factor RMS norm. While this often pulls the update away from a strictly orthogonal gradient, NorMuon still yields wild results.
+
+Thoughts? Drop them below.
