@@ -1,0 +1,43 @@
+---
+title: "Recursive Language Models: An All-in-One Deep Dive"
+excerpt: "Exactly how does it differ from ReAct, CodeAct, Self-Loops, and Subagents?"
+category: "ai"
+date: 2026-05-17
+publishedAt: "2026-05-17T02:06:35.638Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "your fave news bestie 💅"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+So basically Exactly how does it differ from ReAct, CodeAct, Self-Loops, and Subagents?
+
+The post Recursive Language Models: An All-in-One Deep Dive appeared first on Towards Data Science. In this article , you will learn what Recursive Language Models (RLMs) are, why they are winning all the long-context benchmarks right now, and understand how they are different from existing agentic harness designs! (it feels like chaos)
+
+And we are going to learn it by magnifying one simple case study.
+
+## The Details
+
+I have spent a decent chunk of last month implementing RLMs, running benchmarks, and producing a 50-minute tutorial video on it. Throughout the process, I responded to 100+ questions on YouTube and X about RLMs.
+
+This article is a summary of what I learned answering those questions, and the specific nuances about RLMs that made me go a-ha ! Side note: Unless specified, all images used in this article were produced .
+
+## Why This Matters
+
+The main reason Recursive Language Models feel inaccessible to a lot of the audience is that some of the ideas are actually quite counter-intuitive compared to existing methods (like ReAct, CodeAct, vanilla subagents, etc). The best way to understand RLMs is to first understand where those other methods fail, and realize the single missing piece in agentic harnesses. The idea of passing context around by reference, instead of replicating it.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## Key Takeaways
+
+- And a more advanced variation (lets call it Problem 2): Generate a dictionary of different categories: fruits, countries, animals.
+- For each category, generate 50 names of that and count the number of R in each, return as a nested dictionary.
+- For problem 1, the expected output is something like: ("strawberry": 3, "berry": 2, ...
+
+## The Bottom Line
+
+), "countries": ("united states of america": 1, "russia": 1, ... ), "animals": ("kangaroo": 1, "tiger": 1", ...
+
+We want to hear your thoughts on this.
