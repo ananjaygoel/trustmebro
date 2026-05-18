@@ -1,0 +1,44 @@
+---
+title: "LLM Evals Are Based on Vibes — I Built the Missing Layer ..."
+excerpt: "Most LLM evaluation systems rely on vague scoring and human judgment disguised as metrics."
+category: "ai"
+date: 2026-05-18
+publishedAt: "2026-05-18T09:40:16.892Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "the tea spiller ☕"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Okay so Most LLM evaluation systems rely on vague scoring and human judgment disguised as metrics.
+
+I built a lightweight evaluation layer in pure Python that turns LLM outputs into reproducible decisions by separating attribution, specificity, and relevance—so hallucinations are caught before they reach production. The post LLM Evals Are Based on Vibes — I Built the Missing Layer That Decides What Ships appeared first on Towards Data Science. (let that sink in)
+
+TL;DR This article shows a full working implementation in pure Python, with real benchmark numbers.
+
+## The Details
+
+Most teams evaluate LLM responses and guessing. That breaks the moment you grow.
+
+The real problem is not that models hallucinate. It is that nothing catches the confident ones, the responses that score 0.
+
+## Why This Matters
+
+525, pass your threshold, and are quietly wrong. I built a scoring layer that splits faithfulness into two signals: attribution and specificity. High specificity plus low attribution is the signature of a hallucination.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## Key Takeaways
+
+- A single score misses it every time.
+- This is not an evaluation script.
+- It is a decision engine that sits between your model and your user.
+- I Changed One Line in My Prompt.
+
+## The Bottom Line
+
+I caught it manually that time. And the whole point of an eval system is that it should not depend on whether you happen to be reading carefully on a given afternoon.
+
+Thoughts? Drop them below.
