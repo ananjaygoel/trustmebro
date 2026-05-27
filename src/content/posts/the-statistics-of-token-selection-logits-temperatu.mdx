@@ -1,0 +1,37 @@
+---
+title: "The Statistics of Token Selection: Logits, Temperature, a..."
+excerpt: "When large language models, or LLMs for short, produce outputs, several criteria are at stake, including not only overall response releva..."
+category: "ai"
+date: 2026-05-27
+publishedAt: "2026-05-27T14:54:48.993Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/05/mlm-the-statistics-of-token-selection-logits-temperature-and-top-p-walkthrough.png"
+author: "the tea spiller ☕"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+Breaking it down: When large language models, or LLMs for short, produce outputs, several criteria are at stake, including not only overall response relevance but also coherence and creativity.
+
+The Statistics of Token Selection: Logits, Temperature, and Top-P Walkthrough By Iván Palomares Carrascosa on in Language Models 0 Post In this article, you will learn how logits, temperature, and top-p sampling work together to control next-token prediction in large language models. Topics we will cover include: What logits are and how they are produced by a transformers final linear layer. (wild, right?)
+
+How temperature and top-p (nucleus sampling) shape the probability distribution used for token selection.
+
+## The Details
+
+How these three components fit into a sequential pipeline that governs LLM output generation. Since deep inside the models operate response word by word or more precisely, token by token capturing these desirable properties is a matter of mathematically adjusting the output probability distributions that govern the next-token prediction process.
+
+This article introduces the mechanics behind LLM decoding strategies from a statistical vantage point. In particular, we will explore how raw model scores, known as logits , interact with two other model settings temperature and top-p which are three key parameters utilized to control the token selection process.
+
+## Why This Matters
+
+While we will focus on exploring what happens inside the final stages of the LLMs underlying architecture, a. The transformer, you can check this article if you need a concise overview of the whole process and journey made beginning to end. Token selection process in LLMs What Are Logits?
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## The Bottom Line
+
+Token selection process in LLMs What Are Logits? In neural networks, the raw, unnormalized scores produced (typically at final linear layers) before converting them into probabilities of possible outcomes (e.
+
+How do you feel about this development?
