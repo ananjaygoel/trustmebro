@@ -1,0 +1,43 @@
+---
+title: "Meet mKernel: A Multi-GPU, Multi-Node Fused Kernel Librar..."
+excerpt: "UC Berkeley's UCCL team releases mKernel, fusing intra-node NVLink, inter-node RDMA, and dense compute into a single persistent CUDA kernel."
+category: "ai"
+date: 2026-05-29
+publishedAt: "2026-05-29T14:39:36.607Z"
+image: "https://s.w.org/images/core/emoji/17.0.2/72x72/26a1.png"
+author: "main character energy 💫"
+source: "MarkTechPost"
+featured: false
+---
+
+## What's Happening
+
+Breaking it down: UC Berkeley's UCCL team releases mKernel, fusing intra-node NVLink, inter-node RDMA, and dense compute into a single persistent CUDA kernel.
+
+The post Meet mKernel: A Multi-GPU, Multi-Node Fused Kernel Library for GPU-Driven Communication appeared first on MarkTechPost. AI AI Infrastructure Technology AI Shorts Applications Editors Pick ML New Releases Open Source software Engineering Staff Tech News Meet mKernel: A Multi-GPU, Multi-Node Fused Kernel Library for GPU-Driven Communication By Asif Razzaq - GPU communication overhead is a measurable bottleneck in production AI workloads. (wild, right?)
+
+According to data cited project, communication can consume 43.
+
+## The Details
+
+6% of the forward pass and 32% of end-to-end training time . Across popular Mixture-of-the experts (MoE) models, inter-device communication can account for up to 47% of total execution time .
+
+Researchers from UC Berkeleys UCCL project have dropped mKernel, a library of persistent CUDA kernels that fuse intra-node NVLink communication, inter-node RDMA, and compute into a single kernel. The Problem: Host-Driven Communication The standard model for multi-GPU communication is host-driven : the CPU runs the control path and calls into a library like NCCL or NVSHMEM.
+
+## Why This Matters
+
+The library issues the collective operation — an AllReduce, an AllGather, etc. Compute and communication run on separate CUDA streams and overlap at kernel boundaries. The research team identifies two problems with this approach : (1) CPUs are not scaling with GPU compute.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- A GB300 NVL72 rack integrates 72 Blackwell Ultra GPUs and 36 Grace CPUs, delivering 720 PFLOP/s FP8/FP6, 1.
+- 44 EFLOP/s FP4 Tensor Core performance, and 130 TB/s of all-to-all intra-rack NVLink bandwidth.
+- (2) Host-driven systems overlap compute and communication at coarse kernel boundaries.
+
+## The Bottom Line
+
+Finer-grained overlap at the tile or chunk level is not possible from the host side. The alternative is GPU-driven communication : the GPU itself triggers transfers, with communication fused into the same kernel as the compute.
+
+We want to hear your thoughts on this.
