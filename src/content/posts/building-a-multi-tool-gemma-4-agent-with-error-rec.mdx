@@ -1,0 +1,43 @@
+---
+title: "Building a Multi-Tool Gemma 4 Agent with Error Recovery"
+excerpt: "In a a href=\" Building a Multi-Tool Gemma 4 Agent with Error Recovery By Matthew Mayo on in AI 0 Post In this article, you will learn ho..."
+category: "ai"
+date: 2026-05-30
+publishedAt: "2026-05-30T13:03:48.868Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/05/mlm-building-a-multi-tool-gemma-4-agent-with-error-recovery.png"
+author: "ur news bff 💕"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+Let's talk about In a a href=" Building a Multi-Tool Gemma 4 Agent with Error Recovery By Matthew Mayo on in AI 0 Post In this article, you will learn how to transform a basic tool-calling script into a resilient agent that gracefully handles failures from misbehaving tools, malformed model outputs, and unavailable services.
+
+Topics we will cover include: How to structure an iterative agent loop with a safety cap on iteration count. The four distinct categories of failure an agent encounters when calling tools, and how to handle each one. (shocking, we know)
+
+How to design tool error messages that teach the model how to recover, reducing wasted iterations.
+
+## The Details
+
+Building a Multi-Tool Gemma 4 Agent with Error Recovery Introduction In a previous article , we wired up Gemma 4 to a handful of Python functions using Ollamas tool-calling API. That gave us a working single-turn dispatcher: the model picks a tool, our code runs it, the model answers.
+
+Its a useful starting point, but its a long way from an agent. One of the things that turns a tool-calling demo into an actual agent is how it handles things going wrong.
+
+## Why This Matters
+
+The model hallucinates a function name, or passes a string where you wanted a number, or asks about a city your lookup table has never heard of. A required argument is missing. In the previous tutorial, any of these would either crash the script or get swallowed by a try / except that prints a message and gives up.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## Key Takeaways
+
+- Thats fine for a single path demo.
+- Its not fine for anything youd want to leave running.
+- This article rebuilds the agent around the assumption that things will go wrong, and shows how to recover gracefully when they do.
+
+## The Bottom Line
+
+The pattern is simple: catch errors at the boundary, convert them into messages the model can read, send them back to the model, and let the model decide whether to retry, route around the problem, or explain the failure to the user. Well also wrap everything in a proper iterative agent loop with a safety cap on iteration count.
+
+Sound off in the comments.
