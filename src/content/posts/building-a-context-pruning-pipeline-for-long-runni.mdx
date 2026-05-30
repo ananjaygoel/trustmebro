@@ -1,0 +1,37 @@
+---
+title: "Building a Context Pruning Pipeline for Long-Running Agents"
+excerpt: "Modern AI agents built on top of large language models (LLMs) are designed to run continuously."
+category: "ai"
+date: 2026-05-30
+publishedAt: "2026-05-30T02:08:26.195Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/04/mlm-building-a-context-pruning-pipeline-for-long-running-agents.png"
+author: "your fave news bestie 💅"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+Listen up: Modern AI agents built on top of large language models (LLMs) are designed to run continuously.
+
+Building a Context Pruning Pipeline for Long-Running Agents By Iván Palomares Carrascosa on in AI 0 Post In this article, you will learn how to implement a context pruning pipeline for long-running AI agents, enabling them to manage conversational memory efficiently through semantic similarity. Topics we will cover include: Why unbounded conversation history is a problem for agents built on top of large language models, and what a context pruning strategy looks like. (let that sink in)
+
+How to use sentence transformer embedding models to compute semantic similarity between a current prompt and archived conversation turns.
+
+## The Details
+
+How to assemble a pruned context window from the most recent turn, the top-K semantically relevant past turns, and the current prompt. So, their conversation history keeps growing indefinitely.
+
+Passing such an entire history as the LLMs context window is the immaculate recipe for prohibitive token costs, latency bottlenecks, and eventual degradation in reasoning. Building a context pruning pipeline can address this issue recent conversational memory.
+
+## Why This Matters
+
+This article outlines the basic principles for implementing a context pruning pipeline for long-running agents. We use an entirely accessible and free-to-run local solution based on open-source embedding models rather than paid APIs, but you can replace them with paid APIs if you want a more efficient solution. Proposed Memory Strategy Classical memory strategies in agents rely on a sliding window that forgets old information as it falls behind, including potentially critical details.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## The Bottom Line
+
+Proposed Memory Strategy Classical memory strategies in agents rely on a sliding window that forgets old information as it falls behind, including potentially critical details. Moving beyond that approach, it is possible to build a selective, smarter pipeline that gives the LLM precisely what it needs as context.
+
+Thoughts? Drop them below.
