@@ -1,0 +1,37 @@
+---
+title: "Serving Multiple Users at Once: How Continuous Batching K..."
+excerpt: "This article is divided into four parts; they are: • The Problem with Static Batching • Code Example of Static Batching • Continuous Batc..."
+category: "ai"
+date: 2026-05-31
+publishedAt: "2026-05-31T13:15:09.879Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/05/petra-reid-WYvxaZGBebg-unsplash-scaled.jpg"
+author: "your fave news bestie 💅"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+Listen up: This article is divided into four parts; they are: • The Problem with Static Batching • Code Example of Static Batching • Continuous Batching: Dynamic Scheduling and Ragged Batching • Full Implementation The simplest way to serve multiple requests together is to use static batching, by grouping them into fixed-size batches and processing each batch together.
+
+Serving Multiple Users at Once: How Continuous Batching Keeps LLM Inference Efficient By Yoyo Chan on in Inference from Transformer Models 0 Post In the previous article , we saw how a language model processes a prompt during prefill, then generates tokens one at a time during decode, and uses KV cache to avoid repeated computation. In the real world, inference servers handle hundreds or thousands of requests at the same time. (we're not making this up)
+
+How a server schedules those requests determines whether the GPU is doing useful work or sitting idle waiting.
+
+## The Details
+
+In this tutorial, we take a hands-on approach to understand: Why does static batching create a bottleneck and waste tokens on padding How dynamic scheduling admits new requests the moment a slot opens How ragged batching allows multiple prompts to be processed together of this tutorial, you will have a working code that demonstrates how continuous batching works. Overview This article is divided into four parts; they are: The Problem with Static Batching Code Example of Static Batching Continuous Batching: Dynamic Scheduling and Ragged Batching Full Implementation The Problem with Static Batching The simplest way to serve multiple requests together is to use static batching, into fixed-size batches and processing each batch together.
+
+For example, there are 3 requests: A: The capital of France is (generates 6 more tokens) B: Todays weather is so(generates 50 more tokens) C: In ML, a transformer is (generates 300 more tokens) In this batch, requests A and B finish early, but their slots cannot be freed. They sit idle while the GPU decodes the remaining tokens for C.
+
+## Why This Matters
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## The Bottom Line
+
+This story is still developing, and we'll keep you updated as more info drops.
+
+Is this a W or an L? You decide.
