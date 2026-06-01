@@ -1,0 +1,44 @@
+---
+title: "Parallax: A Parameterized Local Linear Attention That Kee..."
+excerpt: "Parallax replaces LLA's per-query solver with a learned projector, doubling arithmetic intensity and improving perplexity at 0."
+category: "ai"
+date: 2026-06-01
+publishedAt: "2026-06-01T11:09:32.784Z"
+image: "https://www.marktechpost.com/wp-content/uploads/2026/05/Screenshot-2026-05-31-at-9.27.43-PM-1.png"
+author: "the tea spiller ☕"
+source: "MarkTechPost"
+featured: false
+---
+
+## What's Happening
+
+Here's the thing: Parallax replaces LLA's per-query solver with a learned projector, doubling arithmetic intensity and improving perplexity at 0.
+
+The post Parallax: A Parameterized Local Linear Attention That Keeps Softmax and Adds a Learned Covariance Correction Branch appeared first on MarkTechPost. AI AI Infrastructure Tech News AI Paper Summary Technology AI Shorts Applications Editors Pick ML Staff Parallax: A Parameterized Local Linear Attention That Keeps Softmax and Adds a Learned Covariance Correction Branch By Asif Razzaq - The Transformers attention mechanism has barely changed since 2017. (yes, really)
+
+Most efficiency work has tried to replace softmax attention outright.
+
+## The Details
+
+A new paper takes a different route. It keeps softmax attention and bolts on a correction branch.
+
+A team of researchers from Northwestern University, Tilde Research, and University of Washington introduce a parameterized Local Linear Attention called Parallax that scales to LLM pretraining and codesigns with Muon. Parallax does not chase efficiency .
+
+## Why This Matters
+
+It adds compute deliberately, then makes that compute cheaper to run on modern GPUs. What is Parallax Parallax builds on Local Linear Attention (LLA) . LLA comes from the test-time regression framework.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- That framework reads attention as a regression solver over key-value pairs.
+- In this view, keys are training data points.
+- Softmax attention is a nonparametric estimator called Nadaraya-Watson.
+- It fits a local constant function for each query.
+
+## The Bottom Line
+
+The research team writes this as ρ i = W R x i . Here W R is a learnable matrix that probes the KV covariance directly from the layer input.
+
+How do you feel about this development?
