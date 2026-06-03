@@ -1,0 +1,44 @@
+---
+title: "How to Fine-Tune LFM2 Using QLoRA and DPO: A Complete Ste..."
+excerpt: "Learn to fine-tune LFM2 with QLoRA, supervised fine-tuning, DPO, and adapter merging using TRL and PEFT on Colab."
+category: "ai"
+date: 2026-06-03
+publishedAt: "2026-06-03T02:49:55.331Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "your fave news bestie 💅"
+source: "MarkTechPost"
+featured: false
+---
+
+## What's Happening
+
+Breaking it down: Learn to fine-tune LFM2 with QLoRA, supervised fine-tuning, DPO, and adapter merging using TRL and PEFT on Colab.
+
+The post How to Fine-Tune LFM2 Using QLoRA and DPO: A Complete Step-by-Step Coding Tutorial on Google Colab appeared first on MarkTechPost. Technology AI Editors Pick Language Model Large Language Model ML Staff Tutorials How to Fine-Tune LFM2 Using QLoRA and DPO: A Complete Step-by-Step Coding Tutorial on Google Colab By Sana Hassan - In this tutorial, we fine-tune Liquid AI’s LFM2 model through a complete open-source workflow. (and honestly, same)
+
+We start base LFM2 checkpoint with QLoRA, preparing a chat-style supervised fine-tuning dataset, training a lightweight LoRA adapter using TRL and PEFT, and then merging the adapter back into the model.
+
+## The Details
+
+We also extend the workflow with DPO to show how we can improve response preference using chosen and rejected answers. At the end, we have a practical pipeline that moves from a base LFM2 model to an SFT-tuned, preference-aligned checkpoint, ready for further testing or deployment.
+
+Copy Code Copied Use a different Browser ! Pip install -q -U "transformers=4.
+
+## Why This Matters
+
+34" bitsandbytes import torch, gc from datasets import load_dataset, Dataset from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig from peft import LoraConfig, PeftModel, prepare_model_for_kbit_training from trl import SFTConfig, SFTTrainer, DPOConfig, DPOTrainer MODEL_ID = "LiquidAI/LFM2-1. 2B" USE_4BIT = True RUN_DPO = True SFT_SAMPLES = 500 SFT_STEPS = 60 DPO_STEPS = 40 MAX_LEN = 1024 BF16 = torch. Is_bf16_supported() DTYPE = torch.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- Is_available(), "No GPU detected — set Runtime Change runtime type GPU" print(f"GPU: (torch.
+- Get_device_name(0)) | dtype=(DTYPE) | 4bit=(USE_4BIT)") We install all the required libraries for fine-tuning LFM2 inside Google Colab.
+- We import the core tools from Transformers, TRL, PEFT, datasets, bitsandbytes, and PyTorch.
+- We also define the main training settings, detect available GPUs, and select the appropriate precision for efficient training.
+
+## The Bottom Line
+
+We import the core tools from Transformers, TRL, PEFT, datasets, bitsandbytes, and PyTorch. We also define the main training settings, detect available GPUs, and select the appropriate precision for efficient training.
+
+Are you here for this or nah?
