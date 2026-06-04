@@ -1,0 +1,42 @@
+---
+title: "FPN Paper Walkthrough: Leveraging the Internal Pyramid"
+excerpt: "Understanding how FPN allows deep learning models detecting small objects and how to implement it from scratch The post FPN Paper Walkthr..."
+category: "ai"
+date: 2026-06-04
+publishedAt: "2026-06-04T14:35:11.276Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "your fave news bestie 💅"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Alright so Understanding how FPN allows deep learning models detecting small objects and how to implement it from scratch The post FPN Paper Walkthrough: Leveraging the Internal Pyramid appeared first on Towards Data Science.
+
+In my previous article I was talking about YOLOv3 [1]. One of the factors that makes this YOLO version better than its predecessors is its ability in detecting small objects thanks to its FPN-like neck adopted . (yes, really)
+
+Unfortunately, my explanation about FPN in that article was not quite thorough since I was focusing more on YOLOv3 itself.
+
+## The Details
+
+Thus, in this article I decided to write specifically about FPN from its original paper titled “ Feature Pyramid Networks for Object Detection ” [2] so that you can get a better understanding of what it actually is and how it works. Not only that, here I will also demonstrate how to implement FPN from scratch and how to connect it with a CNN backbone and an RPN head.
+
+Backbone, Neck, and Head Before we get into FPN, we first need to know that the structure of an object detection model is different from that of the classification model, in which the main difference lies in the last layer. In a typical classification model, the last layer comprises a number of neurons where each of them corresponds to every single class available in the dataset.
+
+## Why This Matters
+
+Or, in the case of binary classification, the output layer only consists of a single neuron, which is responsible to predict whether a sample belongs to class 0 or 1. This kind of output layer is actually not suitable for detection task since it also requires neurons dedicated for predicting the location and the size of an object plus to its class. So, in order for a model to be able to predict object location and size, we need to replace the output layer, i.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## Key Takeaways
+
+- , the classification head , with the so-called detection head .
+- The remaining layers themselves (everything except the head ) are commonly called backbone .
+
+## The Bottom Line
+
+The remaining layers themselves (everything except the head ) are commonly called backbone . Some models that use this structure are YOLOv1 and YOLOv2, where they use a stack of convolution layers as the backbone and a specific head for predicting object location and size within an image as well as its class.
+
+Is this a W or an L? You decide.
