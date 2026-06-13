@@ -1,0 +1,44 @@
+---
+title: "When PyMuPDF Can’t See the Table: Parse PDFs for RAG with..."
+excerpt: "Enterprise Document Intelligence [Vol. 1 #5bis] - The same relational tables."
+category: "ai"
+date: 2026-06-13
+publishedAt: "2026-06-13T08:46:54.715Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "main character energy 💫"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Listen up: Enterprise Document Intelligence [Vol.
+
+1 #5bis] - The same relational tables. OCR for scanned pages and images. (it feels like chaos)
+
+Captions and headings without regex.
+
+## The Details
+
+The post When PyMuPDF Can’t See the Table: Parse PDFs for RAG with Azure Layout appeared first on Towards Data Science. This article is a parsing companion in Enterprise Document Intelligence , the series that builds an enterprise RAG system from four bricks.
+
+Article 5 (document parsing) built the parser with PyMuPDF (fitz). This companion keeps the same goal and the same relational tables, and swaps the engine for Azure Layout (the prebuilt-layout model), a richer package that recovers what fitz cannot.
+
+## Why This Matters
+
+Where this companion sits: it extends Article 5 (document parsing), inside Part II (the four bricks), with a different parsing engine Image by author PyMuPDF (fitz) is fast, free, and exact on clean prose. It also goes blind in three places, and each one is where enterprise RAG quietly breaks. The table on page 14 of a contract.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## Key Takeaways
+
+- Fitz reads the cells one concatenates them.
+- “Renewal fee 500 Setup fee 200” lands in the chunk.
+- Your model is asked to guess which number is which fee.
+- The scanned amendment glued to the end of the document.
+
+## The Bottom Line
+
+The same tables, Azure enriches half Image by author 1. Where fitz is blind Four cases.
+
+Sound off in the comments.
