@@ -1,0 +1,44 @@
+---
+title: "GPU Time-Slicing for Concurrent LLM Agents on Kubernetes"
+excerpt: "A systems-level deep dive into the hidden microarchitectural costs of Kubernetes GPU time-slicing, and what it actually costs to co-locat..."
+category: "ai"
+date: 2026-06-14
+publishedAt: "2026-06-14T13:28:43.180Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "ur news bff 💕"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Alright so A systems-level deep dive into the hidden microarchitectural costs of Kubernetes GPU time-slicing, and what it actually costs to co-locate Agentic AI workloads.
+
+The post GPU Time-Slicing for Concurrent LLM Agents on Kubernetes appeared first on Towards Data Science. Toy agents run one at a time in Python . (it feels like chaos)
+
+Production agents fight over the same GPU — and on one d card, a latency-sensitive agents p99 latency quietly got 66% worse while every pod still reported healthy.
+
+## The Details
+
+Here is what that fight actually costs, measured to the p99, not hand-waved. This is Part 2 of the Production-Grade Agentic Inference series .
+
+Each part removes one kind of redundant work from an agentic LLM pipeline. Part 1 kills redundant prefill.
+
+## Why This Matters
+
+Part 2 (this part) tackles redundant waiting — how multiple micro-agents one GPU through time-slicing. Part 3 keeps RAG retrieval on the GPU with a custom CUDA Top-K kernel. Part 4 persists agent state across hand-offs so the next agent never has the cold-start problem.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- Key Takeaways Sharing a GPU is not free, and your scheduler will not tell you.
+- When two agents one time-sliced GPU, Kubernetes happily reports both pods as Running .
+- The damage hides in the latency tail.
+- The median lies; the tail tells the truth.
+
+## The Bottom Line
+
+This was intentional, not everyone can afford H100 some still keep using their old hardware. And honestly, running an agentic AI production on H100 does not require any magic; but on a $150 GPU, it surely does.
+
+What's your take on this whole situation?
