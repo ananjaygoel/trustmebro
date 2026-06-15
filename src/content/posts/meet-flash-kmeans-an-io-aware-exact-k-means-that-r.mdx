@@ -1,0 +1,44 @@
+---
+title: "Meet Flash-KMeans: An IO-Aware, Exact K-Means That Runs O..."
+excerpt: "Flash-KMeans is an open-source, IO-aware implementation of standard Lloyd's k-means in Triton GPU kernels."
+category: "ai"
+date: 2026-06-15
+publishedAt: "2026-06-15T11:46:03.007Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "your fave news bestie 💅"
+source: "MarkTechPost"
+featured: false
+---
+
+## What's Happening
+
+Alright so Flash-KMeans is an open-source, IO-aware implementation of standard Lloyd's k-means in Triton GPU kernels.
+
+It does not change the math or approximate. FlashAssign removes distance-matrix materialization; Sort-Inverse Update eliminates atomic contention. (plot twist fr)
+
+On an NVIDIA H200, it reports 17.
+
+## The Details
+
+9× end-to-end, 33× over cuML, and over 200× over FAISS. The post Meet Flash-KMeans: An IO-Aware, Exact K-Means That Runs Over 200× Faster Than FAISS on GPUs appeared first on MarkTechPost.
+
+AI AI Infrastructure Tech News AI Paper Summary Technology AI Shorts Applications Editors Pick New Releases Open Source Staff Meet Flash-KMeans: An IO-Aware, Exact K-Means That Runs Over 200× Faster Than FAISS on GPUs By Asif Razzaq - k-means has been an offline tool for decades. You run it once to preprocess data, then move on.
+
+## Why This Matters
+
+A team of researchers from UC Berkeley and UT Austin dropped Flash-KMeans, a new open-source library that targets a different setting. Modern AI pipelines now call k-means inside training and inference loops. At that frequency, latency per call matters more than theoretical FLOPs.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- Flash-KMeans is an IO-aware implementation of standard Lloyds k-means.
+- It does not change the math, and it does not approximate.
+- It only restructures how the algorithm moves data on a GPU.
+- On an NVIDIA H200, the research team reported up to 17.
+
+## The Bottom Line
+
+It writes the matrix, then reads it back to run argmin. For N=65536, K=1024, d=128, B=32, the distance math takes 2.
+
+What do you think about all this?
