@@ -1,0 +1,42 @@
+---
+title: "Dispatching the Parsed RAG Question: Chunk Strategy, Mode..."
+excerpt: "Enterprise Document Intelligence [Vol. Here's what you need to know."
+category: "ai"
+date: 2026-06-18
+publishedAt: "2026-06-18T14:47:26.148Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "your fave news bestie 💅"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Alright so Enterprise Document Intelligence [Vol.
+
+1 #6c] - The decisions the parser makes on top of the user string, using the document’s profile: dispatch, activations, full schema, three approaches to deciding what fires, the audit _meta block, and a broker-corpus walkthrough The post Dispatching the Parsed RAG Question: Chunk Strategy, Model Tier, Activations, Audit appeared first on Towards Data Science. This article closes the question-parsing brick of Enterprise Document Intelligence , a series that builds an enterprise RAG system from four bricks: parsing, question parsing, retrieval, and generation. (let that sink in)
+
+The earlier parts: Article 6_a (thesis) made the case for parsing the question and showed the two consumer briefs the parsed row splits into.
+
+## The Details
+
+Article 6_b (extraction) walked the five families of columns the parser reads straight from the user string. This article picks up the other half: the columns the parser decides on top of those, using the document’s profile, plus the architecture and persistence choices the brick has to make.
+
+Where this article sits in the series: Article 6 (question parsing), the dispatch half, inside Part II (the four bricks) Image by author The runnable code paths in this article call the OpenAI gpt-4. 1 family for question parsing; that service is proprietary and governed by OpenAI’s Terms of Use .
+
+## Why This Matters
+
+The fields the parser decides with the document profile Take a one-page CV and the question “what is the name? Question parsing on its own returns keywords=["name"] and retrieval looks for the literal word name in the file. Nothing matches, the answer comes back empty.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## Key Takeaways
+
+- The parser needs the same starting point.
+- Two more column families get filled right after question parsing returns, using the parsed question PLUS the document’s profile.
+
+## The Bottom Line
+
+Two more column families get filled right after question parsing returns, using the parsed question PLUS the document’s profile. In the shipped code, that profile is the semantic zone of parsing_summary , the doc-level dict produced .
+
+Sound off in the comments.
