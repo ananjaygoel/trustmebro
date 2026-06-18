@@ -1,0 +1,37 @@
+---
+title: "Your Churn Threshold Is a Pricing Decision"
+excerpt: "How unit economics should set your classification cutoff, and why they rarely do."
+category: "ai"
+date: 2026-06-18
+publishedAt: "2026-06-18T10:05:04.227Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "certified yapper 🗣️"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Breaking it down: How unit economics should set your classification cutoff, and why they rarely do.
+
+The post Your Churn Threshold Is a Pricing Decision appeared first on Towards Data Science. When a churn model says this users probability of leaving is 0. (we're not making this up)
+
+4 and your code does predict(X) = 0.
+
+## The Details
+
+5 , you have just made a pricing decision: you decided that the cost of sending a retention offer to a customer who would have stayed is exactly equal to the cost of losing one who would have left, and on the IBM Telco dataset (arguably the most-recycled churn dataset on Kaggle and GitHub), that decision is wrong by a factor of 13. I assembled a corpus of 36 publicly available IBM Telco churn analyses (Kaggle notebooks, GitHub repositories, blog posts, peer-reviewed papers), and the reporting pattern is striking: roughly nine in ten report classification accuracy or F1, just over one in seven report a profit curve, and none use survival analysis to compute lifetime value.
+
+The result is a literature where the same dataset has been re-modelled hundreds of times, and every default-threshold model leaves money on the floor: about $86 per customer in avoidable burn on the standard 20% test split, and scaled to a 100,000-r book with the same churn profile that would represent $8. 6 million in recoverable cost; the IBM Telco churn rate (26.
+
+## Why This Matters
+
+5% annual) is unusually high, and a healthier B2C SaaS book with 5–8% annual churn would see the per-customer figure drop by roughly 3–4×, so what stays invariant across any cost-sensitive setting is not the headline dollar amount but the asymmetry — 13× more expensive to miss a churner than to over-treat a loyalist. This piece lays out three things, in order: first, what the IBM Telco literature reports and what it leaves out; second, how to compute the dollar cost of a misclassification using public 2026 B2C SaaS benchmarks and Kaplan-Meier survival analysis, with no hand-waved CAC; third, why the textbook Bayes-optimal threshold formula loses to a brute-force sweep when the model is trained on SMOTE-balanced data, and what to do about it.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## The Bottom Line
+
+This story is still developing, and we'll keep you updated as more info drops.
+
+We want to hear your thoughts on this.
