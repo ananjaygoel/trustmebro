@@ -1,0 +1,43 @@
+---
+title: "Parse Scanned PDFs for RAG with EasyOCR: Free OCR Gives Y..."
+excerpt: "Enterprise Document Intelligence [Vol. 1 #5quinquies] - Same 1974 scanned PDF, two engines."
+category: "ai"
+date: 2026-06-19
+publishedAt: "2026-06-19T14:43:03.395Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "no cap correspondent 🧢"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Here's the thing: Enterprise Document Intelligence [Vol.
+
+1 #5quinquies] - Same 1974 scanned PDF, two engines. Docling recovers text + sections + figures. (shocking, we know)
+
+The structural gap makes one output usable downstream and the other one a flat string.
+
+## The Details
+
+The post Parse Scanned PDFs for RAG with EasyOCR: Free OCR Gives You Words, Not a Document appeared first on Towards Data Science. This article is a parsing companion in Enterprise Document Intelligence , the series that builds an enterprise RAG system from four bricks.
+
+Article 5 (document parsing) built the parser with PyMuPDF (fitz), which returns empty on a scanned page with no text layer. This companion swaps the engine for EasyOCR , a free OCR package that recovers that text.
+
+## Why This Matters
+
+It is the one case in this family where the new engine gives you less , not more: it recovers the text and nothing around it, and that gap is the lesson. Where this companion sits: it extends Article 5 (document parsing), inside Part II (the four bricks), with a different parsing engine Image by author Scanned PDFs are not solved by “just throw OCR at it” . The OCR step recovers text; that’s necessary but not sufficient for an enterprise RAG pipeline.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## Key Takeaways
+
+- “Traditional OCR” (the term of art for text-detection + text-recognition engines like EasyOCR, Tesseract, PaddleOCR) gives you the text.
+- The rest is the layout problem, and the layout problem is the harder half.
+- This article runs that distinction concretely.
+
+## The Bottom Line
+
+The rest of the family adds structure Image by author 1. What “traditional OCR” does (and doesn’t) Traditional OCR reads pixels and returns text rectangles.
+
+Are you here for this or nah?
