@@ -1,0 +1,43 @@
+---
+title: "Materialized Lake Views in Microsoft Fabric: When Your Me..."
+excerpt: "Five surfaces collapsed into one declarative layer. Here's what you need to know."
+category: "ai"
+date: 2026-06-20
+publishedAt: "2026-06-20T13:27:51.085Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "ur news bff 💕"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Not gonna lie, Five surfaces collapsed into one declarative layer.
+
+Here's the full story of Materialized Lake Views in Microsoft Fabric - from syntax to the new GA capabilities The post Materialized Lake Views in Microsoft Fabric: When Your Medallion Fits in a SELECT Statement appeared first on Towards Data Science. For the longest time, building a medallion architecture in Microsoft Fabric meant stitching together a small orchestra of moving parts: notebooks for the transformations, pipelines for orchestration, schedules for refresh, custom code for data quality checks, and the Monitor Hub for keeping an eye on whether anything actually worked. (wild, right?)
+
+Every layer worked – until something didn’t, and then you had to figure out which layer broke, why, and which downstream layers got affected along the way.
+
+## The Details
+
+If you’ve ever tried to debug a silver layer that didn’t update because the bronze notebook flopped three hours ago, you know exactly what I’m talking about. Then, at FabCon Atlanta in March 2026, materialized lake views (MLVs) went generally available.
+
+And the story they’re telling is simple: what if your entire medallion pipeline could be a few SELECT statements? Let me walk you through the whole thing – what they are, how they work, what changed between preview and GA, and where they fit (and where they don’t) in your architecture.
+
+## Why This Matters
+
+Materialized Lake View – WHAT? A materialized lake view is a persisted, automatically refreshed view defined in Spark SQL or PySpark. You write a SELECT query that describes the transformation you want, and Fabric takes care of execution, storage, refresh, dependency tracking, and data quality enforcement.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## Key Takeaways
+
+- The result is stored as a Delta table in your lakehouse.
+- So downstream people, such as Power BI Direct Lake, Spark notebooks, SQL endpoints, can query it just like any other Delta table.
+- No special handling, no different syntax.
+
+## The Bottom Line
+
+Image by author OK, that’s nice. But what does that actually replace?
+
+We want to hear your thoughts on this.
