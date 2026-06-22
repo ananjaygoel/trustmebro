@@ -1,0 +1,42 @@
+---
+title: "Tool Calling, broke down: How AI Agents Decide What to Do..."
+excerpt: "Understanding ow LLMs interact with the world around them, from returning data to taking action The post Tool Calling, broke down: How AI..."
+category: "ai"
+date: 2026-06-22
+publishedAt: "2026-06-22T02:48:17.086Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "certified yapper 🗣️"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Not gonna lie, Understanding ow LLMs interact with the world around them, from returning data to taking action The post Tool Calling, broke down: How AI Agents Decide What to Do Next appeared first on Towards Data Science.
+
+In my latest post , we talked about how to get structured, machine-readable outputs as a response from an LLM, using JSON Mode, function calling, and structured outputs. In that post, we briefly touched on the idea of function calling, approaching it as a method for obtaining structured responses. (shocking, we know)
+
+Still, function calling is something that goes well beyond just getting structured data back from a model, since it is essentially the backbone of agentic AI workflows .
+
+## The Details
+
+So, in todays post, we are going to take a closer look at exactly this topic. In all of the examples we have covered so far, the LLM is just used as a passive responder, meaning it receives a question and then generates an answer, and thats it.
+
+But what if we want the LLM not just to respond with something but instead to do something ? Or to put it more precisely, what if we want an action to be triggered based on the models response?
+
+## Why This Matters
+
+This action may be anything: look up into live data, send a message, query a database, call an external API, and so on. This is made possible with tool calling . Tool calling is what transforms an LLM from a smart text generator into something that can actually trigger actions and interact with the world around it.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## Key Takeaways
+
+- The key thing to understand here is that the model itself does not execute the tool .
+- It only decides which tool to call and with what arguments .
+
+## The Bottom Line
+
+The actual execution of the selected tool happens in our own code, in which the request to the AI model is included. We then feed the tools result back to the AI model, which uses it to generate a final response to the user.
+
+Are you here for this or nah?
