@@ -1,0 +1,37 @@
+---
+title: "Why I Stopped Using One Agent and Built a Multi-Agent Pip..."
+excerpt: "A practical walkthrough using text-to-SQL as the example The post Why I Stopped Using One Agent and Built a Multi-Agent Pipeline Instead ..."
+category: "ai"
+date: 2026-06-24
+publishedAt: "2026-06-24T14:06:44.338Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "main character energy 💫"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Not gonna lie, A practical walkthrough using text-to-SQL as the example The post Why I Stopped Using One Agent and Built a Multi-Agent Pipeline Instead appeared first on Towards Data Science.
+
+Last semester we developed a text-to-SQL app. It was a simple one-agent architecture that takes a user query in natural language and after passing the validations checkpoint it generates a SQL query for it. (shocking, we know)
+
+After completing the development we kicked off testing it and realised that one agent architecture was not enough for our app.
+
+## The Details
+
+It worked for simple queries where only 1 or 2 operations were required but it kicked off failing when the user kicked off asking complex queries, including multiple operations and schema scans. After thorough testing of the app we realised that a single agent couldnt perform every task.
+
+The agent was trying to parse the intent, map it to a schema, generate a valid SQL, and validate its own output all in one go. Retry, the context was so bloated with flopped attempts and self-corrections that the agent kicked off contradicting itself.
+
+## Why This Matters
+
+After that we decided to revisit our architecture and implemented multi-agent system with specialised agents for every task instead of relying on just one agent to do everything. In This Article Why single agents struggle with complex tasks What multi-agent architecture actually means in practice How to design specialised agents and wire them together Orchestration and state management with LangGraph How agent nodes are actually implemented The feedback loop and retry logic What breaks in production When you shouldnt use this Conclusion Why a Single Agent Struggles Theres an assumption when you first start building with LLMs that if the model is capable enough, a good prompt can do everything. This is achievable for simpler tasks but as the task grows in complexity youre not just asking the model to think harder, youre asking it to hold multiple competing mental models in a single context window simultaneously.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## The Bottom Line
+
+This is achievable for simpler tasks but as the task grows in complexity youre not just asking the model to think harder, youre asking it to hold multiple competing mental models in a single context window simultaneously. Take the text-to-SQL problem as an example.
+
+We want to hear your thoughts on this.
