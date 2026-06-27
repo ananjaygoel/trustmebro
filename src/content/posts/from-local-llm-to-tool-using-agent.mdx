@@ -1,0 +1,43 @@
+---
+title: "From Local LLM to Tool-Using Agent"
+excerpt: "Using Gemma 4, Ollama, OpenAI Agents SDK, and Tavily MCP to build a lightweight research agent The post From Local LLM to Tool-Using Agen..."
+category: "ai"
+date: 2026-06-27
+publishedAt: "2026-06-27T02:13:21.252Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "certified yapper 🗣️"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Listen up: Using Gemma 4, Ollama, OpenAI Agents SDK, and Tavily MCP to build a lightweight research agent The post From Local LLM to Tool-Using Agent appeared first on Towards Data Science.
+
+You have just deployed a local LLM. But after the first few chats, you might be wondering: what else can I do with it? (plot twist fr)
+
+Well, how about making the local LLM agentic with some tool use?
+
+## The Details
+
+In this post, well explore how to turn a local LLM into a tool-using agent. Specifically, well use Gemma 4 model (edge-friendly variants) as our local LLM Ollama for serving the local LLM OpenAI Agents SDK for the agent runtime Tavily web search MCP as one example of the external tool Well build a mini deep research agent that can search the web, gather the evidence, and synthesize an answer with citations, given a user question.
+
+Of the post, youd have a working local deep research agent and a reusable implementation pattern for turning a local model into a local AI agent. The architecture of the local agent.
+
+## Why This Matters
+
+(Image by author) If you are interested in a local coding-agent setup, I before covered Gemma 4 + OpenCode . In this post, we focus on the more general pattern of connecting a local model to an agent runtime and external tools. Set Up the Local Agent Stack We need to prepare 4 pieces before we write the code: Ollama, Gemma 4 (specifically the Gemma 4 E4B model), OpenAI Agents SDK, and Tavily MCP.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## Key Takeaways
+
+- On Windows, you can download the installer from the official Ollama site: Or use winget in PowerShell: winget install Ollama.
+- Once it is running, the local API endpoint is available.
+- Next, we pull the local model.
+
+## The Bottom Line
+
+The E4B model is a good fit for our purpose, as it is designed with edge/local agentic workflows in mind. My machine has an NVIDIA RTX 2000 Ada Laptop GPU with about 8 GB VRAM.
+
+Sound off in the comments.
