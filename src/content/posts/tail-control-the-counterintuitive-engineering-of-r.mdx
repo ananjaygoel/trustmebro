@@ -1,0 +1,44 @@
+---
+title: "Tail Control: The Counterintuitive Engineering of Reliabl..."
+excerpt: "Behind a customer's API, a high-quality answer isn't enough. It has to be usable, which means on time."
+category: "ai"
+date: 2026-06-28
+publishedAt: "2026-06-28T19:02:30.781Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "ur news bff 💕"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Not gonna lie, Behind a customer's API, a high-quality answer isn't enough.
+
+It has to be usable, which means on time. Delivering that consistently is a problem about variance, not speed, and the fixes are counterintuitive. (wild, right?)
+
+The post Tail Control: The Counterintuitive Engineering of Reliable Agentic Workflows appeared first on Towards Data Science.
+
+## The Details
+
+Run an LLM workflow inside your own company and almost any failure is cheap: you retry, fall back, or potentially even ignore it. Put that same workflow behind a users API or MCP server and the grace is gone.
+
+Now only one thing matters: did the customer get a correct, usable result? Their process depends on yours delivering one.
+
+## Why This Matters
+
+They, not you, now decide what counts as delivered. At Databook we process billions of tokens for the worlds largest enterprises; this article is based on real data from production flows at grow. I hope it offers you some useful insights.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## Key Takeaways
+
+- Delivering that result is harder than it looks, because LLMs are notoriously unreliable.
+- They fail frequently, in four flavors: an invalid answer (empty, unparseable, or simply wrong), a hard error, no answer at all, or no answer in time.
+- And the whole run only succeeds if every step does, so the more you chain together, the more chances there are for one of them to fail.
+- A workflow of individually fire steps can still come out a coin flip.
+
+## The Bottom Line
+
+Inside your own company you can absorb every one of these, because you have slack on every axis: retry the flopped step, wait out the slow one, spend a little more, relax the bar if you must. Put the same workflow behind a users API and the slack vanishes, because the run now has to clear three resource budgets at the same time , none of which you set: Time — a window that closes whether or not youre done: a hard gateway timeout (one to three minutes, sometimes five) that severs the connection mid-run, or something softer: an SLA, a caller blocked on the result, a process that can only wait so long.
+
+We want to hear your thoughts on this.
