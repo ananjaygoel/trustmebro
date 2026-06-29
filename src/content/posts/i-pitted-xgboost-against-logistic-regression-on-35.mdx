@@ -1,0 +1,43 @@
+---
+title: "I Pitted XGBoost Against Logistic Regression on 358 Match..."
+excerpt: "A concrete bias–variance lesson: why the smallest model had the best cross-validated fit, and how to know when to reach for the big hammer."
+category: "ai"
+date: 2026-06-29
+publishedAt: "2026-06-29T02:35:00.047Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "the tea spiller ☕"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Listen up: A concrete bias–variance lesson: why the smallest model had the best cross-validated fit, and how to know when to reach for the big hammer.
+
+The post I Pitted XGBoost Against Logistic Regression on 358 Matches. Appeared first on Towards Data Science. (we're not making this up)
+
+Theres a reflex most of us on a new modelling problem: reach for the model that wins.
+
+## The Details
+
+These days thats gradient boosting, and the reflex is usually right — XGBoost earns its reputation on a staggering range of problems. So when I lined up five classifiers on the same task and the one-line linear model beat the Kaggle champion, the result was the kind that surprises exactly nobody who has shipped models on real data, and almost everybody still learning.
+
+Five classifiers, same task, same features: predict whether an international match ends in a home win, draw, or away win. The contenders ran from a humble logistic regression up through a random forest, KNN, a small neural network, and XGBoost.
+
+## Why This Matters
+
+More interesting than that it clutched is why — and the why is one of the most useful ideas in applied ML. Heres the experiment, the result, and the theory that cracks it open. The setup This came out of building a suite of eleven World Cup models , where I needed a result classifier and wanted to know which family to trust.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## Key Takeaways
+
+- The target is the three-way result.
+- I scored them with 5-fold cross-validation, and the primary metric is log-loss, not accuracy.
+- That choice does a lot of work in this article, so its worth being explicit about it up front.
+
+## The Bottom Line
+
+Model_selection import cross_val_predict from sklearn. Metrics import log_loss, accuracy_score proba = cross_val_predict(model, X, y, cv=5, method="predict_proba") print(log_loss(y, proba), accuracy_score(y, proba.
+
+Is this a W or an L? You decide.
