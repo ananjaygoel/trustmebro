@@ -1,0 +1,43 @@
+---
+title: "Model Context Protocol broke down in 3 Levels of Difficulty"
+excerpt: "MCP provides a standard way for AI applications and external systems to communicate."
+category: "ai"
+date: 2026-07-01
+publishedAt: "2026-07-01T19:30:04.935Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/06/mlm-mcp-3-levels.png"
+author: "no cap correspondent 🧢"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+Not gonna lie, MCP provides a standard way for AI applications and external systems to communicate.
+
+Model Context Protocol broke down in 3 Levels of Difficulty By Bala Priya C on in AI 0 Post In this article, you will learn how the Model Context Protocol (MCP) standardizes the way AI applications connect to external tools and data sources, broken down across three levels of depth. Topics we will cover include: Why connecting models to external systems without a d standard creates an integration problem that grows with every new client or tool. (wild, right?)
+
+How the host, client, and server work together, and what happens when a models request flows through an MCP server.
+
+## The Details
+
+The transport options, security risks, and deployment choices that matter once an MCP server is running in production. Introduction Every large language model has the same limitation baked in: its knowledge stops at training time.
+
+Ask it about a file on your machine, a row in your database, or an email that came in this morning, and it either halts or guesses. The model is sealed off from the systems your app actually runs on, and bridging that gap falls entirely on the developer.
+
+## Why This Matters
+
+The usual approach is to write custom integrations a function here, a tool definition there that pipe external data into the context window. But once youre connecting multiple models to multiple services, you end up maintaining a matrix of one-off adapters , each with its own auth logic, schema assumptions, and failure modes. Adding a new model or a new service means reworking that whole matrix again.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- The MCP is an open standard, introduced by Anthropic, that gives this problem a cleaner shape.
+- Instead of every AI app building its own connectors to every external system, both sides implement a d protocol.
+- A service exposes itself as an MCP server once, and any MCP-compatible client can use it.
+
+## The Bottom Line
+
+Instead of every AI app building its own connectors to every external system, both sides implement a d protocol. A service exposes itself as an MCP server once, and any MCP-compatible client can use it.
+
+Thoughts? Drop them below.
