@@ -1,0 +1,43 @@
+---
+title: "Assemble Each RAG Generation Prompt from a Base Prompt Pl..."
+excerpt: "Enterprise Document Intelligence [Vol. Here's what you need to know."
+category: "ai"
+date: 2026-07-05
+publishedAt: "2026-07-05T19:01:49.813Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "no cap correspondent 🧢"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+So basically Enterprise Document Intelligence [Vol.
+
+1 #8B] - A fixed BASE, the rules each question needs, one registry: the dispatcher that turns a parsed question into a typed LLM call The post Assemble Each RAG Generation Prompt from a Base Prompt Plus the Rules Each Question Needs appeared first on Towards Data Science. This article is the second part of the generation brick of Enterprise Document Intelligence , a series that builds an enterprise RAG system from four bricks: document parsing, question parsing, retrieval, and generation. (it feels like chaos)
+
+Article 8A (the answer contract) declared the typed schema family and the ANSWER_REGISTRY that maps each answer shape to its schema.
+
+## The Details
+
+This part builds the call that fills the contract: a ParsedQuestion comes in; the dispatcher picks the schema from the registry, composes the system prompt from a fixed BASE plus fragments, builds the user prompt, calls the model, and keeps the full trace. What happens to the answer after the call is Article 8C (validation).
+
+Generation is the fourth brick. A reader landing here can pick up the first three from their own articles: Document parsing , the PDF turned into structured tables: Article 5A (what to read in a PDF) and Article 5B (the relational data model) .
+
+## Why This Matters
+
+Question parsing , the user string turned into a typed ParsedQuestion : Article 6A (the thesis) , Article 6B (extraction) , and Article 6C (dispatch) . Retrieval , the passages filtered down to what should hold the answer: Article 7A (retrieval as filtering) , Article 7B (anchor detection) , and Article 7C (the LLM arbiter) . Where this article sits in the series: Article 8 (generation), the prompt-assembly part, inside Part II (the four bricks) Image by author 📓 Runnable companion notebooks are on GitHub : doc-intel/notebooks-vol1 .
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- The public companion-code repo at doc-intel/notebooks-vol1 Image by author 1.
+- From brief to prompt: the dispatcher One prompt per question shape, composed at call time.
+- The alternative is the mega-prompt every RAG codebase drifts into: one system prompt handling amounts, dates, lists, tables, and free text at once.
+
+## The Bottom Line
+
+From brief to prompt: the dispatcher One prompt per question shape, composed at call time. The alternative is the mega-prompt every RAG codebase drifts into: one system prompt handling amounts, dates, lists, tables, and free text at once.
+
+Are you here for this or nah?
