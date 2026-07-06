@@ -1,0 +1,43 @@
+---
+title: "Validating the RAG Answer Before the User Sees It: Spans,..."
+excerpt: "Enterprise Document Intelligence [Vol. Here's what you need to know."
+category: "ai"
+date: 2026-07-06
+publishedAt: "2026-07-06T14:59:32.374Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "vibes curator ✨"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+So get this: Enterprise Document Intelligence [Vol.
+
+1 #8C] - Structured output is the start of validation, not the end: check the evidence, accept not-found, loop the feedback The post Validating the RAG Answer Before the User Sees It: Spans, Quotes, and the Feedback Loop appeared first on Towards Data Science. This article closes the generation brick of Enterprise Document Intelligence , a series that builds an enterprise RAG system from four bricks: document parsing, question parsing, retrieval, and generation. (wild, right?)
+
+Article 8A (the answer contract) declared the typed answer schema; Article 8B (prompt assembly) built the dispatcher that calls the model against it.
+
+## The Details
+
+This part is about what happens after the model answers: the validator that checks spans, quotes, and formats; not found as a first-class output; the join that lifts citations to rectangles on the PDF; and the feedback loops that turn generation from a terminal step into a step the pipeline can react to. Generation is the fourth brick.
+
+A reader landing here can pick up the first three from their own articles: Document parsing , the PDF turned into structured tables: Article 5A (what to read in a PDF) and Article 5B (the relational data model) . Question parsing , the user string turned into a typed ParsedQuestion : Article 6A (the thesis) , Article 6B (extraction) , and Article 6C (dispatch) .
+
+## Why This Matters
+
+Retrieval , the passages filtered down to what should hold the answer: Article 7A (retrieval as filtering) , Article 7B (anchor detection) , and Article 7C (the LLM arbiter) . Where this article sits in the series: Article 8 (generation), the validation part, inside Part II (the four bricks) Image by author 📓 Runnable companion notebooks are on GitHub : doc-intel/notebooks-vol1 . The public companion-code repo at doc-intel/notebooks-vol1 Image by author 1.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## Key Takeaways
+
+- Trust but verify A typed answer is not a checked answer.
+- Structured output is the start of validation, not the end.
+- The fix is post-generation validation .
+
+## The Bottom Line
+
+The fix is post-generation validation . The validator takes the parsed question alongside the answer so it can flag shape mismatches against what was requested.
+
+What do you think about all this?
