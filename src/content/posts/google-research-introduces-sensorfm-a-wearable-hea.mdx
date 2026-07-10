@@ -1,0 +1,44 @@
+---
+title: "Google Research Introduces SensorFM: A Wearable Health Fo..."
+excerpt: "SensorFM, a wearable health foundation model from Google Research, Google DeepMind, and university collaborators."
+category: "ai"
+date: 2026-07-10
+publishedAt: "2026-07-10T09:18:40.013Z"
+image: "https://www.marktechpost.com/wp-content/uploads/2026/07/Screenshot-2026-07-10-at-1.44.28-AM-1.png"
+author: "main character energy 💫"
+source: "MarkTechPost"
+featured: false
+---
+
+## What's Happening
+
+Breaking it down: SensorFM, a wearable health foundation model from Google Research, Google DeepMind, and university collaborators.
+
+We walk through its ViT-1D masked-autoencoder backbone, pretrained on more than one trillion minutes of unlabeled sensor signals from 5,000,000 consented participants. We examine the co-scaling results across four model sizes and four data volumes, including the case where capacity outruns data. (it feels like chaos)
+
+We show how frozen embeddings plus a PCA-50 linear probe beat feature-engineered baseline Tech News AI Paper Summary AI Applications Technology Editors Pick Language Model Large Language Model ML New Releases Staff Google Research Introduces SensorFM: A Wearable Health Foundation Model Pretrained on One Trillion Minutes of Sensor Data SensorFM co-scales model capacity and pretraining data across four orders of magnitude.
+
+## The Details
+
+It transfers to 35 health prediction tasks. By Michal Sutter - Most wearable health models are built one outcome at a time.
+
+That approach breaks down at thirty-five endpoints. Labels are expensive and retrospective annotation is infeasible.
+
+## Why This Matters
+
+Google Research introduced SensorFM, a foundation model for wearable health pre-trained on more than 1 trillion minutes of sensor data from 5 million people. SensorFM is a Large Sensor foundation Model for wearable time-series representation learning. It ingests 34 one-minute aggregate features drawn from five sensors: PPG, accelerometer, EDA, skin temperature, and altimeter.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- Those features are organized into seven categories, over a 24-hour context window.
+- The backbone is a ViT-1D encoder trained with a masked-autoencoder objective and a patch size of [20, 1].
+- Pretraining used 5,000,000 consented participants, sampled between September 2024 and September 2025.
+- That corpus spans 100+ countries, all 50 U.
+
+## The Bottom Line
+
+Variant Parameters Encoder hidden / layers Proportional data Sensor-hours XXS 138,740 64 / 2 5K subjects 2×10⁶ XS 933,204 128 / 4 50K subjects 2×10⁷ S 7,290,068 256 / 8 500K subjects 2×10⁸ B 110,763,412 768 / 12 5M subjects 2×10⁹ Evaluation uses separate data. It covers 13,985 subjects across three prospective IRB-approved studies.
+
+We want to hear your thoughts on this.
