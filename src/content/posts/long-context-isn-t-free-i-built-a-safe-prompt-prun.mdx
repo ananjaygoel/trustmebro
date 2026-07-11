@@ -1,0 +1,44 @@
+---
+title: "Long Context Isn’t Free — I Built a Safe Prompt-Pruning L..."
+excerpt: "LLMs don’t fail because they forget—they fail because they remember too much."
+category: "ai"
+date: 2026-07-11
+publishedAt: "2026-07-11T18:44:52.163Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "main character energy 💫"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+So basically LLMs don’t fail because they forget—they fail because they remember too much.
+
+As conversations grow, prompts accumulate redundant and low-value tokens, driving up cost and latency while silently degrading output quality. This article introduces a deterministic prompt-pruning layer that reduces token usage without breaking dependencies, backed by real benchmarks and production-tested design. (yes, really)
+
+The post Long Context Isn’t Free — I Built a Safe Prompt-Pruning Layer That Makes LLM Systems Work appeare In several long-running LLM systems I’ve worked on, conversation state tends to grow quickly over time.
+
+## The Details
+
+It’s common to resend large portions of the history on each turn—including older tool outputs, repeated RAG retrievals, and context that’s no longer relevant. As this accumulates, prompts can become majorly larger, which may increase inference cost and latency, and in some cases affect reasoning performance.
+
+I built a deterministic pipeline that prunes this redundant state before the prompt ever reaches the model. The version I implemented avoids LLM calls, embeddings, and external dependencies.
+
+## Why This Matters
+
+Relying strictly on standard library components ensures every pruning decision remains fully deterministic and reproducible. State tracking executes in three distinct passes: Expired Context Elimination, Duplicate Context Elimination, and Dependency Restoration. The third pass is what helps make the first two safer in practice.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- It ensures that nothing a later message depends on is accidentally removed.
+- While building it, I ran into two bugs that changed the design.
+- My first benchmark corpus used a fixed number of duplicates and stale tool calls, which made reduction percentages shrink as conversations grew.
+- That didn’t reflect what I would expect from real-world behavior.
+
+## The Bottom Line
+
+Across these runs, all labeled required facts were preserved. The system also reached a stable fixed point after a single pass, which means pruning an already pruned prompt produces no further changes.
+
+How do you feel about this development?
