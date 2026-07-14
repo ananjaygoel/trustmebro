@@ -1,0 +1,44 @@
+---
+title: "Agentic RAG: Let the Agent Search"
+excerpt: "A minimal OpenAI Agents SDK implementation where retrieval becomes a search-read-decide loop The post Agentic RAG: Let the Agent Search a..."
+category: "ai"
+date: 2026-07-14
+publishedAt: "2026-07-14T01:28:04.860Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "no cap correspondent 🧢"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Okay so A minimal OpenAI Agents SDK implementation where retrieval becomes a search-read-decide loop The post Agentic RAG: Let the Agent Search appeared first on Towards Data Science.
+
+For many of us, the first LLM app we build is a RAG app. The recipe is simple: chunk, embed, retrieve, then answer. (wild, right?)
+
+But once you use it on real cases, things get messy quickly: similarity search finds similar wordings but not necessarily useful chunks, the right evidence never shows up in the retrieved context as it ranks too low, or important context may be split across chunk boundaries.
+
+## The Details
+
+With insufficient context, the LLM has little room to recover. So, how about we make retrieval iterative ?
+
+What if the model can search, read, decide whether it has enough evidence, and search again when needed? Probably we dont even need the vector embeddings in the first place.
+
+## Why This Matters
+
+Thats the premise of agentic RAG . In this post, we’ll build a mini agentic RAG workflow with the OpenAI Agents SDK. We’ll examine how the agent iteratively searches, reads, and grounds its answer.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## Key Takeaways
+
+- At the end, well take a step back and briefly discuss the considerations for building a practical agentic RAG solution.
+- Case Study: Answering a Policy Question with Agentic RAG For our case study, well build a policy RAG agent over a company policy document collection.
+- 1 Curating The Document Collection Here, I created six synthetic company policy docs.
+- Each one has a title, an effective date, a short summary, and the policy text.
+
+## The Bottom Line
+
+Md , containing updates to lodging, conference travel, and approval timing for 2026, effective on . Md , containing rules for remote work, effective on .
+
+We want to hear your thoughts on this.
