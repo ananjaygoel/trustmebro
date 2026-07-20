@@ -1,0 +1,42 @@
+---
+title: "Building Agentic Workflows in Python with LangGraph"
+excerpt: "In this article, you will learn how to build a complete agentic workflow in Python with LangGraph, from a single model call to a tool-usi..."
+category: "ai"
+date: 2026-07-20
+publishedAt: "2026-07-20T13:48:01.666Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/07/mlm-langgraph-cover.png"
+author: "certified yapper 🗣️"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+Alright so In this article, you will learn how to build a complete agentic workflow in Python with LangGraph, from a single model call to a tool-using...
+
+Building Agentic Workflows in Python with LangGraph By Bala Priya C on in AI 0 Post In this article, you will learn how to build a complete agentic workflow in Python with LangGraph, from a single model call to a tool-using agent with persistent conversation memory. Topics we will cover include: How state, nodes, and edges combine to define the execution flow of a LangGraph agent. (wild, right?)
+
+How to register a tool and route the models tool calls through the graphs reasoning loop.
+
+## The Details
+
+How a checkpointer persists conversation history across separate graph invocations. Introduction Most AI agent setups handle the single-turn case well: take a question, call a model, and return an answer.
+
+The harder problems appear soon after that. An agent may need to query your database, remember the context from earlier messages, or give you visibility into exactly what the model decided and why.
+
+## Why This Matters
+
+Solving those challenges without building custom plumbing for every use case is where many implementations begin to break down. LangGraph provides a clean structure for handling each of these problems. An agent is represented as a graph, where nodes are units of work, edges define what runs next, and a d state object carries the complete message history through every step.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## Key Takeaways
+
+- The model runs inside a node, so every reasoning step, tool call, and response becomes part of the graphs state.
+- That makes the entire execution flow visible, inspectable, and available to any node that runs afterward.
+
+## The Bottom Line
+
+That makes the entire execution flow visible, inspectable, and available to any node that runs afterward. In this article, youll learn how to understand the state, node, and edge primitives that every LangGraph graph is built on; manage conversation history automatically with MessagesState ; call a language model inside a node and connect it to a graph; register a tool and route tool calls back through the model; trace the complete message sequence to see exactly what the model does at each step; and persist conversations across separate invocations with a checkpointer.
+
+How do you feel about this development?
