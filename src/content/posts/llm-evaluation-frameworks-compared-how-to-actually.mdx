@@ -1,0 +1,43 @@
+---
+title: "LLM Evaluation Frameworks Compared: How to Actually Measu..."
+excerpt: "In this article, you will learn how to evaluate LLM applications using the three dominant open-source frameworks RAGAS, DeepEval, and Pro..."
+category: "ai"
+date: 2026-07-21
+publishedAt: "2026-07-21T13:16:46.796Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/06/MLM-Shittu-LLM-Evaluation-Frameworks-Compared.png"
+author: "main character energy 💫"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+Okay so In this article, you will learn how to evaluate LLM applications using the three dominant open-source frameworks RAGAS, DeepEval, and Promptfoo and why...
+
+LLM Evaluation Frameworks Compared: How to Actually Measure What Your Model Does By Shittu Olumide on in Language Models 2 Post In this article, you will learn how to evaluate LLM applications using the three dominant open-source frameworks RAGAS, DeepEval, and Promptfoo and why the LLM-as-a-judge mechanism they all rely on has measurable biases you need to actively design around. Topics we will cover include: How RAGAS, DeepEval, and Promptfoo differ in purpose and when to use each one, including which pairings experienced teams converge on. (let that sink in)
+
+How to implement a faithfulness check and a CI-gated quality evaluation with working code you can run ASAP.
+
+## The Details
+
+What position bias, self-preference bias, and verbosity bias are, how to detect them with an audit harness, and how to mitigate them in production. Theres a lot to get through, so lets get right into it.
+
+Introduction You ship an LLM feature after seeing a couple of outputs and decide it looks good. Three weeks later, a prompt tweak silently breaks something nobody was testing for, and nobody notices until a user complains.
+
+## Why This Matters
+
+This is the default failure mode for LLM applications, and its different from a typical software bug. Traditional code fails with a stack trace. LLM outputs fail , plausibly wrong, which is exactly the kind of failure a quick manual glance wont catch.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## Key Takeaways
+
+- Three open-source tools dominate the practical side of this problem in 2026: Promptfoo, DeepEval, and RAGAS .
+- Each is built for a different shape of problem, not competing for the same job.
+- Layered above them are production-monitoring platforms like LangSmith and Braintrust, which pick up where offline evaluation leaves off.
+
+## The Bottom Line
+
+Layered above them are production-monitoring platforms like LangSmith and Braintrust, which pick up where offline evaluation leaves off. None of these tools wins outright; most mature GenAI QA programs run two of them in parallel: a lightweight framework for blocking rough deploys plus a platform for ongoing monitoring and human review.
+
+Is this a W or an L? You decide.

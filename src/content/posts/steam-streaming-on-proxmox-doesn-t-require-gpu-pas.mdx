@@ -1,0 +1,42 @@
+---
+title: "Steam streaming on Proxmox doesn't require GPU passthroug..."
+excerpt: "It's not as weird as it sounds, honest Steam streaming on Proxmox doesn't require GPU passthrough, and my LXC setup proves it By Joe Rice..."
+category: "tech"
+date: 2026-07-21
+publishedAt: "2026-07-21T13:16:46.566Z"
+image: "https://static0.xdaimages.com/wordpress/wp-content/uploads/wm/2024/01/how-to-use-steam-link-feature-image.jpeg"
+author: "main character energy 💫"
+source: "XDA Developers"
+featured: false
+---
+
+## What's Happening
+
+Let's talk about It's not as weird as it sounds, honest Steam streaming on Proxmox doesn't require GPU passthrough, and my LXC setup proves it By Joe Rice-Jones Published Jul 21, 2026, 9:00 AM EDT Maker, meme-r, and unabashed geek, Joe has been writing about technology since starting his career in 2018 at KnowTechie.
+
+He's covered everything from Apple to apps and crowdfunding and loves getting to the bottom of complicated topics. In that time, he's also written for SlashGear and numerous corporate clients before finding his home at XDA in the spring of 2023. (wild, right?)
+
+He was the kid who took apart every toy to see how it worked, even if it didn't exactly go back together afterward.
+
+## The Details
+
+That's given him a solid background for explaining how complex systems work together, and he promises he's gotten better at the putting things back together stage since then. Sign in to your XDA account Add Us Summary Generate a summary of this story Like Like follow Follow followed Followed Thread Log in Here is a fact-based summary of the story contents: Try something different: Show me the facts Explain it like I’m 5 Give me a lighthearted recap I've been wanting to turn my Strix Halo box into a game streaming server for months, and the only thing stopping me was the dread of VFIO GPU passthrough .
+
+It's a pain: block the driver, wrangle IOMMU groups, dedicate the entire GPU to one VM, and pray that the next kernel update doesn't break everything. My homelab already runs half a dozen services on Proxmox , and giving up the only GPU in the machine to a single VM just feels wasteful.
+
+## Why This Matters
+
+The thing is, you don't need passthrough at all . An LXC container s the host kernel, so it can also the GPU. The host keeps it, the container borrows it when needed, and nothing needs blocking.
+
+This is part of the broader shift happening across the tech industry right now.
+
+## Key Takeaways
+
+- One evening of tinkering later, I have Steam running headless in a container, streaming to everything in the house via Remote Play and Sunshine.
+- The Radeon 8060S is doing all the rendering, the same chip that I'm also using for local AI work .
+
+## The Bottom Line
+
+One evening of tinkering later, I have Steam running headless in a container, streaming to everything in the house via Remote Play and Sunshine. The Radeon 8060S is doing all the rendering, the same chip that I'm also using for local AI work .
+
+What's your take on this whole situation?
