@@ -1,0 +1,44 @@
+---
+title: "Andrew Ng Just dropped OpenWorker: An Open-Source, Local-..."
+excerpt: "Andrew Ng has dropped OpenWorker, an MIT-licensed desktop AI agent that returns finished deliverables instead of chat replies."
+category: "ai"
+date: 2026-07-24
+publishedAt: "2026-07-24T19:12:05.265Z"
+image: "https://s.w.org/images/core/emoji/17.0.2/72x72/2194.png"
+author: "vibes curator ✨"
+source: "MarkTechPost"
+featured: false
+---
+
+## What's Happening
+
+Here's the thing: Andrew Ng has dropped OpenWorker, an MIT-licensed desktop AI agent that returns finished deliverables instead of chat replies.
+
+It runs a local Python agent server under a Tauri shell, supports 30 curated tool-calling models plus fully local Ollama, and gates every write, shell command and off-machine action behind a typed risk engine. The post Andrew Ng Just dropped OpenWorker: An Open-Source, Local-First Desktop AI Coworker That Returns Finished Deliverables Instead of Chat appeared first on Editors Pick Agentic AI AI Agents Technology AI Shorts AI Applications Generative AI Open Source Tech News Andrew Ng Just dropped OpenWorker: An Open-Source, Local-First Desktop AI Coworker That Returns Finished Deliverables Instead of Chat By Asif Razzaq - Andrew Ng has just dropped OpenWorker , an open-source desktop agent that produces finished work rather than conversation. (and honestly, same)
+
+OpenWorker asks the user for an outcome , not a prompt: a polished document, a Slack reply containing the actual numbers, an updated calendar, a triaged inbox.
+
+## The Details
+
+It then breaks that outcome into steps, works across local files and connected apps, and checks in before anything consequential. The architecture is four layers, and all of them run on your machine The repository contains 119 Python files (~32,400 lines) under coworker/ , 149 TypeScript/TSX files under surfaces/gui/ , and 78 backend test modules.
+
+The stack breaks down as follows: Desktop shell — a Tauri 2 native window wrapping a React 18 UI. Desktop , and the shell supervises the Python server itself.
+
+## Why This Matters
+
+Local agent server — Python 3. 10+ on FastAPI and uvicorn, binding to 127. The example config caps a turn at 12 model↔tool iterations.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## Key Takeaways
+
+- Capability and connector layer — vetted local tools (files, git, ripgrep-backed search, shell, todo) plus hosted integrations plus MCP .
+- Model router — one interface over native, OpenAI-compatible, reseller and local providers.
+- The engine is built on aisuite , Andrew Ngs provider-agnostic LLM library.
+- Bring your own model, from a deliberately small curated list There is no OpenWorker inference service.
+
+## The Bottom Line
+
+Native providers cover OpenAI (GPT-5. 5), Anthropic (Claude Fable 5, Opus 4.
+
+Is this a W or an L? You decide.
