@@ -1,0 +1,44 @@
+---
+title: "How to Build an End-to-End OCR Pipeline with Baidu’s Unli..."
+excerpt: "In this tutorial, we build a complete workflow for running Baidu’s Unlimited-OCR model on document images and multi-page PDFs."
+category: "ai"
+date: 2026-07-24
+publishedAt: "2026-07-24T13:17:41.937Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "vibes curator ✨"
+source: "MarkTechPost"
+featured: false
+---
+
+## What's Happening
+
+Breaking it down: In this tutorial, we build a complete workflow for running Baidu’s Unlimited-OCR model on document images and multi-page PDFs.
+
+From configuring the GPU environment to comparing high-detail tiled Gundam inference and faster Base modes, you'll learn how to process dense layouts, tables, and cross-page content in a reproducible, end-to-end pipeline. The post How to Build an End-to-End OCR Pipeline with Baidu’s Unlimited-OCR for High-Resolution Images and Multi-Page PDF Parsing appeared first on Mar AI AI Infrastructure Applications Technology Editors Pick ML Language Model OCR Staff Tutorials How to Build an End-to-End OCR Pipeline with Baidu’s Unlimited-OCR for High-Resolution Images and Multi-Page PDF Parsing By Sana Hassan - In this tutorial, we build a complete workflow for running Baidu’s Unlimited-OCR model on document images and multi-page PDFs. (and honestly, same)
+
+We configure the GPU environment, install the required dependencies, load the 3B-parameter vision-language model with automatic selection of bfloat16 or float16, and generate structured sample documents for testing.
+
+## The Details
+
+We then evaluate both the tiled Gundam inference mode and the faster Base mode for single-page OCR before extending the pipeline to multi-page PDF parsing with PyMuPDF and infer_multi(). Throughout the workflow, we preserve long-context generation settings, repetition controls, and structured output handling to process dense layouts, tables, paragraphs, and cross-page content in a reproducible end-to-end pipeline.
+
+Copy Code Copied Use a different Browser import subprocess, sys def pip_install(*pkgs): subprocess. Executable, "-m", "pip", "install", "-q", *pkgs]) print(" Installing dependencies (1-2 min)...
+
+## Why This Matters
+
+") pip_install( "transformers==4. 1", "Pillow", "matplotlib", "einops", "addict", "easydict", "pymupdf", "psutil", "accelerate", ) print(" Done. ") import os import torch from transformers import AutoModel, AutoTokenizer assert torch.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- Is_available(), ( "No GPU detected!
+- In Colab: Runtime - Change runtime type - GPU.
+- Get_device_name(0) print(f" GPU: (gpu_name)") use_bf16 = torch.
+- Is_bf16_supported() DTYPE = torch.
+
+## The Bottom Line
+
+Float16 print(f" Using dtype: (DTYPE)") MODEL_NAME = "baidu/Unlimited-OCR" print(" Downloading model (~6 GB for 3B params in BF16). From_pretrained(MODEL_NAME, trust_remote_code=True) model = AutoModel.
+
+Thoughts? Drop them below.
