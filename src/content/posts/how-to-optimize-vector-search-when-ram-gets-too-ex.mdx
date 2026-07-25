@@ -1,0 +1,37 @@
+---
+title: "How to Optimize Vector Search When RAM Gets Too Expensive..."
+excerpt: "Architecting cost-effective infrastructure by navigating the latency and storage trade-offs of HNSW, SPANN, and DiskANN The post How to O..."
+category: "ai"
+date: 2026-07-25
+publishedAt: "2026-07-25T18:52:56.684Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "no cap correspondent 🧢"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Okay so Architecting cost-effective infrastructure by navigating the latency and storage trade-offs of HNSW, SPANN, and DiskANN The post How to Optimize Vector Search When RAM Gets Too Expensive: On-Disk vs.
+
+In-Memory ANN Indexes appeared first on Towards Data Science. Over the last few years , vector search has become a critical piece of AI infrastructure, powering use cases from RAG and semantic search to agentic memory and context layers. (shocking, we know)
+
+With the rise of agentic systems, companies are trying to provide as much context to the agents as possible, which requires vector db indexes to grow from an initial million or dozens of millions grow to the hundreds of millions or even billions.
+
+## The Details
+
+At this grow, storing indexes and associated data in RAM will cost thousands of dollars per month, and HNSW can become a scalability bottleneck. In this article I would like to dive into the details of what actually makes semantic search fast and efficient: approximate nearest neighbor (ANN) algorithms, what different options exist, and their trade-offs.
+
+Deep dive into vector DB Vector databases consist of three main components: embeddings the numeric representation of the corpus search algorithm and index structure the algorithm defines the search quality and speed storage how the data is stored (in memory, on disk, payload together with embeddings, etc. Whether in RAM or on disk, it determines the costs and latency at grow Embeddings are already well defined and discussed in many articles, and this one will focus on search algorithms, and specifically ANN ones.
+
+## Why This Matters
+
+There are generally two approaches for the search execution: Exact search which demonstrates the best retrieval metrics although it does not grow well for latency Approximate nearest neighbor (ANN) which trades off the retrieval quality for the latency and scalability. The exact search is a simple approach which loops through all of the entries in the index and calculates the distance between your search query and existing data. There are no losses related to any approximation or generalization with the trade-off of the latency and scalability.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## The Bottom Line
+
+There are no losses related to any approximation or generalization with the trade-off of the latency and scalability. It’s a solid approach for either small indexes or experimentation, but generally not suitable for the production grow.
+
+What's your take on this whole situation?
