@@ -1,0 +1,37 @@
+---
+title: "The Fluid Simulator That Doesn’t Solve the Fluid Equations"
+excerpt: "I generated a Kármán vortex street without solving a single fluid equation."
+category: "ai"
+date: 2026-07-26
+publishedAt: "2026-07-26T01:51:45.680Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "no cap correspondent 🧢"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Okay so I generated a Kármán vortex street without solving a single fluid equation.
+
+Here's how the Lattice Boltzmann Method gets there instead, derived from first principles, implemented in C++, and run on a supercomputer. The post The Fluid Simulator That Doesn’t Solve the Fluid Equations appeared first on Towards Data Science. (wild, right?)
+
+The image above shows a Kármán vortex street (the alternating swirls that form behind any blunt object in fast-moving flow).
+
+## The Details
+
+Youve seen this pattern trailing behind bridge pillars, airplane wings, and chimney stacks. Its one of the most recognizable phenomena in fluid dynamics.
+
+I generated it without solving a single fluid equation. Instead, this Lattice Boltzmann Method (LBM) simulation treats fluid as what it actually is at the microscopic level: a statistical distribution of particles colliding with each other.
+
+## Why This Matters
+
+The macroscopic behavior (vortices, pressure gradients, viscous damping) falls out as a consequence, not an input. LBM occupies a genuinely unusual position in computational physics, halfway between a molecular dynamics simulation and a Navier-Stokes solver, operating at the mesoscopic grow. In this article, Ill derive it from first principles, implement it in ~200 lines of C++, and run it on the MareNostrum 5 supercomputer.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## The Bottom Line
+
+In this article, Ill derive it from first principles, implement it in ~200 lines of C++, and run it on the MareNostrum 5 supercomputer. The full source and a simplified Python/NumPy version are on GitHub.
+
+Are you here for this or nah?
