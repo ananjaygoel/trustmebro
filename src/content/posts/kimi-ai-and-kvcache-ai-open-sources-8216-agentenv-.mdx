@@ -1,0 +1,44 @@
+---
+title: "Kimi AI and kvcache-ai Open Sources AgentENV&#8217..."
+excerpt: "Moonshot AI's Kimi team and kvcache-ai open-sourced AgentENV (AENV) under MIT, as part of Kimi K3 Open Day."
+category: "ai"
+date: 2026-07-28
+publishedAt: "2026-07-28T01:42:36.534Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "no cap correspondent 🧢"
+source: "MarkTechPost"
+featured: false
+---
+
+## What's Happening
+
+So basically Moonshot AI's Kimi team and kvcache-ai open-sourced AgentENV (AENV) under MIT, as part of Kimi K3 Open Day.
+
+It runs agent sandboxes as Firecracker microVMs with millisecond snapshot, resume, and 16-way fork, behind an E2B-compatible API. The post Kimi AI and kvcache-ai Open Sources AgentENV: A Distributed System that Powers Agentic Reinforcement Learning (RL) Training for Kimi K3 appeared first on MarkTechPost. (yes, really)
+
+Editors Pick Agentic AI AI AI Infrastructure Technology AI Shorts Applications Language Model ML New Releases Open Source software Engineering Staff Tech News Kimi AI and kvcache-ai Open Sources AgentENV: A Distributed System that Powers Agentic Reinforcement Learning (RL) Training for Kimi K3 By Asif Razzaq - Moonshot AIs Kimi team and kvcache-ai have open-sourced AgentENV (AENV) , a distributed platform for running agent environments at grow.
+
+## The Details
+
+AgentENV powers agentic reinforcement learning (RL) training for Kimi K3 , Moonshots 2. 8-trillion-parameter Mixture-of-the experts model.
+
+The code ships under an MIT license . Why Environment Infra Holds Back Agentic RL Agentic RL does not just sample text.
+
+## Why This Matters
+
+It requires the model to act inside a real computer. Every rollout needs an isolated Linux environment with a filesystem, a network stack, and live processes. That requirement creates a hard trade-off.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## Key Takeaways
+
+- Containers start fast but the host kernel, which weakens isolation for model-generated code.
+- Full virtual machines isolate properly but boot slowly and hold memory while idle.
+- AgentENV targets exactly that gap.
+- It runs Firecracker microVMs, then makes idle, restart, and branching cheap enough to run at training grow.
+
+## The Bottom Line
+
+Inside every guest, a daemon called envd handles command execution, file operations, and health reporting on port 49983 . A reverse proxy routes HTTP and WebSocket traffic from clients to services running inside the VM.
+
+Sound off in the comments.
