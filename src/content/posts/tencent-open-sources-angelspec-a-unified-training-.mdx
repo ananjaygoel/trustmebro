@@ -1,0 +1,44 @@
+---
+title: "Tencent Open-Sources AngelSpec: A Unified Training Framew..."
+excerpt: "Tencent has dropped AngelSpec, an open-source torch-native framework for training speculative-decoding draft models across six architectu..."
+category: "ai"
+date: 2026-07-30
+publishedAt: "2026-07-30T13:27:16.072Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "ur news bff 💕"
+source: "MarkTechPost"
+featured: false
+---
+
+## What's Happening
+
+Not gonna lie, Tencent has dropped AngelSpec, an open-source torch-native framework for training speculative-decoding draft models across six architectures.
+
+It introduces DFly, a block-diffusion drafter with hybrid target conditioning and a hidden-correction autoregressive head, and integrates D-cut for runtime-adaptive verification budgeting. On HY3-295B-A21B with TP=8, DFly-8 delivers a 1. (we're not making this up)
+
+40× speedup over autoregressive decoding across concurrency 4 to 64.
+
+## The Details
+
+The post Tencent Open-Sources AngelSpec: A Uni Editors Pick Agentic AI AI AI Infrastructure Tech News AI Paper Summary Technology AI Shorts Language Model New Releases Open Source software Engineering Staff Uncategorized Tencent Open-Sources AngelSpec: A Unified Training Framework for MTP and Block-Parallel Speculative Decoding on Hy3 Models By Michal Sutter - Tencent has dropped AngelSpec , an open-source, torch-native training framework for speculative-decoding draft models. The release covers both autoregressive multi-token prediction (MTP) and the block-parallel DFlash family.
+
+Most speculative-decoding work searches for one drafter that scores well on an averaged benchmark mixture. Real serving traffic does not look like that mixture.
+
+## Why This Matters
+
+AngelSpec treats workload heterogeneity as a first-class design constraint , and specializes structure, training data, and verification depth around it. Why one universal drafter underperforms Speculative decoding is lossless. A lightweight drafter proposes several future tokens, and the target model verifies them together in one forward pass using rejection sampling.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## Key Takeaways
+
+- Acceleration then depends on two things: how many draft tokens get accepted, and how long the complete draft–verify round takes.
+- Those two quantities move in opposite directions across domains.
+- In high-entropy open-wrapped up conversation, many continuations are semantically valid.
+- The target may pick any one of them, so acceptance decays quickly with proposal depth.
+
+## The Bottom Line
+
+These workloads create longer predictable spans, which is exactly what block-parallel drafting amortizes well. AngelSpec so ships two complementary drafters , not one compromise.
+
+How do you feel about this development?
