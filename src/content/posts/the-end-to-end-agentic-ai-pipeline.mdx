@@ -1,0 +1,37 @@
+---
+title: "The End-to-End Agentic AI Pipeline"
+excerpt: "In this article, you will learn the seven architectural components that separate a production-grade agentic AI system from a demo script,..."
+category: "ai"
+date: 2026-07-31
+publishedAt: "2026-07-31T08:34:03.164Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/06/MLM-Shittu-The-End-to-End-Agentic-AI-Pipeline-scaled.png"
+author: "your fave news bestie 💅"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+So get this: In this article, you will learn the seven architectural components that separate a production-grade agentic AI system from a demo script, and how each one...
+
+The End-to-End Agentic AI Pipeline By Shittu Olumide on in AI 1 Post In this article, you will learn the seven architectural components that separate a production-grade agentic AI system from a demo script, and how each one fits into the agents core feedback loop. Topics we will cover include: What each of the seven components — perception, memory, reasoning and planning, tool execution, orchestration, guardrails, and observability — is specifically responsible for. (it feels like chaos)
+
+Where each component tends to break in real systems, and why that component must be kept separate from the others.
+
+## The Details
+
+Focused, runnable Python code illustrating the responsibility of each component in isolation. Introduction Most build an AI agent tutorials show a 40-line script that calls an LLM in a loop and calls it done.
+
+That script works fine for a demo. It does not survive a second concurrent user, a flaky third-party API, or a task that turns out to need twelve steps instead of two.
+
+## Why This Matters
+
+The gap between the demo and the production system isnt clever prompting. Production agentic systems are built from a consistent set of interconnected components: perception, reasoning, planning, memory, tool execution, orchestration, and guardrails. That same component breakdown shows up across nearly every serious architecture writeup, survey paper, and production postmortem published in the last year, regardless of which framework or vendor is doing the writing.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## The Bottom Line
+
+This article walks through each piece of that loop as its own component — what its responsible for, where it tends to break, and a focused code excerpt that makes the responsibility concrete. Nothing here is wired into one running pipeline.
+
+Sound off in the comments.
