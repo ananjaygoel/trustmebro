@@ -1,0 +1,43 @@
+---
+title: "Coding Agents Don’t Need Bigger Context Windows — They Ne..."
+excerpt: "Most coding agents treat prompt construction like retrieval: gather more files, add more context, hope the model figures it out."
+category: "ai"
+date: 2026-08-02
+publishedAt: "2026-08-02T08:05:36.607Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "main character energy 💫"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Here's the thing: Most coding agents treat prompt construction like retrieval: gather more files, add more context, hope the model figures it out.
+
+But that approach breaks down fast. As context grows, irrelevant code competes for attention, and when the window fills, agents start compressing their own memory—often mid-task. (we're not making this up)
+
+What looks like “forgetting” is usually just degraded context.
+
+## The Details
+
+This article explores a different approach: treating prompt construction like a compiler that decides what to keep, what to reduc TL;DR: I built a three-pass Context Compiler in pure Python. Before sending anything to the model, it figures out what your target file actually depends on, trims non-essential code down to pure interfaces, and drops everything unreachable.
+
+Tested it on two real Python repos: it cut prompt sizes by 69–74% and ran in under 75 ms. All the numbers below are pulled straight from captured terminal runs.
+
+## Why This Matters
+
+If the tool couldnt determine something with certainty, it explicitly marked it instead of guessing. Compilers Dont Just Compile Code Compilers are just filters that know what to keep. You give one an entry point and a codebase, it traces what actually gets called, throws out the dead weight, and outputs an intermediate representation with only the detail the next step needs.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## Key Takeaways
+
+- Most coding agents dont treat prompt construction like a compiler.
+- Larger context windows help, but they don’t remove irrelevant context.
+- That extra context competes for attention with the code that actually matters.
+
+## The Bottom Line
+
+It resolves what a target file actually reaches, trims those dependencies down to interfaces, and drops everything else. Across two real Python repos, it cut prompt sizes by 69–74% with a compile time under 75 ms.
+
+What do you think about all this?
