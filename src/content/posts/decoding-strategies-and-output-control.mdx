@@ -1,0 +1,43 @@
+---
+title: "Decoding Strategies and Output Control"
+excerpt: "This chapter is divided into nine parts; they are: • Reading Logits from a Model • Greedy Decoding • Temperature Sampling • Top-$k$ Sampl..."
+category: "ai"
+date: 2026-08-04
+publishedAt: "2026-08-04T08:20:41.169Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/08/claudio-testa-iqeG5xA96M4-unsplash-scaled.jpg"
+author: "the tea spiller ☕"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+Okay so This chapter is divided into nine parts; they are: • Reading Logits from a Model • Greedy Decoding • Temperature Sampling • Top-$k$ Sampling • Nucleus Sampling • Repetition Penalties • Beam Search • Stop Conditions • Structured Output Constraints The model returns a vector of logits for every position in the input sequence.
+
+Decoding Strategies and Output Control By Adrian Tam on in Inference from Transformer Models 0 Post A language model does not write text directly. Instead, it returns logits for the next token. (it feels like chaos)
+
+The decoding algorithm decides how to turn those logits into a token, and repeating this decision produces the output text.
+
+## The Details
+
+The decoding algorithm affects the behavior of the model. Greedy decoding is deterministic and stable, but it can be dull.
+
+Sampling introduces some randomness, which can produce more diverse text but may also produce mistakes. Beam search can be useful for some constrained tasks but is usually not the best default for chat-style generation.
+
+## Why This Matters
+
+Output constraints can make the model produce JSON or stop at a specific marker. In this chapter, you will learn about: Greedy decoding Temperature sampling Top-k and nucleus sampling Repetition penalties Stop conditions Beam search Structured output constraints Lets get kicked off. Decoding Strategies and Output Control Photo by Claudio Testa .
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## Key Takeaways
+
+- For generation, you normally use only the last position because it predicts the next token.
+- The following example uses the Hugging Face transformers library with a small GPT-2 style model.
+- The checkpoint is small enough for local experimentation, but the same logic applies to larger models.
+
+## The Bottom Line
+
+From_pretrained(model_name) model. Eval() prompt = "A language model is" input_ids = tokenizer(prompt, return_tensors="pt").
+
+Sound off in the comments.
