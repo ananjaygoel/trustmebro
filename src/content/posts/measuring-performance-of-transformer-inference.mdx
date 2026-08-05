@@ -1,0 +1,44 @@
+---
+title: "Measuring Performance of Transformer Inference"
+excerpt: "This chapter is divided into eight parts; they are: • Metrics for LLM Inference • Measuring a Single Request • Warmup and Synchronization..."
+category: "ai"
+date: 2026-08-05
+publishedAt: "2026-08-05T08:17:48.155Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/08/tomas-anton-escobar-PHyF2mCMei0-unsplash-scaled.jpg"
+author: "the tea spiller ☕"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+Breaking it down: This chapter is divided into eight parts; they are: • Metrics for LLM Inference • Measuring a Single Request • Warmup and Synchronization • Measuring GPU Work with CUDA Events • Measuring Memory Usage • Measuring Concurrent Requests • Multiple GPUs and Multiple Machines • Cost per Token The most common inference metrics are: • Latency: How long a request takes from start to finish.
+
+Measuring Performance of Transformer Inference By Adrian Tam on in Inference from Transformer Models 0 Post When you optimize the inference performance of an LLM, you need to know how to measure it. Without measurement, it is easy to make a model more complicated without making it faster, or to improve throughput while making user-visible latency worse. (and honestly, same)
+
+An LLM service has several kinds of performance.
+
+## The Details
+
+A user cares about how long it takes to see the first token and how quickly the rest of the answer streams. An operator cares about how many requests the hardware can serve, how much memory is used, and how much each generated token costs.
+
+A researcher may care about whether an optimization changes the models output quality. In this chapter, you will learn about: Latency and throughput metrics Time to first token and time per output token Measuring CPU and GPU inference Using CUDA events Benchmarking multiple requests Thinking about multiple GPUs and multiple machines Lets get kicked off.
+
+## Why This Matters
+
+Measuring Performance of Transformer Inference Photo by Tomas Anton Escobar . Overview This chapter is divided into eight parts; they are: Metrics for LLM Inference Measuring a Single Request Warmup and Synchronization Measuring GPU Work with CUDA Events Measuring Memory Usage Measuring Concurrent Requests Multiple GPUs and Multiple Machines Cost per Token Metrics for LLM Inference The most common inference metrics are: Latency: How long a request takes from start to finish. Time to first token (TTFT): How long the user waits before the first output token appears.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- Time per output token (TPOT): The average time between generated tokens after the first token.
+- Throughput: How many tokens or requests are processed per second.
+- Memory usage: How much CPU memory or GPU memory is used.
+- Utilization: How busy the accelerator is during the benchmark.
+
+## The Bottom Line
+
+Utilization: How busy the accelerator is during the benchmark. Cost per token: The hardware or service cost divided of tokens processed.
+
+Sound off in the comments.
