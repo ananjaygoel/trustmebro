@@ -1,0 +1,44 @@
+---
+title: "Apples iCloud Private Relay is Leaking Users ..."
+excerpt: "Apple's paid Safari protection feature that promises to keep your IP masked doesn't always work, according to security researchers Tommy ..."
+category: "tech"
+date: 2026-08-05
+publishedAt: "2026-08-05T19:14:33.424Z"
+image: "https://images.macrumors.com/article-new/2026/07/General-iCloud-App-Feature.jpg"
+author: "your fave news bestie 💅"
+source: "MacRumors"
+featured: false
+---
+
+## What's Happening
+
+Okay so Apple's paid Safari protection feature that promises to keep your IP masked doesn't always work, according to security researchers Tommy Mysk and Talal Haj Bakry.
+
+It turns out iCloud Private Relay can expose your real IP to websites that use or pretend to use passkeys. ICloud Private Relay is a service included with paid iCloud + plans. (yes, really)
+
+It is supposed to hide your IP and DNS information when you browse the web using Safari, but it is not a VPN that masks all traffic f Apple's iCloud Private Relay is Leaking Users' Real IP Addresses Wednesday 11:44 am PDT by Juli Clover Apple's paid Safari protection feature that promises to keep your IP masked doesn't always work, according to security researchers Tommy Mysk and Talal Haj Bakry .
+
+## The Details
+
+Passkeys use the WebAuthn standard, which stores a private key on your device, not the Safari browser. The request the system sends to the site isn't protected and can leak your IP address.
+
+WebKit hands WebAuthn ceremonies to the operating system's credential service, which issues the HTTPS request itself, directly from the device and unaware of any proxy the host app configured. A page can set rpId to a host of its choosing, and the fetch fires even without user interaction: with mediation: "conditional" and no UI ever appears.
+
+## Why This Matters
+
+] Because the fetch is issued system's credential service rather than by Safari, it never enters Private Relay's proxied path. The destination server sees the device's real IP address either way. An attacker who wants to find someone's protected IP can do so a site that uses WebAuthn.
+
+This is part of the broader shift happening across the tech industry right now.
+
+## Key Takeaways
+
+- There is no visible passkey prompt and no other indication that an IP address has been accessed in the background.
+- The researchers also found two other WebKit features that can leak IP addresses and DNS data.
+- DNS prefetching (added in iOS 26 ) reveals a user's real DNS servers, while WebTransport (added in iOS 26.
+- Apple told 404 Media that it is investigating the report.
+
+## The Bottom Line
+
+Apple told 404 Media that it is investigating the report. Mysk and Haj Bakry created a site to let you test whether Apple's service is leaking your IP address.
+
+Is this a W or an L? You decide.
