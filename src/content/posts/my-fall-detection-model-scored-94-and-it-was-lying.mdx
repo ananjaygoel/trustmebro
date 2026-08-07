@@ -1,0 +1,43 @@
+---
+title: "My Fall-Detection Model Scored 94%, and It Was Lying to Me"
+excerpt: "How a single evaluation choice inflated my results by 25 points, and what rebuilding honestly taught me about ML systems people might dep..."
+category: "ai"
+date: 2026-08-07
+publishedAt: "2026-08-07T12:40:15.359Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "vibes curator ✨"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Real talk: How a single evaluation choice inflated my results by 25 points, and what rebuilding honestly taught me about ML systems people might depend on The post My Fall-Detection Model Scored 94%, and It Was Lying to Me appeared first on Towards Data Science.
+
+My fall-detection model scored 94. I went back over the terminal output and the confusion matrix more than once. (we're not making this up)
+
+The number went into my README and onto my CV.
+
+## The Details
+
+Not by a rounding error, either. It only came to light because I decided to build tools that could verify my own results.
+
+Fixing it taught me more about production ML than building the original system did. Plenty of articles explain data leakage in the abstract.
+
+## Why This Matters
+
+This one is about what it looks like from the inside, with the numbers from before and after. If you evaluate models on sequential data of any kind (video, audio, wearable sensors, time series), theres a decent chance the same bug is sitting in your pipeline right now. The system The project is a real-time fall detector for assistive monitoring.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- A webcam runs through MediaPipe Pose to get skeletal landmarks.
+- A Random Forest classifies every frame, and a smoothing window over the last few predictions decides whether to raise the alarm.
+- It all runs on CPU in real time.
+
+## The Bottom Line
+
+The leak Heres the line that lied to me: X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0. 2, stratify=y) The problem is that this split is random over individual frames, and frames from the same video are not independent.
+
+How do you feel about this development?
