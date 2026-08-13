@@ -1,0 +1,42 @@
+---
+title: "Backpropagation broke down for Beginners (Part 3): How Ba..."
+excerpt: "From one gradient to every gradient The post Backpropagation broke down for Beginners (Part 3): How Backpropagation fr Works appeared fir..."
+category: "ai"
+date: 2026-08-13
+publishedAt: "2026-08-13T07:12:33.759Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "no cap correspondent 🧢"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Listen up: From one gradient to every gradient The post Backpropagation broke down for Beginners (Part 3): How Backpropagation fr Works appeared first on Towards Data Science.
+
+First of all, thank you so much for the response to the first two parts of this series. It feels good that many of you have found them helpful. (wild, right?)
+
+As always, if you have any thoughts, questions, or suggestions while reading, Id love to hear your perspective.
+
+## The Details
+
+Now, lets pick up where we left off in part 2 . Why Recompute the Same Gradients?
+
+We calculated the gradient for w 1 w_1 ​ using the chain rule. \[ \frac(\partial L)(\partial w_1) = \frac(\partial L)(\partial \hat(y)) \cdot \frac(\partial \hat(y))(\partial a_1) \cdot \frac(\partial a_1)(\partial z_1) \cdot \frac(\partial z_1)(\partial w_1) \] We got the same equation that we had before derived using classical differentiation in Part 1.
+
+## Why This Matters
+
+\[ \frac(\partial L)(\partial w_1) = -2(y-\hat(y)) \cdot w_3 \cdot \mathrm(ReLU)'(w_1x+b_1) \cdot x \] We then came to understand just how important the chain rule is. Now, what about the gradients for the other parameters? \[ b_1,\; w_2,\; b_2,\; w_3,\; w_4,\; b_3 \] Weve already seen the entire process for w 1 w_1 ​.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## Key Takeaways
+
+- So, we generally think of repeating the same steps which is using the chain rule for the remaining parameters.
+- If we have a look at all the chain rule equations for all parameters, we can observe that many of the partial derivatives appear more than once.
+
+## The Bottom Line
+
+So, we generally think of repeating the same steps which is using the chain rule for the remaining parameters. If we have a look at all the chain rule equations for all parameters, we can observe that many of the partial derivatives appear more than once.
+
+What's your take on this whole situation?
