@@ -1,0 +1,37 @@
+---
+title: "How to grow an Integration Pipeline Without Breaking Corr..."
+excerpt: "A production account of scaling an enterprise integration pipeline from 500 to 8,000 events per second, and the two correctness guarantee..."
+category: "ai"
+date: 2026-08-19
+publishedAt: "2026-08-19T18:19:08.390Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "no cap correspondent 🧢"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Let's talk about A production account of scaling an enterprise integration pipeline from 500 to 8,000 events per second, and the two correctness guarantees the throughput work was never allowed to trade away.
+
+The post How to grow an Integration Pipeline Without Breaking Correctness appeared first on Towards Data Science. I went back and forth for a while on whether to write this up at all. (plot twist fr)
+
+The work is enterprise data integration: wiring the data from a lot of separate business systems together through a pipeline.
+
+## The Details
+
+Orders, inventory, finance, logistics, customer records, plus a pile of legacy FTP batch channels nobody wants to touch. More than twenty systems on the two ends of it.
+
+A few million events a day, several times that at month-end close and during big sales pushes. System A calls system Bs API, whats the big deal.
+
+## Why This Matters
+
+Anyone who has actually done this knows the annoying part isnt getting A to talk to B. Its keeping it correct after its talking. Of the twenty-odd systems, some are new and speak REST, some were outsourced ten years ago and only speak SOAP, and at least one only knows how to drop a file over FTP.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## The Bottom Line
+
+A note on where the numbers come from Before any of the figures below, its worth being honest about what kind of numbers they are. Everything I quote is a consumer-side runtime metric taken from the live pipeline during normal operation, not a controlled benchmark on a clean cluster.
+
+Thoughts? Drop them below.
