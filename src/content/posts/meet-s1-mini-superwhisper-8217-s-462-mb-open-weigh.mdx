@@ -1,0 +1,44 @@
+---
+title: "Meet S1-mini: Superwhispers 462 MB Open-Weights Te..."
+excerpt: "S1-mini is a 462 MB open-weights normalizer that sits after ASR, removing fillers and resolving self-corrections locally."
+category: "ai"
+date: 2026-08-21
+publishedAt: "2026-08-21T18:22:17.350Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "ur news bff 💕"
+source: "MarkTechPost"
+featured: false
+---
+
+## What's Happening
+
+Okay so S1-mini is a 462 MB open-weights normalizer that sits after ASR, removing fillers and resolving self-corrections locally.
+
+The post Meet S1-mini: Superwhispers 462 MB Open-Weights Text Normalizer That Turns Raw ASR Transcripts Into Clean Written Text appeared first on MarkTechPost. Editors Pick Agentic AI Technology AI Shorts AI Applications Language Model Audio Language Model Large Language Model New Releases Staff Tech News TTS Voice AI Meet S1-mini: Superwhispers 462 MB Open-Weights Text Normalizer That Turns Raw ASR Transcripts Into Clean Written Text By Michal Sutter - Superwhisper has dropped the S1 family of models : S1-Voice, S1-Language, and S1-mini. (shocking, we know)
+
+S1-Voice is a cloud speech-to-text model, and S1-Language is a cloud instruction-following model for cleanup and formatting.
+
+## The Details
+
+The one that is quite interesting outside the app is S1-mini , dropped with open weights on Hugging Face. 6B text normalizer, not a transcriber and not a chat model.
+
+It sits after automatic speech recognition and rewrites raw transcripts as clean written text: fillers removed, self-corrections resolved to what the speaker landed on, punctuation and capitalization applied, and spoken numbers, dates, currency, and email addresses rendered in written form. It is fine-tuned from Qwen/Qwen3-0.
+
+## Why This Matters
+
+6B , covers English only in release v1, and is steered entirely by a three-axis control line placed above the transcript. 8% token accuracy on a held-out set of 7,519 cases, measured greedy on the quantized build. S1-mini is Hugging Face under Apache 2.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- S1-Voice and S1-Language are Superwhisper-hosted services, so they are consumable, not self-hostable.
+- The Q4_K_M GGUF build is a 462 MB file that runs on a laptop CPU.
+- Solo developers can ship it inside a desktop app.
+- Enterprises can run it behind a VPC where audio transcripts cannot leave the network.
+
+## The Bottom Line
+
+Enterprises can run it behind a VPC where audio transcripts cannot leave the network. Industries : Healthcare and clinical documentation, legal, financial services, customer support, developer tooling, accessibility and live captioning.
+
+What's your take on this whole situation?
