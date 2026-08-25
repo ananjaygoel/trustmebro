@@ -1,0 +1,43 @@
+---
+title: "Put Your Own Logic Inside the Codex Agentic Loop"
+excerpt: "Understanding Codex hooks The post Put Your Own Logic Inside the Codex Agentic Loop appeared first on Towards Data Science."
+category: "ai"
+date: 2026-08-25
+publishedAt: "2026-08-25T06:27:53.420Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "vibes curator ✨"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Listen up: Understanding Codex hooks The post Put Your Own Logic Inside the Codex Agentic Loop appeared first on Towards Data Science.
+
+Most of us customize Codex through prompts. We can describe the task, give instructions, and tell Codex what kind of result we expect. (plot twist fr)
+
+This allows us to control how the agent approaches its work.
+
+## The Details
+
+But sometimes, prompting is not enough. We may want to further customize the execution own logic at different stages of a Codex session.
+
+In this post, we’ll explore the concept of hooks and understand where they fit into the agentic loop. Then, well go through a concrete case study to demonstrate the concept.
+
+## Why This Matters
+
+Understanding Codex hooks When Codex works on a task, it goes through an agentic loop. For a new session, the user types in a prompt, Codex analyzes the problem, calls tools, and completes the task. You can think of this whole problem-solving trajectory as a lifecycle, and at different points in this lifecycle, Codex emits events with different event names: SessionStart : emitted when a session begins; PreToolUse : emitted when Codex is about to call a tool; PostToolUse : emitted after the tool finishes; Stop : emitted when Codex is ready to finish its response; SessionEnd : emitted when the Codex session ends.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- A Hook is the mechanism that allows us to attach our own logic to these events.
+- So, what does it mean to attach logic to an event?
+- Suppose we configure a hook for PreToolUse .
+
+## The Bottom Line
+
+So, wed also need a matching rule to let us select the ones we actually care about. For example, we could run the script only when Codex is about to execute a shell command.
+
+How do you feel about this development?
