@@ -1,0 +1,37 @@
+---
+title: "Why Transformers Need Positional Encoding For Time Series..."
+excerpt: "From scalar observations to self-attention, and how positional information restores sequence order The post Why Transformers Need Positio..."
+category: "ai"
+date: 2026-09-06
+publishedAt: "2026-09-06T09:54:46.080Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "main character energy 💫"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Listen up: From scalar observations to self-attention, and how positional information restores sequence order The post Why Transformers Need Positional Encoding For Time Series: A Visual Guide appeared first on Towards Data Science.
+
+Deep Learning Why Transformers Need Positional Encoding For Time Series: A Visual Guide From scalar observations to self-attention, and how positional information restores sequence order Gurjinder Kaur 9 min read Source: AI-generated using ChatGPT While digging into foundation models for time series, I realized that I could not fr understand them without first understanding transformers. I did not want to use these models as black boxes, so I kicked off tracing the ideas backward, from foundation models to transformers, and from transformers to self-attention. (let that sink in)
+
+What made the transition interesting is that although transformers were originally built for language, the core idea carries naturally to time series.
+
+## The Details
+
+The two modalities are different, but they something fundamental: both are sequences, and in both cases, order changes meaning . In language, dog bites man is different from man bites dog.
+
+A temperature of 30 ∘ 30^\circ 3 0 ∘ yesterday and 20 ∘ 20^\circ 2 0 ∘ today tells a different story from 20 ∘ 20^\circ 2 0 ∘ yesterday and 30 ∘ 30^\circ 3 0 ∘ today. The values may be the same, but their order changes the meaning of the sequence.
+
+## Why This Matters
+
+The question is that if self-attention looks at all observations at once, how does a transformer know which observation came first, which came later, or how far apart two observations are? That question led me to positional encoding. What surprised me most was how such a simple mathematical idea could give a Transformer a sense of order.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## The Bottom Line
+
+The exact techniques have evolved considerably since then, but the underlying problem remains the same. This article is my attempt to build that intuition from the ground up, starting with a simple time series and following the path from raw observations to self-attention and finally to positional encoding.
+
+Thoughts? Drop them below.
