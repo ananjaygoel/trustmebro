@@ -1,0 +1,44 @@
+---
+title: "H company Releases NeoMME: A Family of 260M and 800M Sing..."
+excerpt: "We look at NeoMME, a family of 260M and 800M bidirectional encoders from H company."
+category: "ai"
+date: 2026-09-07
+publishedAt: "2026-09-07T16:51:51.503Z"
+image: "https://www.marktechpost.com/wp-content/uploads/2026/09/Screenshot-2026-09-06-at-2.06.00-PM.png"
+author: "main character energy 💫"
+source: "MarkTechPost"
+featured: false
+---
+
+## What's Happening
+
+Real talk: We look at NeoMME, a family of 260M and 800M bidirectional encoders from H company.
+
+Unlike ColPali-style retrievers, it processes multilingual text tokens and raw 32×32 image patches in a single Transformer, with no pretrained vision tower and no causal decoder. We cover the masked discrete-diffusion pretraining objective, the dual dense and late-interaction retrieval heads, and the ViDoRe v3 results where the 260M model reaches 0. (shocking, we know)
+
+We also break down the 255× index compression, the 5 Editors Pick Agentic AI AI AI Infrastructure Tech News AI Paper Summary Applications Technology Language Model Large Language Model ML New Releases Open Source Python software Engineering Staff H company Releases NeoMME: A Family of 260M and 800M Single-Tower Multimodal Encoders That Drop the Vision Tower and Causal Decoder By Asif Razzaq - Most visual document retrievers in production today are hand-me-downs.
+
+## The Details
+
+ColPali and the models that followed it take a generative vision-language model and repurpose it as an encoder. The result still carries a separately pretrained vision tower and a causal decoder that never generates a token.
+
+That is parameter and compute overhead for a task that only needs representations. H company has dropped NeoMME , a family of 260M and 800M bidirectional encoders that drops both components.
+
+## Why This Matters
+
+One Transformer processes multilingual text tokens and raw 32×32 RGB image patches through the same layers, trained from random initialization. The retrieval fine-tune, NeoMME-Retriever, reaches 0. 523 nDCG@10 on ViDoRe v3 at 260M parameters.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## Key Takeaways
+
+- Every checkpoint ships under Apache 2.
+- 0 with day-zero support in Hugging Face Transformers .
+- 3 pages per second on a single NVIDIA L40S and encodes a query in 78.
+- One tower, two modalities Text enters through an ALBERT-style factorized embedding: a 256-dimensional lookup projected to model width.
+
+## The Bottom Line
+
+Both models support a 16,384-token context, enough for two standard 3,840×2,160 4K UHD images after patching. Most layers use symmetric sliding-window attention; every sixth layer and the final layer attend globally.
+
+Sound off in the comments.
