@@ -1,0 +1,44 @@
+---
+title: "Getting kicked off with dbt"
+excerpt: "A practical guide to building, testing, and documenting SQL transformations The post Getting kicked off with dbt appeared first on Toward..."
+category: "ai"
+date: 2026-09-09
+publishedAt: "2026-09-09T15:34:01.479Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "main character energy 💫"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+So get this: A practical guide to building, testing, and documenting SQL transformations The post Getting kicked off with dbt appeared first on Towards Data Science.
+
+Data Engineering Getting kicked off with dbt A practical guide to building, testing, and documenting SQL transformations Thomas Reid 22 min read Image by AI As a contract data engineer , I sometimes experience — ahem — lets just say, periods of inactivity. When I browse the online market for suitable roles during those times, one of the most in-demand skills I keep seeing is experience with a tool called dbt . (let that sink in)
+
+So, to give myself the best possible chance of obtaining work, I decided to learn as much about dbt as I thought I needed to, to at least be confident enough to talk about it in general terms to a fellow techie at an interview stage should the need arise.
+
+## The Details
+
+This article distils that process and what I’ve learnt. Of course you cant learn a subject just it, so as usual, Ill show plenty of practical code and real-world examples.
+
+To be clear, I have no affiliation or commercial association with dbt, DuckDB, or their creators. Dbt Core is a free open-source software dropped under the Apache 2.
+
+## Why This Matters
+
+0 licence, and you can run it locally without a dbt account. DuckDB is also free to use under the permissive MIT licence. Dbt provides a broad range of capabilities, but as this is an introduction to the topic, I’m concentrating on explaining the basics.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## Key Takeaways
+
+- This includes using dbt models and sources, and using it to test data and create documentation.
+- More about all of these later.
+- If you’ve worked on any reasonably sized analytics or data engineering project, you’ve probably wrapped up up with a folder full of SQL scripts.
+- When your project first starts up, everything feels manageable.
+
+## The Bottom Line
+
+You run the scripts manually or schedule them in whatever orchestration tool your company uses. A column gets renamed in one table, and suddenly some downstream report or dashboard stops working or, worse still, your nightly 10 million record data ingestion job fails, and your whole system grinds to a halt.
+
+How do you feel about this development?
