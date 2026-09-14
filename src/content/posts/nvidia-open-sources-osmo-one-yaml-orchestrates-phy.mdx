@@ -1,0 +1,44 @@
+---
+title: "NVIDIA Open-Sources OSMO: One YAML Orchestrates Physical ..."
+excerpt: "NVIDIA has open-sourced OSMO, the Kubernetes-native workflow orchestrator it uses internally for Project GR00T, Isaac Lab, and Isaac Sim."
+category: "ai"
+date: 2026-09-14
+publishedAt: "2026-09-14T11:15:16.244Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "main character energy 💫"
+source: "MarkTechPost"
+featured: false
+---
+
+## What's Happening
+
+Let's talk about NVIDIA has open-sourced OSMO, the Kubernetes-native workflow orchestrator it uses internally for Project GR00T, Isaac Lab, and Isaac Sim.
+
+OSMO lets robotics teams define training, simulation, and hardware-in-the-loop tasks in a single YAML file and routes each one to the right compute tier, from GB200 clusters to Jetson AGX Thor devices, without infrastructure code. The post NVIDIA Open-Sources OSMO: One YAML Orchestrates Physical AI Training, Simulatio Editors Pick Agentic AI AI AI Infrastructure Technology AI Shorts Applications New Releases Open Source Physical AI Robotics Staff Tech News NVIDIA Open-Sources OSMO: One YAML Orchestrates Physical AI Training, Simulation, and Robot Testing By Asif Razzaq - Robot developers do not have one compute problem. (yes, really)
+
+A policy is trained on GB200 or H100 clusters, tested in Isaac Sim on RTX GPUs, then validated on a Jetson mounted inside a real robot.
+
+## The Details
+
+Each tier has its own cluster, its own scheduler, and its own glue scripts. NVIDIA OSMO is NVIDIAs answer to that fragmentation: an open-source, Kubernetes-native workflow orchestrator that lets a team describe the whole pipeline in a single YAML file and run it across every tier without touching infrastructure code.
+
+0 licensed , ships Helm charts and containers on NGC , and has a local quickstart that runs the full control plane on a workstation with KIND. The Three Computer Problem NVIDIA frames physical AI as a three computer problem .
+
+## Why This Matters
+
+Training happens on data-center GPUs. Simulation, physics, and sensor rendering happen on workstation-class RTX hardware. Deployment and hardware-in-the-loop (HIL) testing happen on edge devices such as Jetson AGX Thor, usually on premises.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## Key Takeaways
+
+- Each tier usually gets its own tooling, and the handoffs are where custom scripts accumulate.
+- OSMO treats all 3 as backends of one control plane.
+- Each backend is a Kubernetes cluster registered through the CLI.
+- Workflows never name a cluster.
+
+## The Bottom Line
+
+Workflows never name a cluster. They name a platform (for example gb200 , rtx-pro-6000 , or jetson-agx-thor ) and OSMO routes the task to a pool that offers it.
+
+Is this a W or an L? You decide.
