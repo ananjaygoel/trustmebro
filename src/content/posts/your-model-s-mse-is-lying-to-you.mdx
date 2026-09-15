@@ -1,0 +1,44 @@
+---
+title: "Your Model’s MSE Is Lying to You"
+excerpt: "First in a series on probabilistic forecasting for physical signals."
+category: "ai"
+date: 2026-09-15
+publishedAt: "2026-09-15T02:29:44.021Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "ur news bff 💕"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Real talk: First in a series on probabilistic forecasting for physical signals.
+
+Next: what happens when you roll the forecast forward more than one step. The post Your Model’s MSE Is Lying to You appeared first on Towards Data Science. (it feels like chaos)
+
+ML Your Model’s MSE Is Lying to You First in a series on probabilistic forecasting for physical signals.
+
+## The Details
+
+Waleed Esmail 24 min read Why mean squared error hides the uncertainty in a forecast, and the probabilistic loss that recovers it. Two models , one number, opposite realities Imagine you have a sensor recording something you care about, for example seismic background at a detector site, electrical load on a grid, or strain in a bridge cable, and youve trained a model to forecast the next value.
+
+The model looks at the recent history, thinks for a moment, and gives you a single number: 0. Theres a threshold τ = 1.
+
+## Why This Matters
+
+The question is: should you worry? Not because youre missing information about the model, but because the model is missing a way to tell you what it knows . Lets see why thats a problem.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- Imagine you actually have two models, both watching the same signal, both predicting x ^ = 0.
+- They even post the same mean squared error on your test set, not approximately, but identically to three decimal places.
+- Ranking metric, they are interchangeable .
+- Heres whats hiding underneath.
+
+## The Bottom Line
+
+0 1 2 ) If this notation is new to you: N ( μ , σ 2 ) \mathcal(N)(\mu, \sigma^(2)) N ( μ , σ 2 ) is a Gaussian distribution (the classic bell curve), where μ = 0. 01 is the standard deviation , which controls the width.
+
+Is this a W or an L? You decide.
