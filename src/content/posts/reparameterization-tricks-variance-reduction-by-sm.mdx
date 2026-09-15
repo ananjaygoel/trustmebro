@@ -1,0 +1,37 @@
+---
+title: "Reparameterization Tricks: Variance Reduction by Smarter ..."
+excerpt: "How moving randomness outside the computation graph turns noisy gradient estimators into low-variance, differentiable ones The post Repar..."
+category: "ai"
+date: 2026-09-15
+publishedAt: "2026-09-15T15:54:53.943Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "main character energy 💫"
+source: "Towards Data Science"
+featured: false
+---
+
+## What's Happening
+
+Listen up: How moving randomness outside the computation graph turns noisy gradient estimators into low-variance, differentiable ones The post Reparameterization Tricks: Variance Reduction by Smarter Gradients appeared first on Towards Data Science.
+
+ML Reparameterization Tricks: Variance Reduction How moving randomness outside the computation graph turns noisy gradient estimators into low-variance, differentiable ones Ananya Bhattacharyya 9 min read Generated The reparameterization trick is what makes Variational Autoencoders (VAEs) trainable with standard stochastic gradient descent. It works outside the computation graph and turns an awkward gradient of an expectation into an ordinary chain-rule derivative. (wild, right?)
+
+An encoder maps input data x to a distribution over a latent variable z , while a decoder maps a sampled z back to a reconstruction of x .
+
+## The Details
+
+What makes it trainable is its objective, the ELBO (Evidence Lower Bound) i. , a tractable stand-in for the true (intractable) data likelihood, made up of a reconstruction term and a term that regularizes the latent distribution toward a simple prior.
+
+To train a VAE involves maximizing this ELBO using gradient descent, and to do that the gradient of an expectation must be computed; more precisely, the gradient of the expected reconstruction quality with respect to randomly sampled latent variables z must be computed. Its genuinely awkward to make that distinction and the issue is not unique to VAEs.
+
+## Why This Matters
+
+The same structure shows up in the expected return in policy-gradient RL, and in variational inference more generally. In every case were optimizing L(θ) = E[f(z)] where z is itself sampled from a distribution that depends on θ — so the thing were differentiating is defined were differentiating with respect to. That circularity is where a lot of the pain in stochastic optimization comes from, and its exactly what the reparameterization trick was built to sidestep.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## The Bottom Line
+
+That circularity is where a lot of the pain in stochastic optimization comes from, and its exactly what the reparameterization trick was built to sidestep.
+
+How do you feel about this development?
