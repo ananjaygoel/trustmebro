@@ -1,0 +1,44 @@
+---
+title: "Linkup Research Releases SPARSEUP: A 149M-Parameter Open-..."
+excerpt: "Linkup Research has dropped SPARSEUP, an open-source sparse embedding model built on a 149M-parameter ModernBERT backbone."
+category: "ai"
+date: 2026-09-19
+publishedAt: "2026-09-19T15:02:54.178Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "ur news bff 💕"
+source: "MarkTechPost"
+featured: false
+---
+
+## What's Happening
+
+So basically Linkup Research has dropped SPARSEUP, an open-source sparse embedding model built on a 149M-parameter ModernBERT backbone.
+
+4 nDCG@10 on BEIR-13, which Linkup calls the best result it knows of for a public sparse encoder under 150M parameters. The model uses a logit shift, top-12 expansion per token and case folding to keep its vectors sparse. (it feels like chaos)
+
+With the Seismic index, it reaches over 97% recall in about 380 microseconds per query, and it ships under Apache 2.
+
+## The Details
+
+The post Linkup Resear Editors Pick Agentic AI AI AI Infrastructure Technology AI Shorts Applications Deep Learning Language Model Embedding Model Large Language Model ML New Releases Open Source Tech News Python Staff Linkup Research Releases SPARSEUP: A 149M-Parameter Open-Source Sparse Embedding Model By Asif Razzaq - Linkup research team releases SPARSEUP , an open-source learned sparse embedding model. The model runs on a 149M-parameter ModernBERT backbone and ships under Apache 2.
+
+It calls this the strongest public vocabulary-based sparse encoder it knows of under 150M parameters. The weights are on Hugging Face under Apache 2.
+
+## Why This Matters
+
+The model loads through Transformers or Sentence Transformers with trust_remote_code=True . Why a Sparse Model, and Why Now Most open retrieval models are dense: 1 vector per text. Sparse models output weights over a vocabulary instead.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## Key Takeaways
+
+- Each dimension maps to a real token, so vectors fit inverted indexes and humans can read them.
+- They also tend to match rare words well.
+- The trigger was LightOns DenseOn and LateOn release .
+- LightOn published open data, a training recipe, a dense model and a late-interaction model.
+
+## The Bottom Line
+
+A vanilla SPLADE on this backbone produced huge bags full of stopwords. Linkup fixed this with 3 changes: Logit shifting: The encoder computes log(1 + ReLU(x - 15)) .
+
+Is this a W or an L? You decide.
