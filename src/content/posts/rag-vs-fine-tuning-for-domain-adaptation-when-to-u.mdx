@@ -1,0 +1,37 @@
+---
+title: "RAG vs. Fine-Tuning for Domain Adaptation: When to Use Which"
+excerpt: "In this article, you will learn the mechanical difference between retrieval-augmented generation and fine-tuning, when each technique is ..."
+category: "ai"
+date: 2026-09-23
+publishedAt: "2026-09-23T20:51:39.051Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/08/MLM-Shittu-RAG-vs-Fine-Tuning-for-Domain-Adaptation-scaled.png"
+author: "no cap correspondent 🧢"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+Alright so In this article, you will learn the mechanical difference between retrieval-augmented generation and fine-tuning, when each technique is the right tool, and how to decide...
+
+Fine-Tuning for Domain Adaptation: When to Use Which By Shittu Olumide on in Language Models 0 Post In this article, you will learn the mechanical difference between retrieval-augmented generation and fine-tuning, when each technique is the right tool, and how to decide which one, or both, your production system actually needs. Topics we will cover include: What RAG and fine-tuning each do at a mechanical level, and what each one cannot do. (plot twist fr)
+
+Two complete, working code examples one RAG pipeline for a knowledge-retrieval use case, and one LoRA fine-tuning setup for a structured-output use case.
+
+## The Details
+
+A concrete six-point decision framework for choosing between RAG, fine-tuning, or both. RAG vs fine-tuning is one of the most searched, most argued-about tradeoffs in applied LLM work right now, and most of the debate happens at the wrong level of abstraction.
+
+It gets framed as a single either/or decision, when the honest 2026 picture is that roughly 60% of production LLM deployments now use both together , not because teams couldnt decide, but because retrieval-augmented generation and fine-tuning solve two genuinely different problems, and most real domain-adaptation projects have both problems at once. This article breaks that false binary down properly: what each technique actually does at a mechanical level, two complete, working, real examples — one for each approach — and then a concrete decision framework for figuring out which one your specific project actually needs, and when the honest answer is both.
+
+## Why This Matters
+
+What RAG Actually Is (and Isnt) Retrieval-augmented generation doesnt touch the model at all. The models weights never change; what changes is what the model sees in its context window at the moment its asked a question. A retrieval step searches a knowledge base, pulls back the most relevant documents, and hands them to the model alongside the users query, so the model is answering with a briefing document in front of it rather than from memory alone.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## The Bottom Line
+
+A retrieval step searches a knowledge base, pulls back the most relevant documents, and hands them to the model alongside the users query, so the model is answering with a briefing document in front of it rather than from memory alone.
+
+How do you feel about this development?
