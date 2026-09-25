@@ -1,0 +1,44 @@
+---
+title: "Contrastive-LM Releases CLM-8B: An Open System One Model ..."
+excerpt: "Contrastive-LM has dropped CLM-8B, an open System One model that scores candidate actions against a state instead of generating text."
+category: "ai"
+date: 2026-09-25
+publishedAt: "2026-09-25T02:32:29.943Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "certified yapper 🗣️"
+source: "MarkTechPost"
+featured: false
+---
+
+## What's Happening
+
+So get this: Contrastive-LM has dropped CLM-8B, an open System One model that scores candidate actions against a state instead of generating text.
+
+It adds 2 small projection heads to a frozen Qwen3-8B encoder and trains them with a contrastive InfoNCE objective. In zero-shot tests it runs up to 9× faster than TypeSafe's Jev. (we're not making this up)
+
+With fine-tuned heads as a verifier, it reaches 81.
+
+## The Details
+
+6% on held-out DeepSWE tasks and 87. 6% on held-out Terminal-Bench 2.
+
+The post Contrastive-LM Releases CLM-8B: An Open System O Editors Pick Agentic AI AI AI Infrastructure Technology AI Shorts Applications For Devs Language Model Large Language Model ML New Releases software Engineering Staff Tech News Contrastive-LM Releases CLM-8B: An Open System One Model That Scores Agent Actions Up to 9× Faster Than Jev By Michal Sutter - Contrastive-LM has dropped CLM-8B , the first open model in a new class called Contrastive Language Models (CLMs). It scores a set of candidate actions against the current state and returns probabilities.
+
+## Why This Matters
+
+Their main baseline is Jev , the proprietary System One model from TypeSafe AI. It runs on 1 NVIDIA GPU under Linux, with vLLM serving the Qwen3-8B encoder. What a System One Model Does Jev entered limited early access on 15 September 2026.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- It returns typed values with probabilities instead of text.
+- CLM targets the same interface.
+- The CLM GitHub repo serves CLM-8B behind a TypeSafe-compatible API.
+- It exposes 3 question types: Noul: returns the probability that a statement is true.
+
+## The Bottom Line
+
+This design disaggregates states and actions. In an agent loop, the state changes every step while the action set stays mostly fixed.
+
+Sound off in the comments.
