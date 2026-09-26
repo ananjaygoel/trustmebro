@@ -1,0 +1,37 @@
+---
+title: "Tool Calling vs. Code Execution for AI Agents: Choosing t..."
+excerpt: "Theory is easier to trust once it's running against a real API, so both examples in this article use the same tool — a get_weather functi..."
+category: "ai"
+date: 2026-09-26
+publishedAt: "2026-09-26T20:22:28.302Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/08/MLM-Shittu-Tool-Calling-vs.-Code-Execution-for-AI-Agents-Choosing-the-Right-Action-Primitive-scaled.png"
+author: "ur news bff 💕"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+Here's the thing: Theory is easier to trust once it's running against a real API, so both examples in this article use the same tool — a get_weather function backed by a href=" Tool Calling vs.
+
+Code Execution for AI Agents: Choosing the Right Action Primitive By Shittu Olumide on in AI 0 Post In this article, you will learn what tool calling and code execution are as agent action primitives, how they differ mechanically, and when to choose one over the other. Topics we will cover include: How tool calling works under the hood, and why it remains the right choice for single, time-sensitive lookups. (wild, right?)
+
+How code execution via Programmatic Tool Calling differs from standard tool calling, and what measurable benefits it offers for fan-out and aggregation tasks.
+
+## The Details
+
+A practical decision framework for choosing between the two primitives based on call count, data sensitivity, latency, infrastructure, and auditability needs. Picture an agent asking one simple-sounding question: which of twenty employees went over their Q3 travel budget.
+
+To answer it, the agent needs each persons expense line items, every flight, hotel, and meal receipt, compared against a budget limit tied to their level. Built the obvious way, with the model calling a tool for each persons expenses one at a time, thats twenty separate tool calls, each returning fifty to a hundred line items, and every single one of those items has to pass through the models context just so it can be added up.
+
+## Why This Matters
+
+Thats over 2,000 line items and more than 50KB of raw data the model never actually needed to read it needed a sum . Thats the real cost hiding behind a design decision most agent tutorials skip past entirely: how does an agent actually take action in the world. There are two real answers, tool calling and code execution , and which one you reach for isnt a style preference — its an architectural choice with measurable consequences for cost, latency, and accuracy.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## The Bottom Line
+
+There are two real answers, tool calling and code execution , and which one you reach for isnt a style preference — its an architectural choice with measurable consequences for cost, latency, and accuracy.
+
+We want to hear your thoughts on this.
