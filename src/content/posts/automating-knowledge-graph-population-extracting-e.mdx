@@ -1,0 +1,43 @@
+---
+title: "Automating Knowledge Graph Population: Extracting Entitie..."
+excerpt: "In this article, you will learn how to automatically extract structured knowledge from raw text and populate a knowledge graph with SPOC ..."
+category: "ai"
+date: 2026-09-29
+publishedAt: "2026-09-29T17:16:45.751Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/09/mlm-automating-knowledge-graph-population-extracting-entities-and-triples-from-unstructured-text-with-an-llm-feature.png"
+author: "no cap correspondent 🧢"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+Here's the thing: In this article, you will learn how to automatically extract structured knowledge from raw text and populate a knowledge graph with SPOC quads using a...
+
+Automating Knowledge Graph Population: Extracting Entities and Triples from Unstructured Text with an LLM By Iván Palomares Carrascosa on in Language Models 0 Post In this article, you will learn how to automatically extract structured knowledge from raw text and populate a knowledge graph with SPOC quads using a local LLM via Ollama. Topics we will cover include: How to set up Ollama with the Llama 3. (it feels like chaos)
+
+2 model to run a free, local LLM for structured data extraction.
+
+## The Details
+
+How to design a strong extraction pipeline that converts unstructured Wikipedia text into SPOC (Subject-Predicate-Object-Context) quads using few-shot prompting and JSON output mode. How to load the extracted quads into a QuadStore knowledge graph, ready for use in a Graph-RAG retrieval pipeline.
+
+Introduction The recent article on Building a Deterministic 3-Tiered Graph-RAG System shows how a hierarchical, graph-based architecture can tackle the issue of hallucinations in standard vector information retrieval. That article leveraged Quadstore , a lightweight knowledge graph database implemented in Python, to teach LLMs to respect ground-truth facts, there accuracy and deterministic retrieval conflict resolution in applications like RAG systems.
+
+## Why This Matters
+
+A critical question remains, though: where does the factual graph knowledge come from? This article helps close the loop, showing a free, fully automated approach to extract entities and build SPOC quads (Subject-Predicate-Object-Context) from raw text such as Wikipedia pages. We will do this with the help of a local, free LLM from Ollama.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- Once these quads are built, we will illustrate how to directly populate the Quadstore.
+- If you choose the latter, you will need to manually install Ollama on your computer first, along with pulling the Llama 3.
+- In Google Colab, you can set up Ollama and get Llama 3.
+
+## The Bottom Line
+
+If you choose the latter, you will need to manually install Ollama on your computer first, along with pulling the Llama 3. In Google Colab, you can set up Ollama and get Llama 3.
+
+What do you think about all this?
