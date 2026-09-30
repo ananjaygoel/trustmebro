@@ -1,0 +1,44 @@
+---
+title: "Perplexity Introduces Photon: A Rust-Based Retrieval Engi..."
+excerpt: "Perplexity has dropped Photon, an in-house retrieval and ranking engine written in Rust."
+category: "ai"
+date: 2026-09-30
+publishedAt: "2026-09-30T17:14:47.745Z"
+image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800"
+author: "no cap correspondent 🧢"
+source: "MarkTechPost"
+featured: false
+---
+
+## What's Happening
+
+Breaking it down: Perplexity has dropped Photon, an in-house retrieval and ranking engine written in Rust.
+
+It replaces an open-source engine Perplexity had forked for its AI-native search stack. Photon now handles retrieval and ranking for all production traffic. (it feels like chaos)
+
+It also powers a new Fast Search mode in the Perplexity Search API.
+
+## The Details
+
+Perplexity reports single-call latency of 160 [] The post Perplexity Introduces Photon: A Rust-Based Retrieval Engine That Cuts p99 Latency From 800 ms to 65 ms appeared first on Editors Pick Agentic AI AI AI Infrastructure Technology AI Shorts Applications Enterprise AI For Devs Language Model Large Language Model ML New Releases software Engineering Staff Tech News Perplexity Introduces Photon: A Rust-Based Retrieval Engine That Cuts p99 Latency From 800 ms to 65 ms By Asif Razzaq - Perplexity has dropped Photon , an in-house retrieval and ranking engine written in Rust. Perplexity reports single-call latency of 160 ms at p50 and 230 ms at p95.
+
+Set search_type: "fast" on POST /search and pay $1 per 1,000 requests. Photon itself is not open source, so the engine cannot be self-hosted.
+
+## Why This Matters
+
+Why Perplexity Replaced its Old Engine The old engine hit 3 limits as the index grew: Tail latency: Production p99 sat near 800 ms. The dataset exceeded RAM, so mlock was not an option. Cold reads triggered major page faults that stalled queries.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## Key Takeaways
+
+- Merge spikes: During disk index fusion, p99 climbed to about 1.
+- Slow recovery: Deploying and syncing an extra cluster could take more than a week.
+- Recovery also raised the of partial responses.
+- Perplexity team concluded that building from scratch was simpler and cheaper than maintaining its fork.
+
+## The Bottom Line
+
+Longer lists split into blocks of fixed document ID ranges. Sparse blocks store sorted offset arrays and use galloping search.
+
+Thoughts? Drop them below.
