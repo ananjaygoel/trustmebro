@@ -1,0 +1,42 @@
+---
+title: "How (and Why) to Build an AI Agent from Scratch in Python"
+excerpt: "In this article, you will learn what an AI agent is and how to build one from scratch in plain Python using the Anthropic API,..."
+category: "ai"
+date: 2026-10-06
+publishedAt: "2026-10-06T12:25:56.495Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/09/mlm-ai-agent-from-scratch.png"
+author: "main character energy 💫"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+So basically In this article, you will learn what an AI agent is and how to build one from scratch in plain Python using the Anthropic API,...
+
+How (and Why) to Build an AI Agent from Scratch in Python By Bala Priya C on in AI 0 Post In this article, you will learn what an AI agent is and how to build one from scratch in plain Python using the Anthropic API, without relying on any orchestration framework. Topics we will cover include: Why tool calling is necessary and how to define a tool the model can use. (plot twist fr)
+
+How to implement the request-execute-respond loop that drives an agents behavior.
+
+## The Details
+
+How to add persistent memory so the agent maintains context across multiple turns. Introduction A simple call to a large language model is enough when the answer can be produced from what the model already knows: explaining a policy, drafting a reply, summarizing text.
+
+It is not enough once the answer depends on data outside that training set, such as a live order status or a row in your database; this gap is what an agent is built to close. An AI agent is what results once the model can call out to something else a function, a database query, an API and use the result before it answers.
+
+## Why This Matters
+
+Reaching for an agent orchestration framework to get this working is a reasonable move, at some point. Writing one from scratch in plain Python, using a raw API call, makes the underlying architecture clear. At its core, there is simply a model, a loop that manages the interaction, and a small set of well-defined functions that give the model the capabilities it needs.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## Key Takeaways
+
+- Stripping away the frameworks and abstractions makes it easier to see how these pieces fit together and what is actually happening under the hood.
+- Prerequisites You need Python 3.
+
+## The Bottom Line
+
+This article covers: Why tool calling is necessary and what you need installed to try it How to describe a tool so the model knows when and how to call it What the request-execute-respond loop looks like in code How to add memory so the agent keeps context across turns You can find the companion code for this article in this GitHub repository . Prerequisites You need Python 3.
+
+Sound off in the comments.
