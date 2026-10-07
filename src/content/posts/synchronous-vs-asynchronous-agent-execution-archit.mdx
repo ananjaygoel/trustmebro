@@ -1,0 +1,37 @@
+---
+title: "Synchronous vs. Asynchronous Agent Execution: Architectur..."
+excerpt: "In this article, you will learn how synchronous and asynchronous execution patterns differ architecturally, and how to choose between the..."
+category: "ai"
+date: 2026-10-07
+publishedAt: "2026-10-07T12:19:01.565Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/10/mlm-synchronous-vs-asynchronous-agent-execution-architecture-patterns-for-production-feature.png"
+author: "your fave news bestie 💅"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+So basically In this article, you will learn how synchronous and asynchronous execution patterns differ architecturally, and how to choose between them when deploying LLM-based agents to...
+
+Asynchronous Agent Execution: Architecture Patterns for Production By Iván Palomares Carrascosa on in AI 0 Post In this article, you will learn how synchronous and asynchronous execution patterns differ architecturally, and how to choose between them when deploying LLM-based agents to production. Topics we will cover include: How the synchronous wait and see execution pattern works, and the production scenarios where it is appropriate. (wild, right?)
+
+How the asynchronous, event-driven fire and forget pattern decouples task submission from task completion to handle long-running agent workflows.
+
+## The Details
+
+A practical guide to choosing between the two patterns based on task complexity, latency tolerance, and infrastructure requirements. Introduction Building local Python scripts where an LLM-based agent loops through several tools is increasingly easy nowadays, with endless high-level libraries and supporting frameworks on the rise.
+
+But, there is a severe deployment gap in the agentic AI space that deserves further attention. From a production standpoint, real-world agent workflows entail intricate dependencies, multi-step reasoning loops, and API latency.
+
+## Why This Matters
+
+Failing to design an architecture that accounts for this reality results in system timeouts, dropped user requests, and memory leaks. Two core architectural patterns that bridge these gaps and move toward standard distributed system paradigms are synchronous and asynchronous execution. This article examines these two patterns from an agent execution perspective, illustrating their rationale through two easy-to-run, lightweight notebooks whose underlying logic can be readily translated to production-ready agent-based applications.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## The Bottom Line
+
+This article examines these two patterns from an agent execution perspective, illustrating their rationale through two easy-to-run, lightweight notebooks whose underlying logic can be readily translated to production-ready agent-based applications. Synchronous Agent Execution: Wait and See The synchronous agent execution pattern closely resembles the classic HTTP request-response approach.
+
+What do you think about all this?
