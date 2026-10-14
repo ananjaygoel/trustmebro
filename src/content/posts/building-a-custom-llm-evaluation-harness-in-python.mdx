@@ -1,0 +1,44 @@
+---
+title: "Building a Custom LLM Evaluation Harness in Python from S..."
+excerpt: "In this article, you will learn how to build a custom LLM evaluation harness in Python from scratch, structured around four modular compo..."
+category: "ai"
+date: 2026-10-14
+publishedAt: "2026-10-14T16:10:46.666Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/09/mlm-chugani-custom-llm-evaluation-harness-python-scratch-feature.png"
+author: "certified yapper 🗣️"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+Listen up: In this article, you will learn how to build a custom LLM evaluation harness in Python from scratch, structured around four modular components that give...
+
+Building a Custom LLM Evaluation Harness in Python from Scratch By Vinod Chugani on in Language Models 0 Post In this article, you will learn how to build a custom LLM evaluation harness in Python from scratch, structured around four modular components that give you full control over how your models are tested and scored. Topics we will cover include: How to construct a golden dataset of test cases grounded in real user inputs and known failure modes. (shocking, we know)
+
+How to build an async inference runner and a two-mode judge layer using both deterministic and LLM-based scoring.
+
+## The Details
+
+How to log results in a crash-safe format that decouples scoring from inference, so you can re-score without re-running expensive API calls. Public benchmarks like MMLU or GSM8K measure general capability, but they wont tell you whether your customer support agent follows your refusal policy, or whether your RAG pipeline pulls the right context for your specific domain.
+
+For that, you need something you own. Thats where a custom evaluation harness comes in: a repeatable pipeline built around your test cases and your scoring criteria.
+
+## Why This Matters
+
+In software engineering, a test harness is the scaffolding that feeds inputs to a system, captures outputs, and scores them against a known baseline. Applied to large language models, it does the same thing across a suite of prompts, tracking pass rates, latency, and cost over time. This guide walks through building one from scratch in Python.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## Key Takeaways
+
+- Well cover four modular components: a golden dataset, an inference runner, a judge layer, and a logger.
+- Each is deliberately kept minimal so you have a foundation to build on, not a black box to copy-paste.
+- Prerequisites Youll need Python 3.
+- 10 or later, mainly for native asyncio support that lets you run evaluations concurrently instead of waiting on each API call one at a time.
+
+## The Bottom Line
+
+10 or later, mainly for native asyncio support that lets you run evaluations concurrently instead of waiting on each API call one at a time. Beyond that, the dependency list is short on purpose.
+
+What do you think about all this?
