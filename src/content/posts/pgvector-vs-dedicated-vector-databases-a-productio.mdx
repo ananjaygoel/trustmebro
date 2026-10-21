@@ -1,0 +1,37 @@
+---
+title: "pgvector vs. Dedicated Vector Databases: A Production Ben..."
+excerpt: "Run this on a typical laptop and both systems will report latencies in the low single-digit to tens of milliseconds range, with the exact..."
+category: "ai"
+date: 2026-10-21
+publishedAt: "2026-10-21T10:50:09.340Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/09/MLM-Shittu-pgvector-vs.-Dedicated-Vector-Databases-A-Production-Benchmark-scaled.png"
+author: "no cap correspondent 🧢"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+So get this: Run this on a typical laptop and both systems will report latencies in the low single-digit to tens of milliseconds range, with the exact numbers depending heavily on your CPU, available RAM, and whatever else is running on your machine at the time.
+
+Dedicated Vector Databases: A Production Benchmark By Shittu Olumide on in Language Models 0 Post In this article, you will learn how pgvector compares to dedicated vector databases for real, measured performance, and how to decide which approach suits your production workload. Topics we will cover include: What pgvector and dedicated vector databases are, and how they differ architecturally. (it feels like chaos)
+
+How to set up and run a hands-on benchmark comparing pgvector and Qdrant on your own machine.
+
+## The Details
+
+What production-grow benchmark data actually shows about throughput, latency, and the tradeoffs between the two approaches. A team adds pgvector to their existing Postgres database on a Tuesday afternoon, embeddings and relational data sitting in the same table, one query doing both the filter and the similarity search.
+
+Six months later, a vendor pitch lands in their inbox insisting they need to migrate to a real vector database before they hit a wall. No benchmark accompanies the claim in either direction, just confidence.
+
+## Why This Matters
+
+That gap — strong opinions with no numbers behind them — is exactly what this article exists to close. What pgvector Actually Is pgvector is an open-source Postgres extension, rn at version 0. 6 and supporting Postgres 13 and later, according to its official GitHub repository .
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## The Bottom Line
+
+What that means in practice: a vector embedding lives in the same table as the record it describes, in the same row if you want, queried with the same SQL you already know. Theres no separate service to stand up, no second system to keep in sync, no network hop between your relational data and your vector data.
+
+Thoughts? Drop them below.
