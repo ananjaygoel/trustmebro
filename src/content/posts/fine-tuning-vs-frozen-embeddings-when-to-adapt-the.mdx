@@ -1,0 +1,37 @@
+---
+title: "Fine-Tuning vs. Frozen Embeddings: When to Adapt the LLM ..."
+excerpt: "In this article, you will learn how to compare two strategies for adapting a large language model to a specific domain: fine-tuning with ..."
+category: "ai"
+date: 2026-10-30
+publishedAt: "2026-10-30T03:33:57.638Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/10/mlm-fine-tuning-vs-frozen-embeddings-when-to-adapt-the-llm-vs-the-sklearn-head-feature.png"
+author: "vibes curator ✨"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+Okay so In this article, you will learn how to compare two strategies for adapting a large language model to a specific domain: fine-tuning with LoRA versus...
+
+Frozen Embeddings: When to Adapt the LLM vs. The Sklearn Head By Iván Palomares Carrascosa on in Language Models 0 Post In this article, you will learn how to compare two strategies for adapting a large language model to a specific domain: fine-tuning with LoRA versus training a scikit-learn classifier on frozen embeddings. (let that sink in)
+
+Topics we will cover include: How frozen embeddings work as a lightweight alternative to full model fine-tuning, and when this approach is appropriate.
+
+## The Details
+
+How to implement QLoRA fine-tuning using the PEFT library with a Hugging Face model and a classification head. How the two strategies compare for training time and classification accuracy on a real dataset.
+
+Introduction When adapting an LLM (a large language model) to a specific domain, the classical approach picked learning community boils down to fine-tuning the model on a domain-specific dataset. But a question arises: is this always necessary?
+
+## Why This Matters
+
+Or could alternative strategies like using frozen embeddings combined with lightweight downstream classifiers on top of the model be a wiser approach to adopt, especially when building cost-friendly, compute-constrained applications? This article presents a practical comparison of fine-tuning a local LLM with LoRA (Low-Rank Adaptation, an algorithm for efficient weight updating) against training only a downstream scikit-learn classifier on frozen embeddings. We cover, analyze, and discuss when each strategy is preferred based on cost and performance.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## The Bottom Line
+
+Initial Setup If you are running this practical comparison on Google Colab, first and foremost, make sure you set the running environment to GPU (T4), as the code and methods used in it are optimized for GPU use. You will only need to install the following libraries: !
+
+How do you feel about this development?
