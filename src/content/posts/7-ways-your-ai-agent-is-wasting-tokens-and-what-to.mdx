@@ -1,0 +1,43 @@
+---
+title: "7 Ways Your AI Agent Is Wasting Tokens (And What to Do In..."
+excerpt: "In this article, you will learn seven common token-waste patterns in production AI agent systems, and the architectural fixes that addres..."
+category: "ai"
+date: 2026-10-31
+publishedAt: "2026-10-31T03:18:28.703Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/09/mlm-chugani-7-ways-ai-agent-wasting-tokens-feature.png"
+author: "no cap correspondent 🧢"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+So get this: In this article, you will learn seven common token-waste patterns in production AI agent systems, and the architectural fixes that address each one.
+
+7 Ways Your AI Agent Is Wasting Tokens (And What to Do Instead) By Vinod Chugani on in AI 0 Post In this article, you will learn seven common token-waste patterns in production AI agent systems, and the architectural fixes that address each one. Topics we will cover include: How treating the context window as a system of record inflates costs and latency, and how to fix it with sliding windows and semantic summarization. (and honestly, same)
+
+How uncompressed tool results, static schema bloat, and naive retrieval patterns silently drain your token budget.
+
+## The Details
+
+How to use circuit breakers, prompt prefixing, cascaded routing, and constrained output formats to build cost-stable agent architectures. Introduction Prototyping an agent over a weekend is one problem.
+
+Keeping its API bill from spiraling is another. The naive approach to agent architecture — appending every user message, observation, and internal response to an endlessly growing array — quadratically increases inference latency and linearly inflates token costs on every call.
+
+## Why This Matters
+
+The root of this failure is treating the context window as a system of record. Theres a distinction many engineers miss early on: Context is the ephemeral token payload sent over the wire per request. State is the durable, serialized representation of the agents progress.
+
+This adds to the ongoing AI race that's captivating the tech world.
+
+## Key Takeaways
+
+- Conflate the two and youre paying for your database reads on every single inference call.
+- Context Window Accumulation (The Append-Only Trap) The most widespread mistake in agent design is treating the prompt array as a database.
+- Every turn gets appended — user messages, tool observations, intermediate reasoning, assistant responses.
+
+## The Bottom Line
+
+Every turn gets appended — user messages, tool observations, intermediate reasoning, assistant responses. By turn 20, the agent is re-reading its entire operational history on every request, paying quadratically increasing attention costs to do so.
+
+Thoughts? Drop them below.
