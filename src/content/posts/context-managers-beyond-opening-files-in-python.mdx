@@ -1,0 +1,44 @@
+---
+title: "Context Managers Beyond Opening Files in Python"
+excerpt: "The stopwatch in the opening script is the smallest case of the pattern."
+category: "ai"
+date: 2026-11-01
+publishedAt: "2026-11-01T03:17:36.901Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/10/mlm-context-managers-beyond-opening-files-feature.png"
+author: "ur news bff 💕"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+So get this: The stopwatch in the opening script is the smallest case of the pattern.
+
+Context Managers Beyond Opening Files in Python By Nahla Davies on in Practical Python 0 Post In this article, you will learn how Python context managers work beneath the surface, and how to apply them to real cleanup problems well beyond file handling. Topics we will cover include: How the with statements protocol works, including what __enter__() and __exit__() actually do and why the return value of __exit__() matters. (plot twist fr)
+
+How to build custom context managers using a class, the @contextmanager decorator, and standard library tools like TemporaryDirectory and patch.
+
+## The Details
+
+How to manage a runtime-variable number of resources safely using ExitStack , and when to wrap it in a class of its own. The evaluation script does a fair amount of housekeeping before it evaluates anything.
+
+There is a scratch directory for the extracted test set, an environment variable that points the model cache at a faster disk, a library logger turned down to WARNING because it otherwise floods the console, and a stopwatch. The bottom of the file undoes all of it in the right order: the directory is deleted, the variable restored, the logger reset, the elapsed time printed.
+
+## Why This Matters
+
+The cleanup at the bottom runs every time the script succeeds. The day a malformed record makes evaluate() raise halfway through, none of it runs. Whoever uses the machine next gets a stale cache path, a logger that has gone quiet for no reason they can see, and 3 GB of extracted files nobody remembers creating.
+
+The AI space continues to evolve at a wild pace, with developments like this becoming more common.
+
+## Key Takeaways
+
+- Scratch = Path("scratch"); scratch.
+- Environ["MODEL_CACHE"] = "/fast/cache" logging.
+- Perf_counter() scores = evaluate(model, extract(archive, scratch)) # raises on a rough record print(f"took (time.
+- 1f)s") # none of this runs shutil.
+
+## The Bottom Line
+
+Environ["MODEL_CACHE"] logging. INFO) 1 2 3 4 5 6 7 8 9 10 11 12 scratch = Path ( "scratch" ) ; scratch .
+
+What do you think about all this?
