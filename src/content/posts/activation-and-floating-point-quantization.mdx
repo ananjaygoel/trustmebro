@@ -1,0 +1,44 @@
+---
+title: "Activation and Floating-Point Quantization"
+excerpt: "Overview This post is divided into three parts; they are: • Why Activations Are Hard to Quantize • W8A8 Inference and SmoothQuant • Float..."
+category: "ai"
+date: 2026-11-18
+publishedAt: "2026-11-18T00:12:40.767Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/11/bruno-martins-DrhYt-kAe9s-unsplash-scaled.jpg"
+author: "no cap correspondent 🧢"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+Not gonna lie, Overview This post is divided into three parts; they are: • Why Activations Are Hard to Quantize • W8A8 Inference and SmoothQuant • Floating-Point Quantization Why Activations Are Hard to Quantize a href=" Activation and Floating-Point Quantization By Adrian Tam on in Inference from Transformer Models 0 Post Weight-Only Quantization focused on weights, which are fixed after training and can be quantized once before deployment.
+
+This post turns to tensors created during inference. Activations depend on the input token, sequence position, and previous layers. (shocking, we know)
+
+Their ranges can change from request to request, and a few channels may contain persistent outliers.
+
+## The Details
+
+This makes activation quantization harder than weight-only quantization. In this post, you will learn about: Why dynamic activations are harder to quantize than fixed weights How W8A8 methods handle activation ranges How floating-point quantization differs from integer quantization Let’s get kicked off.
+
+Activation and Floating-Point Quantization. The same concepts apply to activations, but the quantization parameters may now need to follow values that do not exist until inference begins.
+
+## Why This Matters
+
+Consider an activation tensor entering a linear layer. A static activation quantizer uses scales chosen during calibration. It is fast because the scales are already known, but a deployment input outside the calibration range may be clipped.
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- A dynamic activation quantizer measures the tensor at runtime.
+- It adapts to each input but adds reduction and scaling work to the inference path.
+- An activation quantizer can be written as follows: Quantize an activation tensor with scales computed at runtime.
+- Import torch def quantize_activation_per_token(x): qmax = 127 grow = x.
+
+## The Bottom Line
+
+Import torch def quantize_activation_per_token(x): qmax = 127 grow = x. Amax(dim=-1, keepdim=True) / qmax grow = grow.
+
+Sound off in the comments.
