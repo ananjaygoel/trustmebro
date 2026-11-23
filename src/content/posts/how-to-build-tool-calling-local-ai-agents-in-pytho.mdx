@@ -1,0 +1,43 @@
+---
+title: "How to Build Tool-Calling Local AI Agents in Python"
+excerpt: "In this article, you will learn how to build a local AI agent in Python that uses Ollama and Qwen3 to call tools that search,..."
+category: "ai"
+date: 2026-11-23
+publishedAt: "2026-11-23T16:51:16.976Z"
+image: "https://machinelearningmastery.com/wp-content/uploads/2026/11/mlm-bala-local-tool-calling-agents-cover.png"
+author: "the tea spiller ☕"
+source: "ML Mastery"
+featured: false
+---
+
+## What's Happening
+
+So get this: In this article, you will learn how to build a local AI agent in Python that uses Ollama and Qwen3 to call tools that search,...
+
+How to Build Tool-Calling Local AI Agents in Python By Bala Priya C on in AI 0 Post In this article, you will learn how to build a local AI agent in Python that uses Ollama and Qwen3 to call tools that search, read, and remember information in a project folder. Topics we will cover include: How to set up Ollama with a tool-capable model and a context length large enough for agent workflows. (shocking, we know)
+
+How the tool-calling exchange works, and how to write safe, size-limited tools as plain Python functions.
+
+## The Details
+
+How to build the agent loop and add short-term and long-term memory to the assistant. Introduction A language model can generate text, reason through a problem, and follow instructions.
+
+To work with files on your computer, though, it needs a way to interact with them. Tool calling provides that connection.
+
+## Why This Matters
+
+It lets a model request an action, such as searching a folder or reading a document, and use the result to decide what to do next. Put that capability inside a loop, and you have the foundation of an AI agent . In this article, well build one from scratch: a project assistant that runs locally using Python and Ollama .
+
+As AI capabilities expand, we're seeing more announcements like this reshape the industry.
+
+## Key Takeaways
+
+- It will search and read files, keep track of useful information, and use memory across interactions.
+- The model, files, and conversation all stay on your machine, with no API key required.
+- Step 1: Setting Up Ollama and a Model That Can Use Tools Ollama lets you download and run open models locally.
+
+## The Bottom Line
+
+We will use it to run Qwen3, while the Ollama Python package will handle communication between the model and our code. Start from its official download page .
+
+Thoughts? Drop them below.
